@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Diagram</title>
+    <script type="module">
+        // Load Mermaid from CDN
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        // Initialize Mermaid to automatically process diagrams on load
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>Class Diagram</h1>
+    <!-- Mermaid class diagram code -->
+    <div class="mermaid">
+        classDiagram
+        class User {
+            +username: String
+            +password: String
+            +login(): void
+        }
+        class Session {
+            +status: Boolean
+            +startSession(): void
+            +endSession(): void
+        }
+        class FinancialData {
+            +type: String
+            +amount: float
+            +date: Date
+            +saveData(): void
+        }
+
+        User --> Session : manages
+        Session --> FinancialData : accesses
+    </div>
+</body>
+</html>

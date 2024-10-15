@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Use cases diagram</title>
+    <script type="module">
+        // Cargar Mermaid desde CDN
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        // Inicializar Mermaid para que procese los diagramas automáticamente
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>Use cases diagram</h1>
+    <!-- Aquí colocas tu código Mermaid -->
+    <div class="mermaid">
+        graph TD
+        A[User] --> B(Log-in)
+        A --> C(Input Data)
+        A --> D(Visualize Data)
+    </div>
+</body>
+</html>
