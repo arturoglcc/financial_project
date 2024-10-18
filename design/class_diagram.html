@@ -16,25 +16,78 @@
     <!-- Mermaid class diagram code -->
     <div class="mermaid">
         classDiagram
-        class User {
-            +username: String
-            +password: String
-            +login(): void
-        }
-        class Session {
-            +status: Boolean
-            +startSession(): void
-            +endSession(): void
-        }
-        class FinancialData {
-            +type: String
-            +amount: float
-            +date: Date
-            +saveData(): void
-        }
+    class User {
+        +int user_id
+        +String email
+        +String username
+        +String password_hash
+        +String salt
+        +createAccount(String email, String username, String password)
+        +login(String usernameOrEmail, String password)
+    }
 
-        User --> Session : manages
-        Session --> FinancialData : accesses
+    class PasswordManager {
+        +hashPassword(String password, String salt) String
+        +generateSalt() String
+    }
+
+    class SessionManager {
+        +createSession(User user) String
+        +validateSession(String token) Boolean
+        +invalidateSession(String token)
+    }
+
+    class EmailService {
+        +sendVerificationEmail(String email, String verificationLink)
+        +sendPasswordResetEmail(String email, String resetLink)
+    }
+
+    class UsersDatabase {
+        +int user_id
+        +email : String
+        +username : String
+        +password_hash : String
+    }
+
+    note for User "
+    createAccount es el constructor de User. \n
+    1. Primero, verifica que el username no esté registrado.
+    2. Luego, genera un salt con PasswordManager.
+    3. Después, hashea la contraseña con el salt.
+    4. Luego, verifica que el email no esté registrado.
+    5. Si el email no está registrado, envia un email de verificación con EmailServices.
+    6. Si todo es correcto, se guarda en la base de datos como UserDatabase.
+    7. Si algún paso falla, lanza una excepción y no crea la cuenta.
+    
+    El user_id es asignado al crear la cuenta y se usa para identificar al usuario en el sistema.
+    No es algo que el usuario proporcione directamente.
+    "
+
+    %% Nota sobre sendVerificationEmail %%
+    note for EmailService "sendVerificationEmail primero verifica que el formato del email sea válido.
+    Si es válido, envía el enlace de verificación al correo proporcionado."
+
+    note for SessionManager "
+    createSession(User user):
+    - Genera un token único (JWT) para la sesión del usuario.
+    - El token se devuelve al cliente y se usa para identificar al usuario en futuras solicitudes.
+
+    validateSession(String token):
+    - Verifica si el token de sesión es válido.
+    - Si el token es válido, el usuario tiene acceso autorizado.
+    - Si no es válido, se solicita al usuario que inicie sesión de nuevo.
+
+    invalidateSession(String token):
+    - Invalida el token de sesión, cerrando la sesión del usuario.
+    - El token ya no será válido para futuras solicitudes.
+    "
+    
+    
+    User "1" --> "1" PasswordManager : uses
+    User "1" --> "1" SessionManager : manages
+    User "1" --> "1" EmailService : verifies
+
+
     </div>
 </body>
 </html>
