@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Diagram</title>
+    <title>authentication</title>
     <script type="module">
         // Load Mermaid from CDN
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
@@ -11,8 +11,9 @@
         mermaid.initialize({ startOnLoad: true });
     </script>
 </head>
+
 <body>
-    <h1>Class Diagram</h1>
+    <h1>authentication class Diagram</h1>
     <!-- Mermaid class diagram code -->
     <div class="mermaid">
         classDiagram
@@ -20,11 +21,33 @@
         +int user_id
         +String email
         +String username
-        +String password_hash
+        +String password_hashed
         +String salt
-        +createAccount(String email, String username, String password)
-        +login(String usernameOrEmail, String password)
+        -User(Int id, String email, String username, String password_hashed, String salt)
     }
+
+    class UserBuilder {
+        -String email
+        -String username
+        -String password
+        -String salt
+        -String password_hash
+        +UserBuilder(String email, String username, String password)
+        +build() User
+    }
+
+    class UserController {
+        +createUser(String email, String username, String password) User
+        +verificarCuenta(String token)
+        +Login(String UsernameOrPassword, String Password) : token
+    }
+
+    class UserService {
+        +createUser(String email, String username, String password)
+        +verificarCuenta(String token)
+        +getUserData(String UsernameOrPassword) : User
+    }
+    
 
     class PasswordManager {
         +hashPassword(String password, String salt) String
@@ -32,8 +55,8 @@
     }
 
     class SessionManager {
-        +createSession(User user) String
-        +validateSession(String token) Boolean
+        +createSession(User user) token
+        +validateSession(String token) Int
         +invalidateSession(String token)
     }
 
@@ -47,21 +70,18 @@
         +email : String
         +username : String
         +password_hash : String
+        +salt : String
     }
 
-    note for User "
-    createAccount es el constructor de User. \n
-    1. Primero, verifica que el username no esté registrado.
-    2. Luego, genera un salt con PasswordManager.
-    3. Después, hashea la contraseña con el salt.
-    4. Luego, verifica que el email no esté registrado.
-    5. Si el email no está registrado, envia un email de verificación con EmailServices.
-    6. Si todo es correcto, se guarda en la base de datos como UserDatabase.
-    7. Si algún paso falla, lanza una excepción y no crea la cuenta.
-    
-    El user_id es asignado al crear la cuenta y se usa para identificar al usuario en el sistema.
-    No es algo que el usuario proporcione directamente.
-    "
+    class notVerifiedUsersDB {
+        +int user_id
+        +String email
+        +String username
+        +String password_hash
+        +String salt
+        +String token_verificacion
+        +Date fecha_expiracion
+    }
 
     %% Nota sobre sendVerificationEmail %%
     note for EmailService "sendVerificationEmail primero verifica que el formato del email sea válido.
@@ -74,19 +94,25 @@
 
     validateSession(String token):
     - Verifica si el token de sesión es válido.
-    - Si el token es válido, el usuario tiene acceso autorizado.
+    - Si el token es válido, Se devuelve el ID del usuario.
     - Si no es válido, se solicita al usuario que inicie sesión de nuevo.
 
     invalidateSession(String token):
     - Invalida el token de sesión, cerrando la sesión del usuario.
     - El token ya no será válido para futuras solicitudes.
     "
-    
-    
-    User "1" --> "1" PasswordManager : uses
-    User "1" --> "1" SessionManager : manages
-    User "1" --> "1" EmailService : verifies
 
+    UserController  -- >  SessionManager : manages
+    UserController -- > UserService : uses
+    UserController -- > PasswordManager : uses 
+    UserService -- >  notVerifiedUsersDB : manages
+    UserService -- >  UsersDatabase : manages
+    UserService -- > UserBuilder : uses
+    UserBuilder  -- >  PasswordManager : uses
+    UserBuilder -- > User : creates
+    UserBuilder  -- >  EmailService : verifies
+    UserBuilder -- > UsersDatabase : verifies
+    UserBuilder -- > notVerifiedUsersDB : verifies
 
     </div>
 </body>

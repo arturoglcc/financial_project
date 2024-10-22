@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>financial manager</title>
+    <script type="module">
+        // Load Mermaid from CDN
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        // Initialize Mermaid to automatically process diagrams on load
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>financial manager class Diagram</h1>
+    <!-- Mermaid class diagram code -->
+    <div class="mermaid">
+        classDiagram
+
+        class FinancialManager{
+            +add_earning(int User_id, Earning earning, list~string~ tags)
+            +add_expense(int User_id, Expense expense, list~string~ tags)
+            +add_debt(int User_id, String debtTo, int debtAmount)
+            +delate_earning(int User_id, int earning_id)
+            +delate_expense(int User_id, int expense_id)
+            +delate_debt(int User_id, int debt_id)
+        }
+
+        class FinancialConsultor {
+            +get_earnings(int User_id, Date start_date, Date end_date) : List~Earning~
+            +get_expenses(int User_id, Date start_date, Date end_date) : List~Expense~
+            +get_earnings(int User_id, Date start_date, Date end_date, List~string~ tags) : List~Earning~
+            +get_expenses(int User_id, Date start_date, Date end_date, List~string~ tags) : List~Expense~
+            +get_debts(int user_id)
+        }
+    
+    
+        class Earnings {
+            +int earning_id
+            +int amount
+            +String description
+            +int date
+        }
+    
+        class Expenses {
+            +int expense_id
+            +int amount
+            +String description
+            +int date
+        }
+    
+        class UserEarnings {
+            +int user_id
+            +int earning_id
+        }
+    
+        class UserExpenses {
+            +int user_id
+            +int expense_id
+        }
+
+        class Debts {
+            +String debtTo
+            +int debtAmount
+        }
+
+        class UserDebts {
+            +int user_id
+            +int debt_id
+        }
+    
+    
+        class UserExpensesTags {
+            +int user_id
+            +int expense_id
+            +int tag_id
+        }
+
+        class UserEarningsTags {
+            +int user_id
+            +int earning_id
+            +int tag_id
+        }
+
+        class Earning {
+            +int amount
+            +String description
+            +Date date
+        }
+    
+        class Expense {
+            +int amount
+            +String description
+            +Date date
+        }
+
+        class EarningsTags {
+            +int tag_id
+            +string tag
+        }
+
+        class ExpensesTags {
+            +int tag_id
+            +string tag
+        }
+
+        FinancialManager -- > Earnings : add/delate 
+        FinancialManager -- > Expenses : add/delate 
+        FinancialManager -- > EarningsTags : add/delate
+        FinancialManager -- > ExpensesTags : add/delate
+        FinancialManager -- > UserEarnings : add/delate 
+        FinancialManager -- > UserExpenses : add/delate
+        FinancialManager -- > Debts : add/delate
+        FinancialManager -- > UserDebts : add/delate
+        UserEarningsTags < --  FinancialManager : add/delate
+        UserExpensesTags < -- FinancialManager : add/delate
+        UserDebts < -- FinancialManager : add/delate
+
+        FinancialConsultor -- > UserEarningsTags : get 
+        FinancialConsultor -- > UserExpensesTags : get
+        FinancialConsultor -- > UserDebts : get
+    
+
+
+    </div>
+</body>
+</html>
