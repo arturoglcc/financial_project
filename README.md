@@ -42,13 +42,13 @@ This command will build the images if they do not already exist and start the co
 
 To stop and remove all Docker containers, use the following commands:
 
-bash ```
+```bash
 docker stop $(docker ps -q)  # Stop all running containers
 docker rm $(docker ps -a -q) # Remove all containers
 ```
 Or, if you prefer to use Docker Compose to shut down only the containers defined in this project:
 
-bash```
+```bash
 docker-compose down
 ```
 
@@ -56,7 +56,7 @@ docker-compose down
 
 To see a list of active Docker containers, use:
 
-bash```
+```bash
 docker ps
 ```
 
