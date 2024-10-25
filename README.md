@@ -18,46 +18,47 @@ First, clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/arturoglcc/financial_project.git
+```
 
-2. Change to the Project Directory
+### 2. Change to the Project Directory
 
 Navigate into the project directory:
 
-bash
-
+bash ```
 cd financial_project
+```
 
-3. Run All Docker Containers
+### 3. Run All Docker Containers
 
 To start all containers defined in the docker-compose.yml file (if they are not already running), use:
 
-bash
-
+bash```
 docker-compose up --build
+```
 
 This command will build the images if they do not already exist and start the containers.
-4. Stop and Remove All Containers
+
+### 4. Stop and Remove All Containers
 
 To stop and remove all Docker containers, use the following commands:
 
-bash
-
+bash ```
 docker stop $(docker ps -q)  # Stop all running containers
 docker rm $(docker ps -a -q) # Remove all containers
-
+```
 Or, if you prefer to use Docker Compose to shut down only the containers defined in this project:
 
-bash
-
+bash```
 docker-compose down
+```
 
-5. View Active Containers
+### 5. View Active Containers
 
 To see a list of active Docker containers, use:
 
-bash
-
+bash```
 docker ps
+```
 
 This will show the container IDs, names, and other useful information about currently running containers.
 Additional Information
