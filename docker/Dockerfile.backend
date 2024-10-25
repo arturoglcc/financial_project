@@ -1,0 +1,11 @@
+# docker/Dockerfile.backend
+FROM python:3.9-slim  # Imagen base para Python y Django
+
+WORKDIR /app
+
+# Copiamos el código de backend
+COPY ./backend /app
+
+# Comando de ejemplo (cambia según el framework)
+CMD ["echo", "Backend listo. Agrega dependencias para iniciar."]
+

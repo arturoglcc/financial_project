@@ -1,7 +1,9 @@
 #!/bin/bash
+docker-compose build
+docker-compose up
 
 # build image for data base
-docker build -t my-mysql -f docker/Dockerfile.bd .
+docker build -t my-mysql -f docker/Dockerfile.db .
 
 # build image for http server
 docker build -t my-http -f docker/Dockerfile.http .
