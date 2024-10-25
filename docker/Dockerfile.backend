@@ -1,11 +1,17 @@
 # docker/Dockerfile.backend
-FROM python:3.9-slim  # Imagen base para Python y Django
+FROM python:3.9-slim
 
 WORKDIR /app
 
+# Instala Django
+RUN pip install django
+
 # Copiamos el código de backend
-COPY ./backend /app
+COPY ../back-end /app
+
+# Expone el puerto de Django
+EXPOSE 8000
 
 # Comando de ejemplo (cambia según el framework)
-CMD ["echo", "Backend listo. Agrega dependencias para iniciar."]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 

@@ -16,5 +16,5 @@ RUN npm install
 EXPOSE 8080
 
 # Comando de ejemplo (cambia según el framework)
-CMD ["echo", "Frontend listo. Agrega dependencias para iniciar."]
+CMD ["npm", "run", "serve"]
 
