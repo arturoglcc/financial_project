@@ -39,6 +39,13 @@ docker-compose up --build
 This command will build the images if they do not already exist and start the containers.
 
 ### 4. Run Specific Docker Containers
+The project defines the following containers:
+
+* frontend: Vue.js frontend application
+* backend: Django backend application
+* db: MySQL database
+* http: Apache HTTP server acting as a reverse proxy
+
 
 To start a single Docker container (e.g., only the frontend), specify the container name from the docker-compose.yml file:
 
@@ -77,5 +84,21 @@ docker ps
 
 This will show the container IDs, names, and other useful information about currently running containers.
 Additional Information
+
+### 7. Work Within a Specific Container
+
+To work inside a specific container (e.g., to debug or run commands directly in the backend container), use:
+
+```bash
+docker exec -it <container_name_or_id> /bin/bash
+```
+
+Replace <container_name_or_id> with the name or ID of the container you want to access. This command opens an interactive terminal session inside the container, allowing you to run commands as if you were working directly on that container.
+
+For example, to access the backend container:
+
+```bash
+docker exec -it backend /bin/bash
+```
 
 For any further information or issues, please refer to the official Docker documentation or reach out to the project maintainers.
