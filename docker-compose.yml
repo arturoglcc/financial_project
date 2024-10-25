@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: financial-project-db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./dbdata:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.http
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=financial-project-db
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+

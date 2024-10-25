@@ -1,0 +1,11 @@
+FROM mysql:5.7
+
+# Eviroment variables from data base
+ENV MYSQL_ROOT_PASSWORD=1234
+ENV MYSQL_DATABASE=financial-project-db
+ENV MYSQL_USER=admin
+ENV MYSQL_PASSWORD=admin
+
+# Expose 3306 port for data base
+EXPOSE 3306
+
