@@ -32,7 +32,7 @@ cd financial_project
 
 To start all containers defined in the docker-compose.yml file (if they are not already running), use:
 
-bash```
+bash ```
 docker-compose up --build
 ```
 
