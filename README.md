@@ -38,7 +38,22 @@ docker-compose up --build
 
 This command will build the images if they do not already exist and start the containers.
 
-### 4. Stop and Remove All Containers
+### 4. Run Specific Docker Containers
+
+To start a single Docker container (e.g., only the frontend), specify the container name from the docker-compose.yml file:
+
+```bash
+
+docker-compose up frontend
+```
+
+To start multiple containers without running all of them, list the service names separated by spaces:
+
+```bash
+docker-compose up frontend backend
+```
+
+### 5. Stop and Remove All Containers
 
 To stop and remove all Docker containers, use the following commands:
 
@@ -52,7 +67,7 @@ Or, if you prefer to use Docker Compose to shut down only the containers defined
 docker-compose down
 ```
 
-### 5. View Active Containers
+### 6. View Active Containers
 
 To see a list of active Docker containers, use:
 
