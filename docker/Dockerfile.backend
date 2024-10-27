@@ -3,15 +3,16 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Instala Django
-RUN pip install django
+# Copia requirements.txt e instala dependencias
+COPY ../back-end/requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 # Copiamos el código de backend
 COPY ../back-end /app
 
-# Expone el puerto de Django
+# Expone el puerto de fastapi
 EXPOSE 8000
 
-# Comando de ejemplo (cambia según el framework)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Comando de inicio usando Uvicorn para ejecutar FastAPI
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
