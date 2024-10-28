@@ -1,6 +1,0 @@
-# docker/Dockerfile.http
-FROM httpd:2.4
-
-# Copia de la configuración de Apache
-COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
-

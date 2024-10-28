@@ -1,20 +1,18 @@
-# docker/Dockerfile.frontend
+# Usa la imagen base de Node.js 18
 FROM node:18
-
 WORKDIR /app
 
-# Instala Vue CLI
-RUN npm install -g @vue/cli
+# Copia solo package.json y package-lock.json para aprovechar la caché de Docker
+COPY ../front-end/src/package*.json ./
 
-# Copiamos el código de frontend
-COPY ../front-end /app
-
-# Instala dependencias de Vue
+# Instala las dependencias
 RUN npm install
 
-# Expone el puerto de desarrollo de Vue.js
+# Copia el código restante del frontend al contenedor
+COPY ../front-end .
+
+# Expone el puerto 8080 para el desarrollo de Vue.js
 EXPOSE 8080
 
-# Comando de ejemplo (cambia según el framework)
+# Comando para iniciar el servidor de desarrollo de Vue.js
 CMD ["npm", "run", "serve"]
-

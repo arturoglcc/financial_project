@@ -7,8 +7,6 @@ services:
       dockerfile: docker/Dockerfile.backend
     ports:
       - "8000:8000"
-    volumes:
-      - ./back-end:/app
     depends_on:
       - db
 
@@ -18,8 +16,6 @@ services:
       dockerfile: docker/Dockerfile.frontend
     ports:
       - "8080:8080"
-    volumes:
-      - ./front-end:/app
     
 
   db:
@@ -31,15 +27,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  http:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.http
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-      - frontend
 
 volumes:
   db_data:
