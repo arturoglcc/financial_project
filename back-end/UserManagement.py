@@ -5,16 +5,36 @@ from typing import Optional
 
 app = FastAPI()
 
-# Configuración de Passlib para el hash de contraseñas
+# passlib configuration for password hashes
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class User:
-    def __init__(self, user_id: int, email: str, username: str, password_hashed: str, salt: str):
+    def __init__(self, user_id: int, email: str, username: str, password_hashed: str):
         self.user_id = user_id
         self.email = email
         self.username = username
         self.password_hashed = password_hashed
-        self.salt = salt
+
+connection = mysql.connector.connect(
+    host="localhost",           
+    user="user",                
+    password="password",        
+    database="financial-projectDB" 
+)
+
+cursor = connetion.cursor()
+
+users_table = """
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT PRIMARY KEY,
+    username VARCHAR(50),
+    email VARCHAR(50),
+    password-hashed VARCHAR(50)
+)
+"""
+cursor.execute(users_table)
+connetion.commit()
+
 
 class UserBuilder(BaseModel):
     email: EmailStr
