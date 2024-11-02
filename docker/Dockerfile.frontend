@@ -3,13 +3,13 @@ FROM node:18
 WORKDIR /app
 
 # Copia solo package.json y package-lock.json para aprovechar la caché de Docker
-COPY ../front-end/src/package*.json ./
+COPY ../frontend/src/package*.json ./
 
 # Instala las dependencias
 RUN npm install
 
 # Copia el código restante del frontend al contenedor
-COPY ../front-end .
+COPY ../frontend .
 
 # Expone el puerto 8080 para el desarrollo de Vue.js
 EXPOSE 8080

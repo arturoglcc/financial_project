@@ -5,3 +5,5 @@ passlib[bcrypt]
 pydantic
 sqlalchemy
 pymysql
+pytest
+ pytest-asyncio

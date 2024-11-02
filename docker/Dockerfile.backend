@@ -4,11 +4,12 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copia requirements.txt e instala dependencias
-COPY ../back-end/requirements.txt /app/requirements.txt
+COPY ../backend/requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
 # Copiamos el código de backend
-COPY ../back-end /app
+COPY ../backend /app
+COPY ../tests/ /app/
 
 # Expone el puerto de fastapi
 EXPOSE 8000
