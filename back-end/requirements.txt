@@ -1,3 +1,7 @@
 fastapi
 uvicorn
-
+mysql-connector-python
+passlib[bcrypt] 
+pydantic
+sqlalchemy
+pymysql
