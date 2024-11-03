@@ -6,4 +6,5 @@ pydantic
 sqlalchemy
 pymysql
 pytest
- pytest-asyncio
+pytest-asyncio
+email-validator

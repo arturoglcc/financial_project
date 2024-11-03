@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import Session, declarative_base
+from pydantic import  BaseModel, EmailStr, ValidationError
 from passlib.context import CryptContext
 from database import SessionLocal
 from models import User
@@ -18,6 +19,8 @@ def get_db():
     finally:
         db.close()
 
+Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = "users"
@@ -32,22 +35,13 @@ class UserBuilder(BaseModel):
     username: str
     password: str
 
-    def is_valid_email(email: str) -> bool:
-    try:
-        valid_email = EmailStr(email)
-        return True
-    except ValidationError:
-        return False
-
-    def is_email_unique(db: Session, email: str) -> bool:
+    def is_email_unique(self, db: Session, email: str) -> bool:
         return not db.query(User).filter(User.email == email).first()
 
     def _hash_password(self, password: str) -> str:
         return pwd_context.hash(password)
     
     def build(self, db: Session) -> User:
-        if not is_valid_email(self.email):
-            raise HTTPException(status_code=400, detail="The email is not in a valid format.")
         if not self.is_email_unique(db, self.email):
             raise HTTPException(status_code=400, detail="The e-mail is already registered.")
         

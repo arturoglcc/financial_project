@@ -13,18 +13,16 @@ TEST_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tables in the test database
-Base.metadata.create_all(bind=engine)
-
 @pytest.fixture(scope="function")
 def db():
     """Create a new database session for a test, and close it after the test completes."""
+    Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()
     yield session
     session.close()
+    Base.metadata.drop_all(bind=engine)
 
 def test_add_user(db):
-    # Arrange
     user_data = UserBuilder(email="test@example.com", username="testuser", password="testpass")
 
     # Act
