@@ -3,7 +3,7 @@ FROM node:18
 WORKDIR /app
 
 # Copia solo package.json y package-lock.json para aprovechar la caché de Docker
-COPY ../frontend/src/package*.json ./
+COPY ../frontend/package*.json ./
 
 # Instala las dependencias
 RUN npm install

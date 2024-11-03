@@ -1,22 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>authentication</title>
-    <script type="module">
-        // Load Mermaid from CDN
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        // Initialize Mermaid to automatically process diagrams on load
-        mermaid.initialize({ startOnLoad: true });
-    </script>
-</head>
-
-<body>
-    <h1>authentication class Diagram</h1>
-    <!-- Mermaid class diagram code -->
-    <div class="mermaid">
-        classDiagram
+classDiagram
     class User {
         +int user_id
         +String email
@@ -113,7 +95,3 @@
     UserBuilder  -- >  EmailService : verifies
     UserBuilder -- > UsersDatabase : verifies
     UserBuilder -- > notVerifiedUsersDB : verifies
-
-    </div>
-</body>
-</html>

@@ -7,8 +7,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.backend
     container_name: backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       - db
     environment:
@@ -17,16 +17,33 @@ services:
       DB_NAME: ${MYSQL_DATABASE}
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - app-network
 
 
   frontend:
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
+    volumes:
+      - ./frontend:/app           # Mounts the frontend folder for live changes
+      - /app/node_modules
     container_name: frontend
     ports:
       - "8080:8080"
-    
+
+  http:
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.http
+    container_name: http
+    ports:
+      - "80:80" 
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
 
   db:
     build:
@@ -42,8 +59,13 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-
+    networks:
+      - app-network
 
 volumes:
   db_data:
+
+networks:
+  app-network:
+    driver: bridge
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <script type="module">
+        // Load Mermaid from CDN
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        mermaid.initialize({ startOnLoad: false });
+
+        async function renderMermaidDiagram() {
+            try {
+                console.log("Fetching the Mermaid file...");
+                const response = await fetch('authentication_class_diagram.mmd');
+
+                if (!response.ok) throw new Error("Failed to load .mmd file");
+
+                const diagramDefinition = await response.text();
+                console.log("Fetched diagram definition:", diagramDefinition);
+
+                // Insert the fetched diagram into the container
+                const container = document.getElementById('mermaidContainer');
+                container.innerHTML = `<div class="mermaid">${diagramDefinition}</div>`;
+
+                // Render the diagram using mermaid.contentLoaded()
+                mermaid.contentLoaded();
+                console.log("Mermaid diagram loaded successfully");
+            } catch (error) {
+                console.error("Error loading the diagram:", error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', renderMermaidDiagram);
+    </script>
+</head>
+
+<body>
+    <h1>Authentication Class Diagram</h1>
+    <div id="mermaidContainer"></div>
+</body>
+</html>
