@@ -6,12 +6,13 @@ from passlib.context import CryptContext
 from database import SessionLocal
 from models import User
 
+# creates an instance of the FastAPI application
 app = FastAPI()
 
 # Password hashing configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Dependency to get a session per request
+# Dependency to get a data base session per request
 def get_db():
     db = SessionLocal()
     try:
@@ -19,17 +20,10 @@ def get_db():
     finally:
         db.close()
 
+# Base is used for creating ORM objects that SQLAlquemy can use
 Base = declarative_base()
 
-
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True)
-    email = Column(String(50), unique=True, index=True)
-    password_hashed = Column(String(100))
-
-
+# UserBuilder creates a new user instance
 class UserBuilder(BaseModel):
     email: EmailStr
     username: str
@@ -38,12 +32,18 @@ class UserBuilder(BaseModel):
     def is_email_unique(self, db: Session, email: str) -> bool:
         return not db.query(User).filter(User.email == email).first()
 
+    def is_username_unique(self, db: Session, username: str) -> bool:
+        return not db.query(User).filter(User.username == username).first()
+
     def _hash_password(self, password: str) -> str:
         return pwd_context.hash(password)
     
     def build(self, db: Session) -> User:
         if not self.is_email_unique(db, self.email):
             raise HTTPException(status_code=400, detail="The e-mail is already registered.")
+
+        if not self.is_username_unique(db, self.username):
+            raise HTTPException(status_code=400, detail="The username is already taken.")
         
         password_hashed = self._hash_password(self.password)
         
@@ -54,13 +54,14 @@ class UserBuilder(BaseModel):
         )
         return new_user
 
+
 @app.post("/create-user")
 async def create_user(user_data: UserBuilder, db: Session = Depends(get_db)):
     try:
         # Build the User object
         new_user = user_data.build(db)
         
-        # Attempt to add and commit to the database
+        # Adding the User to the Database
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
