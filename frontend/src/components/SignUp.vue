@@ -86,6 +86,10 @@ export default {
   },
   methods: {
     async handleLogin() {
+      if (this.password !== this.confirmPassword) {
+        this.errorMessage = "Passwords do not match.";
+        return;
+      }
       console.log("Username:", this.username, "Password:", this.password);
       try {
         // Send the data to the server with a POST request using fetch
