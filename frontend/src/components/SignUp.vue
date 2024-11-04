@@ -85,21 +85,23 @@ export default {
     };
   },
   methods: {
-    async handleLogin() {
+    async handleSignUp() {
+      // Log both passwords for troubleshooting
+      console.log("Password:", this.password, "Confirm Password:", this.confirmPassword);
       if (this.password !== this.confirmPassword) {
         this.errorMessage = "Passwords do not match.";
         return;
       }
-      console.log("Username:", this.username, "Password:", this.password);
       try {
         // Send the data to the server with a POST request using fetch
-        const response = await fetch("http://localhost/api/login", {
+        const response = await fetch("http://localhost/api/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
             username: this.username,
+            email: this.email,
             password: this.password 
           })
         });
@@ -107,17 +109,16 @@ export default {
         // Check if the request was successful
         if (response.ok) {
           const result = await response.json();
-          console.log("Login successful:", result);
-          this.successMessage = "Login successful!";
-          // Handle successful login, such as redirecting or storing tokens
+          this.successMessage = "Sign-up successful! Welcome, " + result.user.username;
+          console.log("Sign-up successful:", result);
         } else {
           const errorMessage = await response.text();
-          console.error("Login failed:", errorMessage);
-          this.error = "Login failed: " + errorMessage;
+          this.errorMessage = "Sign-up failed: " + errorMessage;
+          console.error("Sign-up failed:", errorMessage);
         }
       } catch (error) {
         console.error("Error connecting to server:", error);
-        this.error = "An error occurred while logging in. Please try again later.";
+        alert("An error occurred while signing up. Please try again later.");
       }
     },
 
