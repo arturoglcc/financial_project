@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 mysql-connector-python
-passlib[bcrypt] 
+passlib[bcrypt]==1.7.4
 pydantic
 sqlalchemy
 pymysql

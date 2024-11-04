@@ -9,6 +9,11 @@
     </div>
     <div class="signup-form">
       <h2>Create Your Account</h2>
+
+      <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+      
       <form @submit.prevent="handleSignUp">
         <div class="input-group">
           <label for="username">Username</label>
@@ -75,10 +80,13 @@ export default {
       confirmPassword: "",
       showPassword: false,
       showPassword2: false,
+      successMessage: "",
+      errorMessage: ""
     };
   },
   methods: {
     async handleSignUp() {
+  
       console.log("Username:", this.username, "Email:", this.email, "Password:", this.password);
 
       try {
@@ -91,24 +99,23 @@ export default {
           body: JSON.stringify({
             username: this.username,
             email: this.email,
-            password: this.password
+            password: this.password 
           })
         });
 
         // Check if the request was successful
         if (response.ok) {
           const result = await response.json();
+          this.successMessage = "Sign-up successful! Welcome, " + result.user.username;
           console.log("Sign-up successful:", result);
         } else {
-          // Handling server-side error responses
           const errorMessage = await response.text();
+          this.errorMessage = "Sign-up failed: " + errorMessage;
           console.error("Sign-up failed:", errorMessage);
         }
       } catch (error) {
-        // Catch any network or unexpected errors here
+        this.errorMessage = "An error occurred while signing up. Please try again later.";
         console.error("Error connecting to server:", error);
-        
-        // Optional: Display a user-friendly message
         alert("An error occurred while signing up. Please try again later.");
       }
     },
@@ -265,4 +272,19 @@ p {
 .signup-text a:hover {
   text-decoration: underline;
 }
+
+.success-message {
+  color: green;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 </style>
