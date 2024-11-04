@@ -4,16 +4,28 @@
 FROM node:18 as frontend-builder
 
 WORKDIR /app
+
 COPY ../frontend/package*.json ./
 RUN npm install
-COPY ../frontend . 
+
+COPY ../frontend .
 RUN npm run build  # Builds the Vue.js app into /app/dist
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
+# Install curl for the startup script
+RUN apk add --no-cache curl
+
 # Copy nginx.conf to configure Nginx
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy and configure the startup script
+COPY ./docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Start Nginx with the startup script
+CMD ["/start.sh"]
 
 # Copy built frontend assets from Stage 1
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html

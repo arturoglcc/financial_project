@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import APIRouter, FastAPI, HTTPException, Depends
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session, declarative_base
+from sqlalchemy.exc import SQLAlchemyError
 from pydantic import  BaseModel, EmailStr, ValidationError
 from passlib.context import CryptContext
 from database import SessionLocal
 from models import User
 
-# creates an instance of the FastAPI application
-app = FastAPI()
+# Initialize APIRouter for modular routing
+router = APIRouter()
 
 # Password hashing configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -19,9 +20,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-# Base is used for creating ORM objects that SQLAlquemy can use
-Base = declarative_base()
 
 # UserBuilder creates a new user instance
 class UserBuilder(BaseModel):
@@ -55,7 +53,7 @@ class UserBuilder(BaseModel):
         return new_user
 
 
-@app.post("/create-user")
+@router.post("/signup")
 async def create_user(user_data: UserBuilder, db: Session = Depends(get_db)):
     try:
         # Build the User object

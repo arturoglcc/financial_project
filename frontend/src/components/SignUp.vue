@@ -78,18 +78,52 @@ export default {
     };
   },
   methods: {
-    handleSignUp() {
-      console.log( "Username:", this.username, "Email:", this.email, "Password:", this.password);
+    async handleSignUp() {
+      console.log("Username:", this.username, "Email:", this.email, "Password:", this.password);
+
+      try {
+        // Send the data to the server with a POST request
+        const response = await fetch("http://localhost/api/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: this.username,
+            email: this.email,
+            password: this.password
+          })
+        });
+
+        // Check if the request was successful
+        if (response.ok) {
+          const result = await response.json();
+          console.log("Sign-up successful:", result);
+        } else {
+          // Handling server-side error responses
+          const errorMessage = await response.text();
+          console.error("Sign-up failed:", errorMessage);
+        }
+      } catch (error) {
+        // Catch any network or unexpected errors here
+        console.error("Error connecting to server:", error);
+        
+        // Optional: Display a user-friendly message
+        alert("An error occurred while signing up. Please try again later.");
+      }
     },
+
     hidePassword() {
       this.showPassword = !this.showPassword;
     },
+
     hideConfirmPassword() {
       this.showPassword2 = !this.showPassword2;
-    },
-  },
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 .signup-container {
