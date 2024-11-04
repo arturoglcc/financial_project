@@ -3,15 +3,13 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
 from pydantic import  BaseModel, EmailStr, ValidationError
-from passlib.context import CryptContext
+import bcrypt
 from database import SessionLocal
 from models import User
 
+
 # Initialize APIRouter for modular routing
 router = APIRouter()
-
-# Password hashing configuration
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Dependency to get a data base session per request
 def get_db():
@@ -34,7 +32,9 @@ class UserBuilder(BaseModel):
         return not db.query(User).filter(User.username == username).first()
 
     def _hash_password(self, password: str) -> str:
-        return pwd_context.hash(password)
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed_password.decode('utf-8')
     
     def build(self, db: Session) -> User:
         if not self.is_email_unique(db, self.email):
@@ -77,19 +77,23 @@ async def create_user(user_data: UserBuilder, db: Session = Depends(get_db)):
     
     return {"message": "User created", "user": {"email": new_user.email, "username": new_user.username}}
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
  # User authentication function
 def authenticate_user(db: Session, username: str, password: str) -> bool:
     user = db.query(User).filter(User.username == username).first()
     if not user:
         return False  # User not found
-    if not pwd_context.verify(password, user.password_hashed):
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password_hashed.encode('utf-8')):
         return False  # Incorrect password
     return True  # Correct username and password
 
 
 @router.post("/login")
-async def login(username: str, password: str, db: Session = Depends(get_db)):
-    is_authenticated = authenticate_user(db, username, password)
+async def login(request: LoginRequest, db: Session = Depends(get_db)):
+    is_authenticated = authenticate_user(db, request.username, request.password)
     if not is_authenticated:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
     return {"message": "Inicio de sesión exitoso"}

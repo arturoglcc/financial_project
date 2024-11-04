@@ -12,12 +12,12 @@
       <p>Log in by entering your email address and password.</p>
       <form @submit.prevent="handleLogin">
         <div class="input-group">
-          <label for="email">Email address</label>
+          <label for="username">Username</label>
           <div class="input-container group">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" class="icon">
               <path fill="currentColor" fill-rule="evenodd" d="M14.95 3.684L8.637 8.912a1 1 0 0 1-1.276 0l-6.31-5.228A1 1 0 0 0 1 4v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-.05-.316M2 2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m-.21 1l5.576 4.603a1 1 0 0 0 1.27.003L14.268 3z"/>
             </svg>
-            <input type="email" id="email" v-model="email" required class="input" />
+            <input type="text" id="username" v-model="username" required class="input" placeholder="Enter your username"/>
           </div>
         </div>
         <div class="input-group">
@@ -44,18 +44,36 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      email: "",
+      username: "",
       password: "",
       showPassword: false,
     };
   },
   methods: {
-    handleLogin() {
-      console.log("Email:", this.email, "Password:", this.password);
-    },
+    async handleLogin() {
+  console.log("Username:", this.username, "Password:", this.password);
+  try {
+    const response = await axios.post("http://localhost/api/login", {
+      username: this.username,
+      password: this.password
+    }, {
+      headers: { "Content-Type": "application/json" }
+    });
+    console.log("Login successful:", response.data);
+  } catch (error) {
+    if (error.response) {
+      console.error("Login error:", error.response.data);  // Check for backend validation errors here
+    } else {
+      console.error("Error:", error.message);
+    }
+    this.error = "Login failed. Please check your username and password.";
+  }
+},
     togglePassword() {
       this.showPassword = !this.showPassword;
     },

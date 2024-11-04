@@ -85,20 +85,17 @@ export default {
     };
   },
   methods: {
-    async handleSignUp() {
-  
-      console.log("Username:", this.username, "Email:", this.email, "Password:", this.password);
-
+    async handleLogin() {
+      console.log("Username:", this.username, "Password:", this.password);
       try {
-        // Send the data to the server with a POST request
-        const response = await fetch("http://localhost/api/signup", {
+        // Send the data to the server with a POST request using fetch
+        const response = await fetch("http://localhost/api/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
             username: this.username,
-            email: this.email,
             password: this.password 
           })
         });
@@ -106,17 +103,17 @@ export default {
         // Check if the request was successful
         if (response.ok) {
           const result = await response.json();
-          this.successMessage = "Sign-up successful! Welcome, " + result.user.username;
-          console.log("Sign-up successful:", result);
+          console.log("Login successful:", result);
+          this.successMessage = "Login successful!";
+          // Handle successful login, such as redirecting or storing tokens
         } else {
           const errorMessage = await response.text();
-          this.errorMessage = "Sign-up failed: " + errorMessage;
-          console.error("Sign-up failed:", errorMessage);
+          console.error("Login failed:", errorMessage);
+          this.error = "Login failed: " + errorMessage;
         }
       } catch (error) {
-        this.errorMessage = "An error occurred while signing up. Please try again later.";
         console.error("Error connecting to server:", error);
-        alert("An error occurred while signing up. Please try again later.");
+        this.error = "An error occurred while logging in. Please try again later.";
       }
     },
 
