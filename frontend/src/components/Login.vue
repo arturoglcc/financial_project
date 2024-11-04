@@ -10,6 +10,11 @@
     <div class="login-form">
       <h2>Sign in</h2>
       <p>Log in by entering your email address and password.</p>
+
+      <!-- Display success or error message -->
+      <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
       <form @submit.prevent="handleLogin">
         <div class="input-group">
           <label for="username">Username</label>
@@ -52,6 +57,8 @@ export default {
       username: "",
       password: "",
       showPassword: false,
+      successMessage: "",
+      errorMessage: ""
     };
   },
   methods: {
@@ -65,13 +72,17 @@ export default {
       headers: { "Content-Type": "application/json" }
     });
     console.log("Login successful:", response.data);
+    this.successMessage = `User ${this.username} has logged in successfully!`;
+    this.errorMessage = "";
   } catch (error) {
     if (error.response) {
-      console.error("Login error:", error.response.data);  // Check for backend validation errors here
+      console.error("Login error:", error.response.data);  
+      this.errorMessage = "Login failed. Please check your username and password.";
     } else {
       console.error("Error:", error.message);
+      this.errorMessage = "An error occurred while logging in. Please try again.";
     }
-    this.error = "Login failed. Please check your username and password.";
+    this.successMessage = "";
   }
 },
     togglePassword() {
@@ -222,4 +233,19 @@ button:hover {
 .forgot-link:hover, .signup-text a:hover {
   text-decoration: underline;
 }
+
+.success-message {
+  color: green;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 </style>
