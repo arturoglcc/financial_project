@@ -76,3 +76,20 @@ async def create_user(user_data: UserBuilder, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="An unexpected error occurred.")
     
     return {"message": "User created", "user": {"email": new_user.email, "username": new_user.username}}
+
+ # User authentication function
+def authenticate_user(db: Session, username: str, password: str) -> bool:
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        return False  # User not found
+    if not pwd_context.verify(password, user.password_hashed):
+        return False  # Incorrect password
+    return True  # Correct username and password
+
+
+@router.post("/login")
+async def login(username: str, password: str, db: Session = Depends(get_db)):
+    is_authenticated = authenticate_user(db, username, password)
+    if not is_authenticated:
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    return {"message": "Inicio de sesión exitoso"}
