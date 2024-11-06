@@ -8,3 +8,5 @@ pymysql
 pytest
 pytest-asyncio
 email-validator
+PyJWT
+python-dotenv

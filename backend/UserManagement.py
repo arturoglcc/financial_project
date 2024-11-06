@@ -8,6 +8,8 @@ import jwt
 from datetime import datetime, timedelta
 from database import SessionLocal
 from models import User
+from dotenv import load_dotenv
+import os 
 
 
 # Load environment variables from .env file
