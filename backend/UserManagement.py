@@ -103,7 +103,7 @@ def authenticate_login(db: Session, identifier: str, password: str) -> User:
 
 @router.post("/login")
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = authenticate_user(db, request.username, request.password)
+    user = authenticate_login(db, request.username, request.password)
     # Generate JWT token
     expiration_time = datetime.utcnow() + timedelta(hours=1)
     token = jwt.encode({"user_id": user.id, "exp": expiration_time}, SECRET_KEY, algorithm="HS256")
