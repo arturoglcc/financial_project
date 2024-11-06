@@ -90,20 +90,18 @@ class LoginRequest(BaseModel):
     password: str
 
  # User authentication function
-def authenticate_user(db: Session, username: str, password: str) -> bool:
-    user = db.query(User).filter(User.username == username).first()
+def authenticate_user(db: Session, identifier: str, password: str) -> User:
+    user = db.query(User).filter((User.username == identifier) | (User.email == identifier)).first()
     if not user:
-        return False  # User not found
+        raise HTTPException(status_code=404, detail="Username or email not found")
     if not bcrypt.checkpw(password.encode('utf-8'), user.password_hashed.encode('utf-8')):
-        return False  # Incorrect password
-    return True  # Correct username and password
+        raise HTTPException(status_code=401, detail="Incorrect password")
+    return user  # Correct user and password
 
 
 @router.post("/login")
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
-    is_authenticated = authenticate_user(db, request.username, request.password)
-    if not is_authenticated:
-        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    user = authenticate_user(db, request.username, request.password)
     # Generate JWT token
     expiration_time = datetime.utcnow() + timedelta(hours=1)
     token = jwt.encode({"user_id": user.id, "exp": expiration_time}, SECRET_KEY, algorithm="HS256")
