@@ -4,9 +4,17 @@ from sqlalchemy.orm import Session, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
 from pydantic import  BaseModel, EmailStr, ValidationError
 import bcrypt
+import jwt
+from datetime import datetime, timedelta
 from database import SessionLocal
 from models import User
 
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Secret key for JWT
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Initialize APIRouter for modular routing
 router = APIRouter()
@@ -96,4 +104,12 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     is_authenticated = authenticate_user(db, request.username, request.password)
     if not is_authenticated:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
-    return {"message": "Inicio de sesión exitoso"}
+    # Generate JWT token
+    expiration_time = datetime.utcnow() + timedelta(hours=1)
+    token = jwt.encode({"user_id": user.id, "exp": expiration_time}, SECRET_KEY, algorithm="HS256")
+
+    return {
+        "message": "Inicio de sesión exitoso",
+        "token": token,
+        "expires_in": "1 hora"
+    }
