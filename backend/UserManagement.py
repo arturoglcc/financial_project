@@ -89,8 +89,8 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
- # User authentication function
-def authenticate_user(db: Session, identifier: str, password: str) -> User:
+ # User login authentication function
+def authenticate_login(db: Session, identifier: str, password: str) -> User:
     user = db.query(User).filter((User.username == identifier) | (User.email == identifier)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Username or email not found")
@@ -111,3 +111,19 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         "token": token,
         "expires_in": "1 hora"
     }
+
+# Function to authenticate user using JWT
+def authenticate_user(token: str = Depends(lambda request: request.headers.get("Authorization"))):
+    if not token:
+        raise HTTPException(status_code=403, detail="Token not provided")
+    try:
+        token = token.replace("Bearer ", "")  # Remove Bearer prefix if present
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return user_id
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
