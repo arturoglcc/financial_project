@@ -114,7 +114,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         "expires_in": "1 hora"
     }
 
-# Function to authenticate user using JWT
+# Function to authenticate a user using JWT
 def authenticate_user(token: str = Depends(lambda request: request.headers.get("Authorization"))):
     if not token:
         raise HTTPException(status_code=403, detail="Token not provided")
