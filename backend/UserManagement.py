@@ -9,7 +9,9 @@ from datetime import datetime, timedelta
 from database import SessionLocal
 from models import User
 from dotenv import load_dotenv
-import os 
+import os
+from fastapi import Request
+
 
 
 # Load environment variables from .env file
@@ -115,7 +117,8 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     }
 
 # Function to authenticate a user using JWT
-def authenticate_user(token: str = Depends(lambda request: request.headers.get("Authorization"))):
+def authenticate_user(request: Request):
+    token = request.cookies.get("jwtToken")
     if not token:
         raise HTTPException(status_code=403, detail="Token not provided")
     try:

@@ -63,7 +63,6 @@ export default {
   },
   methods: {
     async handleLogin() {
-  console.log("Username:", this.username, "Password:", this.password);
   try {
     const response = await axios.post("http://localhost/api/login", {
       username: this.username,
@@ -71,7 +70,11 @@ export default {
     }, {
       headers: { "Content-Type": "application/json" }
     });
-    console.log("Login successful:", response.data);
+
+    // Store the token in cookies (expires in 1 hour)
+    const token = response.data.token;
+    document.cookie = `jwtToken=${token}; path=/; max-age=3600; secure; samesite=Strict`;
+
     this.successMessage = `User ${this.username} has logged in successfully!`;
     this.errorMessage = "";
   } catch (error) {
