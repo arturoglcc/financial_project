@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # Retrieve environment variables
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "financial_manager")
+DB_NAME = os.getenv("DB_NAME", "financial_project_db")
 DB_USER = os.getenv("DB_USER", "usuario_financial")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "usuario_password")
 
