@@ -4,6 +4,7 @@
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
       <StatsContainer />
+      <h2>Welcome to the Financial Organizer</h2>
     </div>
   </div>
 </template>
@@ -12,11 +13,12 @@
 import SideBar from '../components/SideBar.vue';
 import Header from '../components/Header.vue';
 import StatsContainer from '../components/StatsContainer.vue';
+
 export default {
   components: {
     SideBar,
     Header,
-    StatsContainer
+    StatsContainer,
   },
   data() {
     return {
@@ -30,6 +32,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 #home {

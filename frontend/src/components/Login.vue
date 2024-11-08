@@ -71,14 +71,12 @@ export default {
         username: this.username,
         password: this.password
       }, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true
       });
-      const token = response.data.token;
-      document.cookie = `jwtToken=${token}; path=/; max-age=3600; secure; samesite=Strict`;
+      console.log("Login successful:", response.data);
       this.successMessage = `User ${this.username} has logged in successfully!`;
       this.errorMessage = "";
-      this.username = "";
-      this.password = "";
       this.$router.push("/home");
     } catch (error) {
       if (error.response) {
