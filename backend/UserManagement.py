@@ -189,23 +189,11 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
 
     return {"message": "User updated successfully", "user": user}
 
-@router.get("/me")
-async def get_current_user(request: Request):
-    token = request.cookies.get("jwtToken")
-    if not token:
-        print("Token not found in request cookies")
-        raise HTTPException(status_code=403, detail="Token not provided")
-
+@router.get("/username")
+async def get_current_user(request: Request, db: Session = Depends(get_db)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        print("Decoded payload:", payload)  # Debug line to check decoded token content
-        username = payload.get("username")
-        if not username:
-            raise HTTPException(status_code=400, detail="Invalid token payload")
-        return {"username": username}
-    except jwt.ExpiredSignatureError:
-        print("Token has expired")
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.InvalidTokenError:
-        print("Invalid token")
-        raise HTTPException(status_code=401, detail="Invalid token")
+        user_id = authenticate_user(request)
+        user = db.query(User).filter(User.id == user_id).first()
+        return {"username": user.username}
+    except HTTPException as e:
+        raise e
