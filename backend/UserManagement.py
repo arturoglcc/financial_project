@@ -141,3 +141,29 @@ class UserUpdate(BaseModel):
     curp: constr(min_length=18, max_length=18) = None
     rfc: constr(min_length=13, max_length=13) = None
     nombre: str = None
+
+#Function allows users to update their data
+@router.put("/update_user")
+async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), user_id: int = Depends(authenticate_user)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user_update.email:
+        user.email = user_update.email
+    if user_update.username:
+        user.username = user_update.username
+    if user_update.password:
+        salt = bcrypt.gensalt()
+        user.password_hashed = bcrypt.hashpw(user_update.password.encode('utf-8'), salt).decode('utf-8')
+    if user_update.curp:
+        user.curp = user_update.curp
+    if user_update.rfc:
+        user.rfc = user_update.rfc
+    if user_update.nombre:
+        user.nombre = user_update.nombre 
+
+    db.commit()
+    db.refresh(user)
+
+    return {"message": "User updated successfully", "user": user}
