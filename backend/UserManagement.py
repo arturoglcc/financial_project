@@ -149,10 +149,10 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if user_update.email:
-        user.email = user_update.email
-    if user_update.username:
-        user.username = user_update.username
+    if user_update.email and db.query(User).filter(User.email == user_update.email, User.id != user_id).first():
+        raise HTTPException(status_code=400, detail="Email is already registered.")
+    if user_update.username and db.query(User).filter(User.username == user_update.username, User.id != user_id).first():
+        raise HTTPException(status_code=400, detail="Username is already taken.")
     if user_update.password:
         salt = bcrypt.gensalt()
         user.password_hashed = bcrypt.hashpw(user_update.password.encode('utf-8'), salt).decode('utf-8')
