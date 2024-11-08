@@ -163,7 +163,12 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
     if user_update.nombre:
         user.nombre = user_update.nombre 
 
-    db.commit()
-    db.refresh(user)
+    try:
+        db.commit()
+        db.refresh(user)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to update user.")
+
 
     return {"message": "User updated successfully", "user": user}
