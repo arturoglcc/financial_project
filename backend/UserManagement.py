@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI, HTTPException, Depends
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic import  BaseModel, EmailStr, ValidationError
+from pydantic import  BaseModel, EmailStr, ValidationError, constr
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
