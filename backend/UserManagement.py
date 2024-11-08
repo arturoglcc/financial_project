@@ -132,3 +132,12 @@ def authenticate_user(request: Request):
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+#This schema defines the fields that the user can update
+class UserUpdate(BaseModel):
+    email: EmailStr = None
+    username: str = None
+    password: str = None
+    curp: constr(min_length=18, max_length=18) = None
+    rfc: constr(min_length=13, max_length=13) = None
+    nombre: str = None
