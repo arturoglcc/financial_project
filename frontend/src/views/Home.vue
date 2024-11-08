@@ -3,7 +3,7 @@
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
-      <h2>Welcome to the Financial Organizer</h2>
+      <StatsContainer />
     </div>
   </div>
 </template>
@@ -11,10 +11,12 @@
 <script>
 import SideBar from '../components/SideBar.vue';
 import Header from '../components/Header.vue';
+import StatsContainer from '../components/StatsContainer.vue';
 export default {
   components: {
     SideBar,
     Header,
+    StatsContainer
   },
   data() {
     return {
