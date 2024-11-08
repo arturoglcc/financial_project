@@ -1,4 +1,5 @@
-from fastapi import APIRouter, FastAPI, HTTPException, Depends
+from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request, Response
+from fastapi.responses import JSONResponse
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
@@ -102,17 +103,32 @@ def authenticate_login(db: Session, identifier: str, password: str) -> User:
 
 
 @router.post("/login")
-async def login(request: LoginRequest, db: Session = Depends(get_db)):
+async def login(response: Response, request: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_login(db, request.username, request.password)
-    # Generate JWT token
+     # Generate JWT token with user properties (including the id)
     expiration_time = datetime.utcnow() + timedelta(hours=1)
-    token = jwt.encode({"user_id": user.id, "exp": expiration_time}, SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(
+        {
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "exp": expiration_time
+        },
+        SECRET_KEY,
+        algorithm="HS256"
+    )
 
-    return {
-        "message": "Inicio de sesión exitoso",
-        "token": token,
-        "expires_in": "1 hora"
-    }
+    # Set the JWT as an HttpOnly cookie
+    response.set_cookie(
+        key="jwtToken",
+        value=token,
+        httponly=True,
+        secure=False,  # Set to True if using HTTPS
+        samesite="Lax",  # Adjust as needed for cross-origin requests
+        max_age=3600  # 1 hour in seconds
+    )
+
+    return JSONResponse(content={"message": "Inicio de sesión exitoso"}, headers=response.headers)
 
 # Function to authenticate a user using JWT
 def authenticate_user(token: str = Depends(lambda request: request.headers.get("Authorization"))):
@@ -128,4 +144,26 @@ def authenticate_user(token: str = Depends(lambda request: request.headers.get("
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+@router.get("/me")
+async def get_current_user(request: Request):
+    token = request.cookies.get("jwtToken")
+    if not token:
+        print("Token not found in request cookies")
+        raise HTTPException(status_code=403, detail="Token not provided")
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        print("Decoded payload:", payload)  # Debug line to check decoded token content
+        username = payload.get("username")
+        if not username:
+            raise HTTPException(status_code=400, detail="Invalid token payload")
+        return {"username": username}
+    except jwt.ExpiredSignatureError:
+        print("Token has expired")
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        print("Invalid token")
         raise HTTPException(status_code=401, detail="Invalid token")

@@ -7,7 +7,7 @@
     </button>
     <h1 class="headerTitle">Financial Organizer</h1>
     <div class="userInfo">
-      <span>username</span>
+      <span>{{ username }}</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
         <path fill="currentColor" fill-opacity="0.25" d="M3 12a9 9 0 1 1 18 0a9 9 0 0 1-18 0" />
         <circle cx="12" cy="10" r="4" fill="currentColor" />
@@ -16,6 +16,36 @@
     </div>
   </header>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: 'Loading...', // Default placeholder while fetching the username
+    };
+  },
+  async created() {
+    // Make the API call when the component is created
+    try {
+      const response = await fetch('http://localhost/api/me', {
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+      });
+      if (response.ok) {
+        const data = await response.json();
+        this.username = data.username || 'Unknown User'; // Fallback if username is not returned
+      } else {
+        console.error('Failed to fetch user info:', response.statusText);
+        this.username = 'Guest'; // Fallback if the request fails
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      this.username = 'Guest'; // Fallback in case of an error
+    }
+  },
+};
+</script>
+
 
 <style scoped>
 .header {

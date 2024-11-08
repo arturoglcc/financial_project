@@ -71,7 +71,8 @@ export default {
         username: this.username,
         password: this.password
       }, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true
       });
       console.log("Login successful:", response.data);
       this.successMessage = `User ${this.username} has logged in successfully!`;
