@@ -10,3 +10,4 @@ class User(Base):
     password_hashed = Column(String(255), nullable=False)
     curp = Column(String(18), unique=True, nullable=True)
     rfc = Column(String(13), unique=True, nullable=True)
+    name = Column(String(255), nullable=True)
