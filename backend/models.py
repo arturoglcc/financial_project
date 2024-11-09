@@ -11,3 +11,4 @@ class User(Base):
     curp = Column(String(18), unique=True, nullable=True)
     rfc = Column(String(13), unique=True, nullable=True)
     name = Column(String(255), nullable=True)
+    token_version = Column(Integer, default=0)

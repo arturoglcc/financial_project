@@ -27,7 +27,7 @@ export default {
   async created() {
     // Make the API call when the component is created
     try {
-      const response = await fetch('http://localhost/api/username', {
+      const response = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include', // Include cookies in the request
       });

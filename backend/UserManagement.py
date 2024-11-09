@@ -114,6 +114,7 @@ async def login(response: Response, request: LoginRequest, db: Session = Depends
             "user_id": user.id,
             "username": user.username,
             "email": user.email,
+            "token_version": user.token_version,
             "exp": expiration_time
         },
         SECRET_KEY,
@@ -133,7 +134,7 @@ async def login(response: Response, request: LoginRequest, db: Session = Depends
     return JSONResponse(content={"message": "Inicio de sesión exitoso"}, headers=response.headers)
 
 # Function to authenticate a user using JWT
-def authenticate_user(request: Request):
+def authenticate_user(request: Request, db: Session = Depends(get_db)) -> User:
     token = request.cookies.get("jwtToken")
     if not token:
         raise HTTPException(status_code=403, detail="Token not provided")
@@ -141,9 +142,13 @@ def authenticate_user(request: Request):
         token = token.replace("Bearer ", "")  # Remove Bearer prefix if present
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         user_id = payload.get("user_id")
-        if not user_id:
+        token_version = payload.get("token_version")
+        if not user_id or token_version is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        return user_id
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user or user.token_version != token_version:
+            raise HTTPException(status_code=401, detail="Token has been invalidated")
+        return user
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
@@ -158,10 +163,8 @@ class UserUpdate(BaseModel):
     rfc: str = None
     name: str = None
 
-#Function allows users to update their data
 @router.put("/update_user")
-async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), user_id: int = Depends(authenticate_user)):
-    user = db.query(User).filter(User.id == user_id).first()
+async def update_user(request: Request, user_update: UserUpdate, user = Depends(authenticate_user)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -173,7 +176,7 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
     if user_update.username and db.query(User).filter(User.username == user_update.username, User.id != user_id).first():
         raise HTTPException(status_code=400, detail="Username is already taken.")
     
-    # Update fields if they are provided)
+    # Update fields if they are provided
     if user_update.email is not None:
         user.email = user_update.email
     if user_update.username is not None:
@@ -185,12 +188,6 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
     if user_update.name is not None:
         user.name = user_update.name
 
-    # Commit the changes to the database
-    db.commit()
-    db.refresh(user)  # Refresh to get updated data
-
-    return {"message": "User updated successfully", "user": user}
-
     try:
         db.commit()
         db.refresh(user)
@@ -198,51 +195,20 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to update user.")
 
-
     return {"message": "User updated successfully", "user": user}
 
-@router.get("/username")
-async def get_current_user(request: Request, db: Session = Depends(get_db)):
-    try:
-        user_id = authenticate_user(request)
-        user = db.query(User).filter(User.id == user_id).first()
-        return {"username": user.username}
-    except HTTPException as e:
-        raise e
 
-
-@router.get("/email")
-async def get_current_email(request: Request, db: Session = Depends(get_db)):
+@router.get("/profile")
+async def get_user_profile(request: Request, user: User = Depends(authenticate_user)):
     try:
-        user_id = authenticate_user(request)
-        user = db.query(User).filter(User.id == user_id).first()
-        return {"email": user.email}
-    except HTTPException as e:
-        raise e
-
-@router.get("/name")
-async def get_current_email(request: Request, db: Session = Depends(get_db)):
-    try:
-        user_id = authenticate_user(request)
-        user = db.query(User).filter(User.id == user_id).first()
-        return {"name": user.name}
-    except HTTPException as e:
-        raise e
-
-@router.get("/curp")
-async def get_current_email(request: Request, db: Session = Depends(get_db)):
-    try:
-        user_id = authenticate_user(request)
-        user = db.query(User).filter(User.id == user_id).first()
-        return {"curp": user.curp}
-    except HTTPException as e:
-        raise e
-
-@router.get("/rfc")
-async def get_current_email(request: Request, db: Session = Depends(get_db)):
-    try:
-        user_id = authenticate_user(request)
-        user = db.query(User).filter(User.id == user_id).first()
-        return {"rfc": user.rfc}
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {
+            "username": user.username,
+            "email": user.email,
+            "name": user.name,
+            "curp": user.curp,
+            "rfc": user.rfc
+        }
     except HTTPException as e:
         raise e

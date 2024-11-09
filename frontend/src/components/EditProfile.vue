@@ -125,7 +125,7 @@ export default {
     async loadUserData() {
       try {
       // Fetch username
-      const response = await fetch('http://localhost/api/username', {
+      const response = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include',
       });
@@ -138,7 +138,7 @@ export default {
       }
 
       // Fetch email
-      const emailResponse = await fetch('http://localhost/api/email', {
+      const emailResponse = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include',
       });
@@ -151,7 +151,7 @@ export default {
       }
 
       // Fetch full name
-      const nameResponse = await fetch('http://localhost/api/name', {
+      const nameResponse = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include',
       });
@@ -164,7 +164,7 @@ export default {
       }
 
       // Fetch user curp 
-      const curpResponse = await fetch('http://localhost/api/curp', {
+      const curpResponse = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include',
       });
@@ -177,7 +177,7 @@ export default {
       }
 
       // Fetch user rfc 
-      const rfcResponse = await fetch('http://localhost/api/rfc', {
+      const rfcResponse = await fetch('http://localhost/api/profile', {
         method: 'GET',
         credentials: 'include',
       });
