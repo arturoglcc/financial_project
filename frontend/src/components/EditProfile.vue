@@ -48,27 +48,29 @@
       </div>
       <div class="input-group">
         <label for="curp">CURP</label>
+        <div v-if="curpError" class="error-message">{{ curpError }}</div>
         <div class="input-container group">
           <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 56 56" class="icon">
             <path fill="currentColor" fill-rule="evenodd" d="M42.853 42.714q-.446-.06-.859-.125c-6.058-.963-6.667-3.117-7.457-4.768c-.642-.277-.957-.5-1.286-1.643c-.142-.488-.388-2.654-.284-3.498c.498-.467.876-1.653 1.04-2.204c.442-1.474.549-1.832.97-3.796c.06-.28.219-.394.348-.442c.392-.142.482-.457.61-.69c.303-.534.043-.774.516-2.077c.604-1.482.698-3.008.24-3.446c-.311-.277-.5-.07-.653-.014c-.102.04-.023-.215.069-.578c.363-1.493.365-2.758.463-4.288c.079-1.239-.004-2.369-.159-3.07c-.146-.145-.523-1.77-.955-2.72c-.738-1.632-2.95-1.885-3.708-2.212c-1.804-.755-4.06-1.778-6.734-.623c-1.19.513-2.775.563-4.5 2.504c-.408.456-1.136.064-1.949 1.84c-.825 1.74-.869 2.886-.681 4.13l-.057.003s.021 2.977.386 4.47c.09.364.167.617.067.579c-.152-.056-.361-.236-.672.042c-.46.438-.216 1.901.388 3.383c.476 1.303.159 1.691.665 2.377c.18.244.348.373.542.455c.13.052.313.068.398.34c.557 2.02.66 2.64 1.239 3.842c.25.519.531 1.818 1.049 2.322c.085.711-.003 2.76-.115 3.371c-.18.961-.517 1.239-1.422 1.643c-.492 1.6-1.797 3.048-7.255 4.722q-.28.086-.571.171q-.156.052-5.545 4.783A2 2 0 0 0 8.301 51h38.907a2 2 0 0 0 1.289-3.53z" />
           </svg>
-          <input type="text" id="curp" v-model="curp" :disabled="!isEditing" class="input" />
+          <input type="text" id="curp" v-model="curp" @input="validateCurp" :disabled="!isEditing" class="input" />
         </div>
       </div>
       <div class="input-group">
         <label for="rfc">RFC</label>
+        <div v-if="rfcError" class="error-message">{{ rfcError }}</div>
         <div class="input-container group">
           <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20" class="icon">
             <path fill="currentColor" d="M10.6 9c-.4-.1-.8-.3-1.1-.6c-.3-.1-.4-.4-.4-.6s.1-.5.3-.6c.3-.2.6-.4.9-.3c.6 0 1.1.3 1.4.7l.9-1.2c-.3-.3-.6-.5-.9-.7s-.7-.3-1.1-.3V4H9.4v1.4c-.5.1-1 .4-1.4.8c-.4.5-.7 1.1-.6 1.7c0 .6.2 1.2.6 1.6c.5.5 1.2.8 1.8 1.1c.3.1.7.3 1 .5c.2.2.3.5.3.8q0 .45-.3.9c-.3.3-.7.4-1 .4c-.4 0-.9-.1-1.2-.4c-.3-.2-.6-.5-.8-.8l-1 1.1c.3.4.6.7 1 1c.5.3 1.1.6 1.7.6V16h1.1v-1.5c.6-.1 1.1-.4 1.5-.8c.5-.5.8-1.3.8-2c0-.6-.2-1.3-.7-1.7c-.5-.5-1-.8-1.6-1M10 2c-4.4 0-8 3.6-8 8s3.6 8 8 8s8-3.6 8-8s-3.6-8-8-8m0 14.9c-3.8 0-6.9-3.1-6.9-6.9S6.2 3.1 10 3.1s6.9 3.1 6.9 6.9s-3.1 6.9-6.9 6.9" />
           </svg>
-          <input type="text" id="rfc" v-model="rfc" :disabled="!isEditing" class="input" />
+          <input type="text" id="rfc" v-model="rfc" @input="validateRfc" :disabled="!isEditing" class="input" />
         </div>
       </div>
       <div class="button-group">
         <button type="button" @click="toggleEdit" class="edit-btn">
           {{ isEditing ? 'Cancel' : 'Edit' }}
         </button>
-        <button v-if="isEditing" type="submit" class="confirm-btn">
+        <button v-if="isEditing" type="submit" class="confirm-btn" :disabled="curpError || rfcError || !isFormValid">
           Confirm
         </button>
       </div>
@@ -90,12 +92,36 @@ export default {
       rfc: "",
       showPassword: false,
       isEditing: false,
+      curpError: "",
+      rfcError: "",
     };
+  },
+  computed: {
+    isFormValid() {
+      // Add additional form validation logic if needed
+      return !this.curpError && !this.rfcError;
+    }
   },
   created() {
     this.loadUserData();
   },
   methods: {
+    validateCurp() {
+      // Check if CURP is either empty or exactly 18 characters
+      if (this.curp && this.curp.length !== 18) {
+        this.curpError = "CURP must be empty or in a valid format (18 characters)";
+      } else {
+        this.curpError = ""; // Clear the error if validation passes
+      }
+    },
+    validateRfc() {
+      // Check if RFC is either empty or has 12 or 13 characters
+      if (this.rfc && this.rfc.length !== 12 && this.rfc.length !== 13) {
+        this.rfcError = "The RFC must be empty or be in a valid format";
+      } else {
+        this.rfcError = ""; // Clear the error if validation passes
+      }
+    },
     async loadUserData() {
       try {
       // Fetch username
@@ -136,11 +162,39 @@ export default {
         console.error('Failed to fetch :', nameResponse.statusText);
         this.name = 'name'; // Fallback if the request fails
       }
+
+      // Fetch user curp 
+      const curpResponse = await fetch('http://localhost/api/curp', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (curpResponse.ok) {
+        const data = await curpResponse.json();
+        this.curp = data.curp || '';
+      } else {
+        console.error('Failed to fetch :', nameResponse.statusText);
+        this.curp = 'curp'; // Fallback if the request fails
+      }
+
+      // Fetch user rfc 
+      const rfcResponse = await fetch('http://localhost/api/rfc', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (rfcResponse.ok) {
+        const data = await rfcResponse.json();
+        this.rfc = data.rfc || '';
+      } else {
+        console.error('Failed to fetch :', rfcResponse.statusText);
+        this.rfc = 'rfc'; // Fallback if the request fails
+      }
     } catch (error) {
       console.error('Error fetching user info:', error);
       this.username = 'Guest'; // Fallback in case of an error
       this.email = '';
       this.fullName = 'unknown user' 
+      this.curp = ''
+      this.rfc = ''
       }
     },
 
@@ -157,11 +211,11 @@ export default {
           },
           credentials: 'include',
           body: JSON.stringify({
-          email: this.email,
-          username: this.username,
-          curp: this.curp,
-          rfc: this.rfc,
-          name: this.fullName,
+          email: this.email || undefined,
+              username: this.username || undefined,
+              curp: this.curp || undefined,
+              rfc: this.rfc || undefined,
+              name: this.fullName || undefined,
           }),
         });
 
@@ -169,6 +223,7 @@ export default {
           const data = await response.json();
           console.log('Update successful:', data);
           this.isEditing = false; // Exit edit mode after a successful update
+          this.$emit('username-updated', this.username);
         } else {
           const errorData = await response.json();
           console.error('Error updating user:', errorData.detail);
@@ -307,6 +362,12 @@ h2 {
 
 .edit-btn:hover::before, .confirm-btn:hover::before {
   width: 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.85em;
+  margin-bottom: 5px;
 }
 
 </style>

@@ -228,3 +228,21 @@ async def get_current_email(request: Request, db: Session = Depends(get_db)):
         return {"name": user.name}
     except HTTPException as e:
         raise e
+
+@router.get("/curp")
+async def get_current_email(request: Request, db: Session = Depends(get_db)):
+    try:
+        user_id = authenticate_user(request)
+        user = db.query(User).filter(User.id == user_id).first()
+        return {"curp": user.curp}
+    except HTTPException as e:
+        raise e
+
+@router.get("/rfc")
+async def get_current_email(request: Request, db: Session = Depends(get_db)):
+    try:
+        user_id = authenticate_user(request)
+        user = db.query(User).filter(User.id == user_id).first()
+        return {"rfc": user.rfc}
+    except HTTPException as e:
+        raise e
