@@ -123,10 +123,24 @@ export default {
         console.error('Failed to fetch email:', emailResponse.statusText);
         this.email = 'email'; // Fallback if the request fails
       }
+
+      // Fetch full name
+      const nameResponse = await fetch('http://localhost/api/name', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (nameResponse.ok) {
+        const data = await nameResponse.json();
+        this.fullName = data.name || '';
+      } else {
+        console.error('Failed to fetch :', nameResponse.statusText);
+        this.name = 'name'; // Fallback if the request fails
+      }
     } catch (error) {
       console.error('Error fetching user info:', error);
       this.username = 'Guest'; // Fallback in case of an error
-      this.email = 'email'; // Fallback for email
+      this.email = '';
+      this.fullName = 'unknown user' 
       }
     },
 

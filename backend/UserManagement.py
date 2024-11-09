@@ -219,3 +219,12 @@ async def get_current_email(request: Request, db: Session = Depends(get_db)):
         return {"email": user.email}
     except HTTPException as e:
         raise e
+
+@router.get("/name")
+async def get_current_email(request: Request, db: Session = Depends(get_db)):
+    try:
+        user_id = authenticate_user(request)
+        user = db.query(User).filter(User.id == user_id).first()
+        return {"name": user.name}
+    except HTTPException as e:
+        raise e
