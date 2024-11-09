@@ -77,6 +77,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -90,7 +92,28 @@ export default {
       isEditing: false,
     };
   },
+  created() {
+    this.loadUserData();
+  },
   methods: {
+    async loadUserData() {
+      try {
+        const response = await fetch('http://localhost/api/username', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          this.username = data.username || 'Unknown User';
+        } else {
+          console.error('Failed to fetch user info:', response.statusText);
+          this.username = 'Guest'; // Fallback if the request fails
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        this.username = 'Guest'; // Fallback in case of an error
+      }
+    },
     toggleEdit() {
       this.isEditing = !this.isEditing;
     },
