@@ -164,16 +164,16 @@ class UserUpdate(BaseModel):
     name: str = None
 
 @router.put("/update_user")
-async def update_user(request: Request, user_update: UserUpdate, user = Depends(authenticate_user)):
+async def update_user(user_update: UserUpdate, user = Depends(authenticate_user), db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
     # Check if email is already in use by another user
-    if user_update.email and db.query(User).filter(User.email == user_update.email, User.id != user_id).first():
+    if user_update.email and db.query(User).filter(User.email == user_update.email, User.id != user.id).first():
         raise HTTPException(status_code=400, detail="Email is already registered.")
     
     # Check if username is already in use by another user
-    if user_update.username and db.query(User).filter(User.username == user_update.username, User.id != user_id).first():
+    if user_update.username and db.query(User).filter(User.username == user_update.username, User.id != user.id).first():
         raise HTTPException(status_code=400, detail="Username is already taken.")
     
     # Update fields if they are provided
@@ -212,3 +212,16 @@ async def get_user_profile(request: Request, user: User = Depends(authenticate_u
         }
     except HTTPException as e:
         raise e
+
+@router.post("/logout")
+async def logout_user(user: User = Depends(authenticate_user), db: Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Increment the token version to invalidate old tokens
+    user.token_version += 1
+    db.commit()
+
+    response = JSONResponse(content={"message": "Logged out successfully"})
+    response.delete_cookie(key="jwtToken")
+    return response
