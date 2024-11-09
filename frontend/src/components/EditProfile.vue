@@ -97,23 +97,39 @@ export default {
   },
   methods: {
     async loadUserData() {
-      try {
-        const response = await fetch('http://localhost/api/username', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          this.username = data.username || 'Unknown User';
-        } else {
-          console.error('Failed to fetch user info:', response.statusText);
-          this.username = 'Guest'; // Fallback if the request fails
-        }
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-        this.username = 'Guest'; // Fallback in case of an error
-      }
-    },
+    try {
+    // Fetch username
+    const response = await fetch('http://localhost/api/username', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (response.ok) {
+      const data = await response.json();
+      this.username = data.username || 'Unknown User';
+    } else {
+      console.error('Failed to fetch username:', response.statusText);
+      this.username = 'Guest'; // Fallback if the request fails
+    }
+
+    // Fetch email
+    const emailResponse = await fetch('http://localhost/api/email', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (emailResponse.ok) {
+      const data = await emailResponse.json();
+      this.email = data.email || ''; // Use 'edata' instead of 'data'
+    } else {
+      console.error('Failed to fetch email:', emailResponse.statusText);
+      this.email = 'email'; // Fallback if the request fails
+    }
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    this.username = 'Guest'; // Fallback in case of an error
+    this.email = 'email'; // Fallback for email
+    }
+  },
+
     toggleEdit() {
       this.isEditing = !this.isEditing;
     },
