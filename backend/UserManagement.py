@@ -154,9 +154,9 @@ class UserUpdate(BaseModel):
     email: EmailStr = None
     username: str = None
     password: str = None
-    curp: constr(min_length=18, max_length=18) = None
-    rfc: constr(min_length=13, max_length=13) = None
-    nombre: str = None
+    curp: str = None
+    rfc: str = None
+    name: str = None
 
 #Function allows users to update their data
 @router.put("/update_user")
@@ -165,19 +165,31 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), us
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Check if email is already in use by another user
     if user_update.email and db.query(User).filter(User.email == user_update.email, User.id != user_id).first():
         raise HTTPException(status_code=400, detail="Email is already registered.")
+    
+    # Check if username is already in use by another user
     if user_update.username and db.query(User).filter(User.username == user_update.username, User.id != user_id).first():
         raise HTTPException(status_code=400, detail="Username is already taken.")
-    if user_update.password:
-        salt = bcrypt.gensalt()
-        user.password_hashed = bcrypt.hashpw(user_update.password.encode('utf-8'), salt).decode('utf-8')
-    if user_update.curp:
+    
+    # Update fields if they are provided)
+    if user_update.email is not None:
+        user.email = user_update.email
+    if user_update.username is not None:
+        user.username = user_update.username
+    if user_update.curp is not None:
         user.curp = user_update.curp
-    if user_update.rfc:
+    if user_update.rfc is not None:
         user.rfc = user_update.rfc
-    if user_update.nombre:
-        user.nombre = user_update.nombre 
+    if user_update.name is not None:
+        user.name = user_update.name
+
+    # Commit the changes to the database
+    db.commit()
+    db.refresh(user)  # Refresh to get updated data
+
+    return {"message": "User updated successfully", "user": user}
 
     try:
         db.commit()
