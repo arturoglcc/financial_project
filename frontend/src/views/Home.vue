@@ -5,6 +5,7 @@
     <div class="content">
       <StatsContainer />
       <h2>Welcome to the Financial Organizer</h2>
+      <AddMovements />
     </div>
   </div>
 </template>
@@ -13,12 +14,14 @@
 import SideBar from '../components/SideBar.vue';
 import Header from '../components/Header.vue';
 import StatsContainer from '../components/StatsContainer.vue';
+import AddMovements from '../components/AddMovements.vue';
 
 export default {
   components: {
     SideBar,
     Header,
     StatsContainer,
+    AddMovements,
   },
   data() {
     return {
