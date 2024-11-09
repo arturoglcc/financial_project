@@ -39,7 +39,7 @@
         </svg>
         <span class="navText" :class="{ 'showText': menuOpen }">Graphs</span>
       </a>
-      <a href="#" class="navItem">
+      <a href="#" class="navItem" @click="handleLogout">
         <svg xmlns="http://www.w3.org/2000/svg" class="navIcon" width="24" height="24" viewBox="0 0 24 24">
           <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
             <path stroke-dasharray="36" stroke-dashoffset="36" d="M12 4h-7c-0.55 0 -1 0.45 -1 1v14c0 0.55 0.45 1 1 1h7">
@@ -76,8 +76,25 @@
       toggleMenu() {
         this.menuOpen = !this.menuOpen;
       },
+      async handleLogout() {
+      try {
+        const response = await fetch('http://localhost/api/logout', {
+          method: 'POST', // Adjust method as needed (POST/GET)
+          credentials: 'include',
+        });
+        if (response.ok) {
+          console.log('Logout successful');
+          // Redirect to login page or home page
+          this.$router.push('/');
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
     },
-  };
+  },
+};
 </script>
 
 <style scoped>

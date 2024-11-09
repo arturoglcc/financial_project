@@ -114,7 +114,6 @@ export default {
           const result = await response.json();
           this.successMessage = "Sign-up successful! Welcome, " + result.user.username;
           console.log("Sign-up successful:", result);
-          this.$router.push("/home");
         } else {
           const errorMessage = await response.text();
           this.errorMessage = "Sign-up failed: " + errorMessage;

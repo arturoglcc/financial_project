@@ -5,9 +5,9 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # Retrieve environment variables
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "financial_project_db")
-DB_USER = os.getenv("DB_USER", "usuario_financial")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "usuario_password")
+DB_NAME = os.getenv("MYSQL_DATABASE", "financial_project_db")
+DB_USER = os.getenv("MYSQL_USER", "root")
+DB_PASSWORD = os.getenv("MYSQL_ROOT_PASSWORD", "your-root-password")
 
 # Construct the database URL
 DATABASE_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
