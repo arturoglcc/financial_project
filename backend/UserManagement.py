@@ -51,10 +51,10 @@ class UserBuilder(BaseModel):
     
     def build(self, db: Session) -> User:
         if not self.is_email_unique(db, self.email):
-            raise HTTPException(status_code=400, detail="The e-mail is already registered.")
+            raise HTTPException(status_code=400, detail={"code": "EMAIL_TAKEN", "message": "The e-mail is already registered."})
 
         if not self.is_username_unique(db, self.username):
-            raise HTTPException(status_code=400, detail="The username is already taken.")
+            raise HTTPException(status_code=400, detail={"code": "USERNAME_TAKEN", "message": "The username is already taken."})
         
         password_hashed = self._hash_password(self.password)
         

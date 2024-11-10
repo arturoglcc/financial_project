@@ -26,11 +26,12 @@
         </div>
         <div class="input-group">
           <label for="email">Email address</label>
+          <div v-if="emailError" class="error-message">The email is not valid</div>
           <div class="input-container group">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" class="icon">
               <path fill="currentColor" fill-rule="evenodd" d="M14.95 3.684L8.637 8.912a1 1 0 0 1-1.276 0l-6.31-5.228A1 1 0 0 0 1 4v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-.05-.316M2 2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m-.21 1l5.576 4.603a1 1 0 0 0 1.27.003L14.268 3z"/>
             </svg>
-            <input type="email" id="email" v-model="email" @input="clearErrorMessage" required class="input" />
+            <input type="email" id="email" v-model="email" @input="validateEmail" required class="input" />
           </div>
         </div>
         <div class="input-group">
@@ -80,17 +81,19 @@ export default {
       showPassword: false,
       showPassword2: false,
       successMessage: "",
-      errorMessage: ""
+      errorMessage: "",
+      emailError: false
     };
   },
   methods: {
+    validateEmail() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailError = !emailRegex.test(this.email);
+    },
+
     async handleSignUp() {
-      // Log both passwords for troubleshooting
-      console.log("Password:", this.password, "Confirm Password:", this.confirmPassword);
       if (this.password !== this.confirmPassword) {
         this.errorMessage = "Passwords do not match.";
-        this.username = "";
-        this.email = "";
         this.password = "";
         this.confirmPassword = "";
         return;
@@ -116,15 +119,23 @@ export default {
           console.log("Sign-up successful:", result);
           this.$router.push("/");
         } else {
-          const errorMessage = await response.text();
-          this.errorMessage = "Sign-up failed: " + errorMessage;
-          console.error("Sign-up failed:", errorMessage);
-          this.username = "";
-          this.email = "";
-          this.password = "";
-          this.confirmPassword = "";
+          const errorData = await response.json();
+          if (errorData.detail && typeof errorData.detail === 'object') {
+            switch (errorData.detail.code) {
+            case "EMAIL_TAKEN":
+              this.errorMessage = "The email is already registered. Please use a different email.";
+              break;
+            case "USERNAME_TAKEN":
+              this.errorMessage = "The username is already taken. Please choose another.";
+              break;
+            default:
+              this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
+          }
+        } else {
+        this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
         }
-      } catch (error) {
+      }
+    } catch (error) {
         console.error("Error connecting to server:", error);
         alert("An error occurred while signing up. Please try again later.");
         this.username = "";
@@ -298,6 +309,7 @@ p {
 .error-message {
   color: red;
   font-size: 0.9em;
+  margin-top: 4px;
   margin-bottom: 10px;
   text-align: center;
 }
