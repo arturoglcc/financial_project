@@ -7,6 +7,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.db
     container_name: db
+    env_file:
+      - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -35,6 +37,8 @@ services:
     depends_on:
       db:
        condition: service_healthy 
+    env_file:
+      - .env
     environment:
       DB_HOST: db                   
       DB_PORT: 3306

@@ -1,16 +1,32 @@
 import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from urllib.parse import quote_plus
+
+load_dotenv()
 
 # Retrieve environment variables
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("MYSQL_DATABASE", "financial_project_db")
-DB_USER = os.getenv("MYSQL_USER", "root")
-DB_PASSWORD = os.getenv("MYSQL_ROOT_PASSWORD", "your-root-password")
+DB_USER = os.getenv("MYSQL_USER", "user")
+DB_PASSWORD = quote_plus(os.getenv("MYSQL_PASSWORD", "data_base_password"))
+
+# Print out the credentials for testing (use caution with sensitive data)
+print("Connecting to the database with the following credentials:")
+print(f"Host: {DB_HOST}")
+print(f"Port: {DB_PORT}")
+print(f"Database Name: {DB_NAME}")
+print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
+print(f"User: {DB_USER}")
+print(f"Password: {DB_PASSWORD}")
+print(f"MYSQL_PASSWORD: {os.getenv('MYSQL_PASSWORD')}")
 
 # Construct the database URL
 DATABASE_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+print("Constructed DATABASE_URL:", DATABASE_URL)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
