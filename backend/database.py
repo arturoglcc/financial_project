@@ -13,16 +13,6 @@ DB_NAME = os.getenv("MYSQL_DATABASE", "financial_project_db")
 DB_USER = os.getenv("MYSQL_USER", "user")
 DB_PASSWORD = quote_plus(os.getenv("MYSQL_PASSWORD", "data_base_password"))
 
-# Print out the credentials for testing (use caution with sensitive data)
-print("Connecting to the database with the following credentials:")
-print(f"Host: {DB_HOST}")
-print(f"Port: {DB_PORT}")
-print(f"Database Name: {DB_NAME}")
-print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
-print(f"User: {DB_USER}")
-print(f"Password: {DB_PASSWORD}")
-print(f"MYSQL_PASSWORD: {os.getenv('MYSQL_PASSWORD')}")
-
 # Construct the database URL
 DATABASE_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
