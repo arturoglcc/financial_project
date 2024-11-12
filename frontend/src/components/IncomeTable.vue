@@ -57,45 +57,45 @@ export default {
       incomes: [
         {
           id: 1,
-          tag: "Salary",
+          tag: "",
           type: "Income",
-          amount: 4200.0,
+          amount: 0.0,
           date: "2021-05-19T10:10:00",
           description: "",
           isEditing: false
         },
         {
           id: 2,
-          tag: "Scholarship",
+          tag: "",
           type: "Income",
-          amount: 1350.0,
+          amount: 0.0,
           date: "2021-05-18T15:12:00",
           description: "",
           isEditing: false
         },
         {
           id: 3,
-          tag: "Transfer",
+          tag: "",
           type: "Income",
-          amount: 435.5,
+          amount: 0.0,
           date: "2021-05-17T14:15:00",
           description: "",
           isEditing: false
         },
         {
           id: 4,
-          tag: "Meeting",
+          tag: "",
           type: "Income",
-          amount: 159.9,
+          amount: 0.0,
           date: "2021-04-23T13:15:00",
           description: "",
           isEditing: false
         },
         {
           id: 5,
-          tag: "Salary",
+          tag: "",
           type: "Income",
-          amount: 4200.0,
+          amount: 0.0,
           date: "2021-04-20T13:15:00",
           description: "",
           isEditing: false
@@ -112,12 +112,19 @@ export default {
       return new Date(date).toLocaleString("en-US", options);
     },
     editIncome(income) {
+      income.originalData = { ...income };
       income.isEditing = true;
     },
     cancelEdit(income) {
+      Object.assign(income, income.originalData);
       income.isEditing = false;
+      income.originalData = null;
     },
     confirmIncome(income) {
+      if (!income.tag || income.amount === null || !income.date || !income.description) {
+        alert("Todos los campos deben estar llenos antes de confirmar.");
+        return;
+      }
       income.isEditing = false;
       console.log(`Confirmed income with id: ${income.id}`);
     },
