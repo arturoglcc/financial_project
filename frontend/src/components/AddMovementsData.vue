@@ -82,7 +82,7 @@ export default {
   border: 2px solid #ddd;
   border-radius: 10px;
   padding: 20px;
-  width: 800px; 
+  width: 1165px; 
   margin: auto;
 }
 
