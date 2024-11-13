@@ -69,3 +69,27 @@ def add_transaction(
     db.refresh(new_transaction)
 
     return {"message": "Transaction added successfully", "transaction_id": new_transaction.id}
+
+@router.get("/transactions", response_model=list[TransactionCreate])
+    def get_transactions(
+       start_date: date,
+        end_date: date,
+        transaction_type: TransactionType,
+        db: Session = Depends(get_db),
+        user: User = Depends(authenticate_user)
+    ):
+    try:
+        transactions = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.date >= start_date,
+            Transaction.date <= end_date,
+            Transaction.type == transaction_type
+        ).all()
+        if not transactions:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No transactions found in this period"})
+        
+        return transactions
+
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error occurred")
+
