@@ -33,7 +33,7 @@ class TransactionCreate(BaseModel):
 
 
 # Function to add a transaction
-@router.post("/transactions", status_code=status.HTTP_201_CREATED)
+@router.post("/addTransaction", status_code=status.HTTP_201_CREATED)
 def add_transaction(
     transaction_data: TransactionCreate,
     db: Session = Depends(get_db),
