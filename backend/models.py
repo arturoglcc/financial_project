@@ -1,6 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, DECIMAL, Text, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, DECIMAL, Text, Enum
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime
 import enum
 
 # Enum for transaction type
@@ -46,7 +47,7 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     amount = Column(DECIMAL(10, 2), nullable=False)
     description = Column(Text, nullable=True)
-    date = Column(Date, nullable=False)
+    date_time = Column(DateTime, nullable=False, default=datetime.utcnow)
     type = Column(Enum(TransactionType), nullable=False)
 
     # Relationship with user and categories

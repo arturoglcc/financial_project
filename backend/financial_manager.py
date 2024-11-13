@@ -1,15 +1,13 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request, Response
 from fastapi.responses import JSONResponse
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import Session, declarative_base
+from sqlalchemy import Column, Integer, DateTime, DECIMAL, Text, Enum, ForeignKey
+from sqlalchemy.orm import Session, declarative_base, relationship
 from sqlalchemy.exc import SQLAlchemyError
-from pydantic import  BaseModel, EmailStr, ValidationError, constr
-import bcrypt
-import jwt
+from pydantic import  BaseModel
+from decimal import Decimal
 from datetime import datetime, timedelta
 from database import SessionLocal, get_db
 from models import User
-from dotenv import load_dotenv
 import os
 from fastapi import Request
 from UserManagement import authenticate_user
@@ -28,7 +26,7 @@ class TransactionType(PyEnum):
 class TransactionCreate(BaseModel):
     amount: Decimal
     description: str
-    date: date
+    date_time: datetime
     type: TransactionType
 
 
@@ -44,7 +42,7 @@ def add_transaction(
         Transaction.user_id == user.id,
         Transaction.amount == transaction_data.amount,
         Transaction.description == transaction_data.description,
-        Transaction.date == transaction_data.date,
+        Transaction.date_time == transaction_data.date_time,
         Transaction.type == transaction_data.type
     ).first()
     
@@ -59,7 +57,7 @@ def add_transaction(
         user_id=user.id,
         amount=transaction_data.amount,
         description=transaction_data.description,
-        date=transaction_data.date,
+        date_time=transaction_data.date_time,
         type=transaction_data.type
     )
     
@@ -72,8 +70,8 @@ def add_transaction(
 
 @router.get("/transactions", response_model=list[TransactionCreate])
     def get_transactions(
-       start_date: date,
-        end_date: date,
+       start_date: datetime,
+        end_date: datetime,
         transaction_type: TransactionType,
         db: Session = Depends(get_db),
         user: User = Depends(authenticate_user)
@@ -81,8 +79,8 @@ def add_transaction(
     try:
         transactions = db.query(Transaction).filter(
             Transaction.user_id == user.id,
-            Transaction.date >= start_date,
-            Transaction.date <= end_date,
+            Transaction.date_time >= start_date,
+            Transaction.date_time <= end_date,
             Transaction.type == transaction_type
         ).all()
         if not transactions:
