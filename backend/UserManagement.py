@@ -7,7 +7,7 @@ from pydantic import  BaseModel, EmailStr, ValidationError, constr
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-from database import SessionLocal
+from database import SessionLocal, get_db
 from models import User
 from dotenv import load_dotenv
 import os
@@ -23,14 +23,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Initialize APIRouter for modular routing
 router = APIRouter()
-
-# Dependency to get a data base session per request
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # UserBuilder creates a new user instance
 class UserBuilder(BaseModel):

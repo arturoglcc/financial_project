@@ -23,6 +23,26 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def init_db():
-    import models
-    Base.metadata.create_all(bind=engine)
+    retries = 5
+    while retries > 0:
+        try:
+            # Attempt to create tables
+            Base.metadata.create_all(bind=engine)
+            print("Database initialized successfully.")
+            break
+        except OperationalError:
+            print("Database not ready, retrying in 5 seconds...")
+            retries -= 1
+            time.sleep(5)
+    else:
+        print("Failed to connect to the database after several attempts.")
+        raise Exception("Database initialization failed")
 
+
+# Dependency to get a data base session per request
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
