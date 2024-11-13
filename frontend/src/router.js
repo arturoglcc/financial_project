@@ -4,6 +4,7 @@ import SignUp from "./components/SignUp.vue";
 import Home from "./views/Home.vue";
 import UserSettings from "./views/UserSettings.vue";
 import ChangePassword from "./views/ChangePassword.vue";
+import AddIncome from "./views/AddIncome.vue";
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: "/change-password",
     name: "Change Password",
     component: ChangePassword,
+  },
+  {
+    path: "/add-income",
+    name: "Add Income",
+    component: AddIncome,
   },
 ];
 
