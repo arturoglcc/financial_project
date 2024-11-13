@@ -1,6 +1,6 @@
 <template>
   <div class="adds-container">
-    <a href="#" class="add-card light">
+    <router-link to="/add-income" class="add-card light">
       <div class="add-title">
         Add <br> income
       </div>
@@ -23,7 +23,7 @@
           <rect width="24" height="24" fill="currentColor" mask="url(#lineMdPlusSquareFilled0)" />
         </svg>
       </div>
-    </a>
+    </router-link>
     <a href="#" class="add-card dark">
       <div class="add-title">
         Add <br> outlay
