@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -73,8 +75,26 @@ export default {
       this.newPassword = "";
       this.confirmPassword = "";
     },
-    confirmEdit() {
-      this.isEditing = false;
+   async confirmEdit() {
+      if (this.newPassword !== this.confirmPassword) {
+        alert("New password and confirmation do not match.");
+        return;
+    }
+
+    try {
+        const response = await axios.put(
+          '/api/change_password',
+          {
+            old_password: this.password,
+            new_password: this.newPassword,
+          },
+          { withCredentials: true }
+        );
+        alert(response.data.message);
+        this.isEditing = false;
+      } catch (error) {
+        alert(error.response?.data?.detail || "Error updating password.");
+      }
     },
     togglePassword() {
       this.showPassword = !this.showPassword;
