@@ -24,7 +24,7 @@
         </svg>
       </div>
     </router-link>
-    <router-link to="add-outlay" class="add-card dark">
+    <router-link to="/add-outlay" class="add-card dark">
       <div class="add-title">
         Add <br> outlay
       </div>

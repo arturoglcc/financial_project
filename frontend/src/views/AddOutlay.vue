@@ -13,7 +13,7 @@
 import SideBar from '../components/SideBar.vue';
 import Header from '../components/Header.vue';
 import AddMovementsData from '../components/AddMovementsData.vue';
-import IncomeTable from '../components/OutlayTable.vue';
+import OutlayTable from '../components/OutlayTable.vue';
 export default {
   components: {
     SideBar,

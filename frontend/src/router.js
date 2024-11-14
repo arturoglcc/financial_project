@@ -5,7 +5,7 @@ import Home from "./views/Home.vue";
 import UserSettings from "./views/UserSettings.vue";
 import ChangePassword from "./views/ChangePassword.vue";
 import AddIncome from "./views/AddIncome.vue";
-import AddOutlay from ".views/AddOutlay.vue";
+import AddOutlay from "./views/AddOutlay.vue";
 
 const routes = [
   {
