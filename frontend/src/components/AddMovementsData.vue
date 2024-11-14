@@ -25,7 +25,7 @@
 
         <!-- Tags Field -->
         <div class="form-control">
-          <input type="text" required v-model="tags">
+          <input type="text" v-model="tags">
           <label>
             <span style="transition-delay:0ms">T</span><span style="transition-delay:50ms">a</span><span style="transition-delay:100ms">g</span><span style="transition-delay:150ms">s</span>
           </label>
@@ -33,7 +33,7 @@
 
         <!-- Amount Field, centered -->
         <div class="form-control amount-centered">
-          <input type="text" required v-model="amount">
+          <input type="float" required v-model="amount">
           <label>
             <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
           </label>
@@ -42,36 +42,48 @@
         <small>*Place the tags related to the entry separated by commas, for example: cinema, food <br> *Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
         
         <!-- Confirm Button -->
-        <button><span class="text">Confirm</span><span>Confirm</span></button>
+        <button @click="handleConfirm"><span class="text">Confirm</span><span>Confirm</span></button>
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: {
     title: {
       type: String,
-      default: "Add",
+      default: "Add Income",
     },
   },
   data() {
     return {
       description: "",
       dateInput: "",
-      tags: "",
       timeInput: "",
+      tags: "",
       amount: "",
     };
   },
   methods: {
-    handleAdd() {
-      this.description = "";
-      this.dateInput = "";
-      this.tags = "";
-      this.timeInput = "";
-      this.amount = "";
+    handleConfirm() {
+      console.log("A transaction has been sent");
+      // Gather data into an object to emit to the parent
+      const incomeData = {
+        description: this.description,
+        dateTime: `${this.dateInput}T${this.timeInput}`, // Combine date and time into a single DateTime string
+        amount: parseFloat(this.amount), // Convert amount to a number
+      };
+
+      // Only add tags to incomeData if tags input is not empty
+      if (this.tags && this.tags.trim()) {
+        incomeData.tags = this.tags.split(',').map(tag => tag.trim());
+      }
+
+      // Emit the data to the parent
+      this.$emit("confirm-transaction", incomeData);
     },
   },
 };

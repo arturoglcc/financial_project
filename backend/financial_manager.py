@@ -1,4 +1,4 @@
-from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request, Response
+from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request, Response, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import Column, Integer, DateTime, DECIMAL, Text, Enum, ForeignKey
 from sqlalchemy.orm import Session, declarative_base, relationship
@@ -7,17 +7,19 @@ from pydantic import  BaseModel
 from decimal import Decimal
 from datetime import datetime, timedelta
 from database import SessionLocal, get_db
-from models import User
+from models import User, Transaction
 import os
 from fastapi import Request
 from UserManagement import authenticate_user
+from enum import Enum
+from typing import List, Optional
 
 # Initialize APIRouter for modular routing
 router = APIRouter()
 
 
 # Define TransactionType Enum
-class TransactionType(PyEnum):
+class TransactionType(Enum):
     INCOME = "income"
     EXPENSE = "expense"
 
@@ -27,6 +29,7 @@ class TransactionCreate(BaseModel):
     amount: Decimal
     description: str
     date_time: datetime
+    tags: Optional[List[str]] = None
     type: TransactionType
 
 
@@ -35,8 +38,7 @@ class TransactionCreate(BaseModel):
 def add_transaction(
     transaction_data: TransactionCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(authenticate_user))
-):
+    user: User = Depends(authenticate_user)):
     # Check if a transaction with the same details already exists (ignoring tags)
     existing_transaction = db.query(Transaction).filter(
         Transaction.user_id == user.id,
@@ -69,13 +71,13 @@ def add_transaction(
     return {"message": "Transaction added successfully", "transaction_id": new_transaction.id}
 
 @router.get("/transactions", response_model=list[TransactionCreate])
-    def get_transactions(
-       start_date: datetime,
-        end_date: datetime,
-        transaction_type: TransactionType,
-        db: Session = Depends(get_db),
-        user: User = Depends(authenticate_user)
-    ):
+def get_transactions(
+   start_date: datetime,
+   end_date: datetime,
+    transaction_type: TransactionType,
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
     try:
         transactions = db.query(Transaction).filter(
             Transaction.user_id == user.id,

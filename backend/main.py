@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine, init_db  # Ensure the database is initialized here
 from UserManagement import router as auth_router  # Import your router
+from financial_manager import router as financial_router
 
 app = FastAPI()
 
@@ -21,3 +22,4 @@ init_db()
 
 # Include the UserManagement router with the "/api" prefix
 app.include_router(auth_router, prefix="/api")
+app.include_router(financial_router, prefix="/api")

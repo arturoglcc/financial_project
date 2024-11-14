@@ -23,7 +23,7 @@
           <rect width="24" height="24" fill="currentColor" mask="url(#lineMdPlusSquareFilled0)" />
         </svg>
       </div>
-    </router-link>
+    </router-link to="/add-outlay">
     <a href="#" class="add-card dark">
       <div class="add-title">
         Add <br> outlay
