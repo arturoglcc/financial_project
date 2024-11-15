@@ -5,7 +5,7 @@
         Last outlay
       </div>
       <div class="stat-value">
-        $ 0
+        $ {{ lastOutlay}}
       </div>
       <div class="stat-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20">
@@ -18,7 +18,7 @@
         Last income
       </div>
       <div class="stat-value">
-        $ 0
+        $ {{ lastIncome}}
       </div>
       <div class="stat-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20">
@@ -54,6 +54,50 @@
     </div>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      lastIncome: null, // Store the value of the last income
+      lastOutlay: null, // Store the value of the last outlay
+    };
+  },
+  methods: {
+    async fetchStats() {
+      try {
+        // Fetch last income
+        const incomeResponse = await axios.get("http://localhost/api/lastIncome", {
+          withCredentials: true, // Include credentials if authentication is required
+        });
+        this.lastIncome = incomeResponse.data.amount;
+        } catch (error) {
+        console.error("Error fetching stats:", error.response ? error.response.data : error.message);
+        // If the requests fail, set values to 0 as fallback
+        this.lastIncome = 0;
+        this.lastOutlay = 0;
+      } try {
+
+        // Fetch last outlay (expense)
+        const outlayResponse = await axios.get("http://localhost/api/lastExpense", {
+          withCredentials: true, // Include credentials if authentication is required
+        });
+        this.lastOutlay = outlayResponse.data.amount;
+      } catch (error) {
+        console.error("Error fetching stats:", error.response ? error.response.data : error.message);
+        // If the requests fail, set values to 0 as fallback
+        this.lastIncome = 0;
+        this.lastOutlay = 0;
+      }
+    },
+  },
+  mounted() {
+    this.fetchStats(); // Fetch data when the component is mounted
+  },
+};
+</script>
 
 <style scoped>
 .stats-container {

@@ -93,3 +93,80 @@ def get_transactions(
     except SQLAlchemyError as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error occurred")
 
+
+
+@router.get("/lastIncome", status_code=status.HTTP_200_OK)
+def get_last_income(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    try:
+        # Query to fetch the latest income transaction for the user
+        last_income = (
+            db.query(Transaction)
+            .filter(
+                Transaction.user_id == user.id,
+                Transaction.type == TransactionType.income.value  # Ensure it's an income
+            )
+            .order_by(Transaction.date_time.desc())  # Order by date_time descending
+            .first()
+        )
+
+        # If no income transaction exists, return a message
+        if not last_income:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No income transactions found for the user."
+            )
+
+        # Return the last income as a JSON response
+        return {
+            "id": last_income.id,
+            "amount": str(last_income.amount),  # Convert Decimal to string for JSON serialization
+            "description": last_income.description,
+            "date_time": last_income.date_time,
+        }
+
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while fetching the last income."
+        )
+
+@router.get("/lastExpense", status_code=status.HTTP_200_OK)
+def get_last_expense(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    try:
+        # Query to fetch the latest expense transaction for the user
+        last_expense = (
+            db.query(Transaction)
+            .filter(
+                Transaction.user_id == user.id,
+                Transaction.type == TransactionType.expense.value  # Ensure it's an expense
+            )
+            .order_by(Transaction.date_time.desc())  # Order by date_time descending
+            .first()
+        )
+
+        # If no expense transaction exists, return a message
+        if not last_expense:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No expense transactions found for the user."
+            )
+
+        # Return the last expense as a JSON response
+        return {
+            "id": last_expense.id,
+            "amount": str(last_expense.amount),  # Convert Decimal to string for JSON serialization
+            "description": last_expense.description,
+            "date_time": last_expense.date_time,
+        }
+
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while fetching the last expense."
+        )
