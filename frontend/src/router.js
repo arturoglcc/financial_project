@@ -5,6 +5,8 @@ import Home from "./views/Home.vue";
 import UserSettings from "./views/UserSettings.vue";
 import ChangePassword from "./views/ChangePassword.vue";
 import AddIncome from "./views/AddIncome.vue";
+import AddOutlay from "./views/AddOutlay.vue";
+import Graphs from "./views/Graphs.vue";
 
 const routes = [
   {
@@ -36,6 +38,16 @@ const routes = [
     path: "/add-income",
     name: "Add Income",
     component: AddIncome,
+  },
+  {
+    path: "/add-outlay",
+    name: "Add Outlay",
+    component: AddOutlay,
+  },
+  {
+    path: "/graphs",
+    name: "Graphs",
+    component: Graphs,
   },
 ];
 

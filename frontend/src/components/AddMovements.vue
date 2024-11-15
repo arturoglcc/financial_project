@@ -23,8 +23,8 @@
           <rect width="24" height="24" fill="currentColor" mask="url(#lineMdPlusSquareFilled0)" />
         </svg>
       </div>
-    </router-link to="/add-outlay">
-    <a href="#" class="add-card dark">
+    </router-link>
+    <router-link to="/add-outlay" class="add-card dark">
       <div class="add-title">
         Add <br> outlay
       </div>
@@ -47,7 +47,7 @@
           <rect width="24" height="24" fill="currentColor" mask="url(#lineMdPlusSquareFilled0)" />
         </svg>
       </div>
-    </a>
+    </router-link>
     <a href="#" class="add-card light">
       <div class="add-title">
         Add <br> debt
