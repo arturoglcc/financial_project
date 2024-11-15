@@ -64,7 +64,7 @@ export default {
       dateInput: "",
       timeInput: "",
       tags: "",
-      amount: "",
+      amount: ""
     };
   },
   methods: {
@@ -73,8 +73,9 @@ export default {
       // Gather data into an object to emit to the parent
       const incomeData = {
         description: this.description,
-        dateTime: `${this.dateInput}T${this.timeInput}`, // Combine date and time into a single DateTime string
+        date_time: `${this.dateInput}T${this.timeInput}`, // Combine date and time into a single DateTime string
         amount: parseFloat(this.amount), // Convert amount to a number
+        type: "",
       };
 
       // Only add tags to incomeData if tags input is not empty

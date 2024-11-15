@@ -36,6 +36,7 @@ export default {
       incomeData.tags = incomeData.tags || null;
       
       try {
+        incomeData.type = "income"
         const response = await axios.post(
           'http://localhost/api/addTransaction', // Use the correct URL with port if necessary
           incomeData, // Send incomeData directly

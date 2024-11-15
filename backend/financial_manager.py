@@ -20,8 +20,8 @@ router = APIRouter()
 
 # Define TransactionType Enum
 class TransactionType(Enum):
-    INCOME = "income"
-    EXPENSE = "expense"
+    income = "income"
+    expense = "expense"
 
 
 # Pydantic model for transaction data
@@ -45,7 +45,7 @@ def add_transaction(
         Transaction.amount == transaction_data.amount,
         Transaction.description == transaction_data.description,
         Transaction.date_time == transaction_data.date_time,
-        Transaction.type == transaction_data.type
+        Transaction.type == transaction_data.type.value
     ).first()
     
     if existing_transaction:
@@ -60,7 +60,7 @@ def add_transaction(
         amount=transaction_data.amount,
         description=transaction_data.description,
         date_time=transaction_data.date_time,
-        type=transaction_data.type
+        type=transaction_data.type.value
     )
     
     # Add and commit the transaction to the database
@@ -83,7 +83,7 @@ def get_transactions(
             Transaction.user_id == user.id,
             Transaction.date_time >= start_date,
             Transaction.date_time <= end_date,
-            Transaction.type == transaction_type
+            Transaction.type == transaction_type.value
         ).all()
         if not transactions:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No transactions found in this period"})

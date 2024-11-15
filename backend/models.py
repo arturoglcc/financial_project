@@ -47,7 +47,7 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     amount = Column(DECIMAL(10, 2), nullable=False)
     description = Column(Text, nullable=True)
-    date_time = Column(DateTime, nullable=False, default=datetime.utcnow)
+    date_time = Column(DateTime, nullable=False)
     type = Column(Enum(TransactionType), nullable=False)
 
     # Relationship with user and categories
