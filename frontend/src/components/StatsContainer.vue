@@ -73,23 +73,20 @@ export default {
           withCredentials: true, // Include credentials if authentication is required
         });
         this.lastIncome = incomeResponse.data.amount;
-        } catch (error) {
-        console.error("Error fetching stats:", error.response ? error.response.data : error.message);
-        // If the requests fail, set values to 0 as fallback
-        this.lastIncome = 0;
-        this.lastOutlay = 0;
-      } try {
+      } catch (error) {
+        console.error("Error fetching last income:", error.response ? error.response.data : error.message);
+        this.lastIncome = 0; // Set fallback value for income only
+      }
 
+      try {
         // Fetch last outlay (expense)
         const outlayResponse = await axios.get("http://localhost/api/lastExpense", {
           withCredentials: true, // Include credentials if authentication is required
         });
         this.lastOutlay = outlayResponse.data.amount;
       } catch (error) {
-        console.error("Error fetching stats:", error.response ? error.response.data : error.message);
-        // If the requests fail, set values to 0 as fallback
-        this.lastIncome = 0;
-        this.lastOutlay = 0;
+        console.error("Error fetching last outlay:", error.response ? error.response.data : error.message);
+        this.lastOutlay = 0; // Set fallback value for outlay only
       }
     },
   },
