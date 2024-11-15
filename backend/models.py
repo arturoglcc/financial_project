@@ -1,6 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date, DECIMAL, Text, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, DECIMAL, Text, Enum
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime
 import enum
 
 # Enum for transaction type
@@ -46,7 +47,7 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     amount = Column(DECIMAL(10, 2), nullable=False)
     description = Column(Text, nullable=True)
-    date = Column(Date, nullable=False)
+    date_time = Column(DateTime, nullable=False)
     type = Column(Enum(TransactionType), nullable=False)
 
     # Relationship with user and categories
@@ -68,8 +69,8 @@ class Debt(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     description = Column(Text, nullable=True)
     amount = Column(DECIMAL(10, 2), nullable=False)
-    date = Column(Date, nullable=True)
-    due_date = Column(Date, nullable=True)
+    date = Column(DateTime, nullable=True, default=datetime.utcnow)
+    due_date = Column(DateTime, nullable=True, default=datetime.utcnow)
     paid = Column(Boolean, default=False)
 
     # Relationship with user
@@ -81,7 +82,7 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     frequency = Column(Enum(ReportFrequency), default=ReportFrequency.monthly)
-    last_sent = Column(Date, nullable=True)
+    last_sent = Column(DateTime, nullable=True)
 
     # Relationship with user
     user = relationship("User", back_populates="reports")
