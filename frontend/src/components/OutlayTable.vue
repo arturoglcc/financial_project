@@ -47,59 +47,26 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-      outlays: [
-        {
-          id: 1,
-          tag: "",
-          type: "Outlay",
-          amount: 0.0,
-          date: "2021-05-19T10:10:00",
-          description: "",
-          isEditing: false
-        },
-        {
-          id: 2,
-          tag: "",
-          type: "Outlay",
-          amount: 0.0,
-          date: "2021-05-18T15:12:00",
-          description: "",
-          isEditing: false
-        },
-        {
-          id: 3,
-          tag: "",
-          type: "Outlay",
-          amount: 0.0,
-          date: "2021-05-17T14:15:00",
-          description: "",
-          isEditing: false
-        },
-        {
-          id: 4,
-          tag: "",
-          type: "Outlay",
-          amount: 0.0,
-          date: "2021-04-23T13:15:00",
-          description: "",
-          isEditing: false
-        },
-        {
-          id: 5,
-          tag: "",
-          type: "Outlay",
-          amount: 0.0,
-          date: "2021-04-20T13:15:00",
-          description: "",
-          isEditing: false
-        }
-      ]
+      outlays: [],
     };
   },
   methods: {
+    async fetchOutlays() {
+      try {
+        // Fetch incomes from the backend
+        const response = await axios.get("http://localhost/api/allExpenses", {
+          withCredentials: true, // Include credentials if authentication is required
+        });
+        this.outlays = response.data;
+      } catch (error) {
+        console.error("Error fetching outlays:", error.response ? error.response.data : error.message);
+      }
+    },
     formatCurrency(amount) {
       return `$ ${amount.toFixed(2)}`;
     },
@@ -127,8 +94,11 @@ export default {
     deleteOutlay(id) {
       this.outlays = this.outlays.filter(outlay => outlay.id !== id);
       console.log(`Deleted outlay with id: ${id}`);
-    }
-  }
+    },
+  },
+  mounted() {
+    this.fetchOutlays(); // Fetch data when the component is mounted
+  },
 };
 </script>
 

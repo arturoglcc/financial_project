@@ -3,7 +3,7 @@
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
-      <AddMovementsData title="Add income" @confirm-transaction="onConfirmIncome" />
+      <AddMovementsData title="Add income" @confirm-transaction="onConfirmIncome"/>
       <IncomeTable />
     </div>
   </div>

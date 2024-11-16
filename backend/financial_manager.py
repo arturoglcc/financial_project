@@ -206,3 +206,37 @@ def get_all_incomes(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching incomes.")
 
+@router.get("/allExpenses", status_code=200)
+def get_all_incomes(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get all expenses for the authenticated user, excluding tags.
+    """
+    try:
+        # Query all incomes for the user
+        expenses = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "expense"  # Filter only expenses
+        ).all()
+
+        if not expenses:
+            return {"message": "No expenses found."}
+
+        # Transform data to exclude tags
+        result = [
+            {
+                "id": expense.id,
+                "amount": expense.amount,
+                "description": expense.description,
+                "date_time": expense.date_time,
+                "type": expense.type
+            }
+            for expense in expenses
+        ]
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching expenses.")
