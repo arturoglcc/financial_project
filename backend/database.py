@@ -3,11 +3,13 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from urllib.parse import quote_plus
+from sqlalchemy.exc import OperationalError
+
 
 load_dotenv()
 
 # Retrieve environment variables
-DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_HOST = os.getenv("MYSQL_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("MYSQL_DATABASE", "financial_project_db")
 DB_USER = os.getenv("MYSQL_USER", "user")

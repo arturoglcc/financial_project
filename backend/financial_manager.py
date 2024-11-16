@@ -170,3 +170,39 @@ def get_last_expense(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while fetching the last expense."
         )
+
+@router.get("/allIncomes", status_code=200)
+def get_all_incomes(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get all incomes for the authenticated user, excluding tags.
+    """
+    try:
+        # Query all incomes for the user
+        incomes = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "income"  # Filter only incomes
+        ).all()
+
+        if not incomes:
+            return {"message": "No incomes found."}
+
+        # Transform data to exclude tags
+        result = [
+            {
+                "id": income.id,
+                "amount": income.amount,
+                "description": income.description,
+                "date_time": income.date_time,
+                "type": income.type
+            }
+            for income in incomes
+        ]
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching incomes.")
+

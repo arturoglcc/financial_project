@@ -32,6 +32,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.backend
     container_name: backend
+    ports:
+      - "8000:8000"
     expose:
       - "8000"
     depends_on:
