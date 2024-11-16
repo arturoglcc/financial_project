@@ -19,8 +19,8 @@
           <td>{{ income.type }}</td>
           <td><span v-if="!income.isEditing">{{ formatCurrency(income.amount) }}</span>
             <input v-else type="number" v-model="income.amount" /></td>
-          <td><span v-if="!income.isEditing">{{ formatDate(income.date) }}</span>
-            <input v-else type="datetime-local" v-model="income.date" /></td>
+          <td><span v-if="!income.isEditing">{{ formatDate(income.date_time) }}</span>
+            <input v-else type="datetime-local" v-model="income.date_time" /></td>
           <td><span v-if="!income.isEditing">{{ income.description || "-------------------------" }}</span>
             <input v-else v-model="income.description" /></td>
           <td>
@@ -84,7 +84,7 @@ export default {
       income.originalData = null;
     },
     confirmIncome(income) {
-      if (!income.tag || income.amount === null || !income.date || !income.description) {
+      if (!income.tag || income.amount === null || !income.date_time || !income.description) {
         alert("All fields must be filled out before confirming.");
         return;
       }

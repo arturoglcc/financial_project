@@ -19,8 +19,8 @@
           <td>{{ outlay.type }}</td>
           <td><span v-if="!outlay.isEditing">{{ formatCurrency(outlay.amount) }}</span>
             <input v-else type="number" v-model="outlay.amount" /></td>
-          <td><span v-if="!outlay.isEditing">{{ formatDate(outlay.date) }}</span>
-            <input v-else type="datetime-local" v-model="outlay.date" /></td>
+          <td><span v-if="!outlay.isEditing">{{ formatDate(outlay.date_time) }}</span>
+            <input v-else type="datetime-local" v-model="outlay.date_time" /></td>
           <td><span v-if="!outlay.isEditing">{{ outlay.description || "-------------------------" }}</span>
             <input v-else v-model="outlay.description" /></td>
           <td>
@@ -84,7 +84,7 @@ export default {
       outlay.originalData = null;
     },
     confirmOutlay(outlay) {
-      if (!outlay.tag || outlay.amount === null || !outlay.date || !outlay.description) {
+      if (!outlay.tag || outlay.amount === null || !outlay.date_time || !outlay.description) {
         alert("All fields must be filled out before confirming.");
         return;
       }
