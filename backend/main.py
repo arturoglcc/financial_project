@@ -19,5 +19,10 @@ app.add_middleware(
 # Initialize database
 init_db()
 
+# Define a root endpoint
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to the Financial Project API"}
+
 # Include the UserManagement router with the "/api" prefix
 app.include_router(auth_router, prefix="/api")

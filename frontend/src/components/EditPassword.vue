@@ -59,44 +59,72 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      password: "",
+      oldpassword: "",
       newPassword: "",
       confirmPassword: "",
       showPassword: false,
       showPassword2: false,
       showPassword3: false,
       isEditing: false,
+      passwordError: "",
+      successMessage: "",
     };
   },
-  methods: {
-    toggleEdit() {
-      this.isEditing = !this.isEditing;
-      this.password = "";
-      this.newPassword = "";
-      this.confirmPassword = "";
+  computed: {
+    isFormValid() {
+      return !this.passwordError;
     },
-   async confirmEdit() {
+  },
+  methods: {
+    validatePassword() {
       if (this.newPassword !== this.confirmPassword) {
-        alert("New password and confirmation do not match.");
-        return;
-    }
-
-    try {
-        const response = await axios.put(
-          '/api/change_password',
-          {
-            old_password: this.password,
-            new_password: this.newPassword,
-          },
-          { withCredentials: true }
-        );
-        alert(response.data.message);
-        this.isEditing = false;
-      } catch (error) {
-        alert(error.response?.data?.detail || "Error updating password.");
+        this.passwordError = "The new password and confirmation do not match.";
+	this.successMessage = "";
+      } else if (this.newPassword.length < 1) {
+        this.passwordError = "The password must be at least 1 characters.";
+	this.successMessage = "";
+      } else {
+        this.passwordError = "";
+	this.successMessage = "";
       }
     },
-    togglePassword() {
+    toggleEdit() {
+      this.isEditing = !this.isEditing;
+      this.oldPassword = "";
+      this.newPassword = "";
+      this.confirmPassword = "";
+      this.passwordError = "";
+      this.successMessage = "";
+    },
+    async confirmEdit() {
+      this.validatePassword();
+      if (!this.isFormValid) {
+        return;
+      }
+      
+      try {
+        const response = await axios.put('http://localhost/api/change_password', {
+	      old_password: this.oldPassword,
+	      new_password: this.newPassword
+	    },
+	    {
+	      withCredentials: true 
+	    }
+	);
+        if (response.status === 200){
+	   this.successMessage = "Password updated successfully";
+           this.passwordError = "";
+	   this.toggleEdit();
+	} else {
+	  console.error('Error updating password:', response.data);
+	  alert(response.data.detail || "Failed to update password.");
+	}
+      } catch (error) {
+        console.error('Error updating password:', error );
+        alert(error.response?.data?.detail || "An error ocurred whileupdating the password.");
+      }
+    },
+     togglePassword() {
       this.showPassword = !this.showPassword;
     },
     toggleNewPassword() {
@@ -106,7 +134,7 @@ export default {
       this.showPassword3 = !this.showPassword3;
     },
   },
-}
+};
 </script>
 
 <style scoped>
