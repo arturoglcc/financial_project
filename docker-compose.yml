@@ -22,7 +22,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USER} -p${MYSQL_PASSWORD}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u ${MYSQL_USER} -p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 1s
       retries: 5
@@ -84,4 +84,3 @@ volumes:
 networks:
   app-network:
     driver: bridge
-

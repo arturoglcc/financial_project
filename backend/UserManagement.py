@@ -12,7 +12,6 @@ from models import User
 from dotenv import load_dotenv
 import os
 from fastapi import Request
-from .auth import authenticate_user
 
 
 
@@ -221,10 +220,11 @@ async def logout_user(user: User = Depends(authenticate_user), db: Session = Dep
 
 class PasswordChangeRequest(BaseModel):
     old_password: str
-    new_password: constr(min_length=8)
+    new_password: constr(min_length=1)
 
 @router.put("/change_password")
 async def change_password(request: PasswordChangeRequest, user: User = Depends(authenticate_user), db: Session = Depends(get_db)):
+    
     #  Verify if the old password is correct
     if not bcrypt.checkpw(request.old_password.encode('utf-8'), user.password_hashed.encode('utf-8')):
         raise HTTPException(status_code=400, detail="Old password is incorrect")
@@ -237,6 +237,6 @@ async def change_password(request: PasswordChangeRequest, user: User = Depends(a
         db.commit()
         db.refresh(user)
         return {"message": "Password changed successfully"}
-    except Exception as e:
+    except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to update password")
