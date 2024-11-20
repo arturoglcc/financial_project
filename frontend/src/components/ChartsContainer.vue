@@ -12,12 +12,24 @@
     <div class="chart-item">
       <div ref="chartRefBottomRight" class="chart"></div>
     </div>
+
+
+    <!-- New Pie Charts -->
+    <div class="chart-item">
+      <div ref="chartRefPieIncome" class="chart"></div>
+    </div>
+    <div class="chart-item">
+      <div ref="chartRefPieExpense" class="chart"></div>
+    </div>
   </div>
+
+
 </template>
 
 <script>
 import { onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
+import axios from 'axios';
 
 export default {
   setup() {
@@ -25,6 +37,8 @@ export default {
     const chartRefRight = ref(null);
     const chartRefBottomLeft = ref(null);
     const chartRefBottomRight = ref(null);
+    const chartRefPieIncome = ref(null);
+    const chartRefPieExpense = ref(null);
 
     const generateRandomData = (points) => {
       return Array.from({ length: points }, () => Math.floor(Math.random() * 10000));
@@ -32,110 +46,166 @@ export default {
 
     const initChart = (chartRef, chartData) => {
       const chartInstance = echarts.init(chartRef);
+      chartInstance.setOption(chartData);
+      window.addEventListener('resize', () => {
+        chartInstance.resize();
+        });
+    };
 
+    const initPieChart = (chartRef, title, data) => {
+      const chartInstance = echarts.init(chartRef);
       const option = {
-        color: ['rgba(75, 192, 192, 1)', '#E70707'],
-        title: {
-          text: chartData.title,
-        },
-        tooltip: {
-          trigger: 'axis',
-        },
-        legend: {
-          data: ['Incomes', 'Outlays'],
-          left:chartData.legendLeft,
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: chartData.xAxisData,
-          axisPointer: { type: 'shadow' },
-          name: chartData.xAxisName,
-          nameLocation: 'center',
-          nameTextStyle: {
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fontSize: 15,
-            padding: 10,
-          },
-        },
-        yAxis: {
-          type: 'value',
-          name: 'Amount $',
-          nameLocation: 'center',
-          nameTextStyle: {
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fontSize: 15,
-            padding: 30,
-          },
-        },
+        title: { text: title, left: 'center' },
+        tooltip: { trigger: 'item' },
         series: [
           {
-            name: 'Incomes',
-            type: 'line',
-            data: chartData.yAxisDataIncome,
+            name: title,
+            type: 'pie',
+            radius: '50%',
+            data,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
           },
-          {
-            name: 'Outlays',
-            type: 'line',
-            data: chartData.yAxisDataOutlay,
-          }
         ],
-        grid: {
-          left: '10%',
-          right: '5%',
-          top: '10%',
-          bottom: '10%',
-        },
       };
-
       chartInstance.setOption(option);
       window.addEventListener('resize', () => {
         chartInstance.resize();
       });
     };
+    const fetchAndPreparePieChartData = async (url, chartRef, title) => {
+      try {
+        const response = await axios.get(url, {
+          withCredentials: true, // Include cookies or authentication headers
+        });
+        const items = response.data;
+
+        const tagCounts = items.reduce((acc, item) => {
+          item.tags.forEach((tag) => {
+            acc[tag] = (acc[tag] || 0) + 1;
+          });
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(tagCounts).map(([name, value]) => ({
+          name,
+          value,
+        }));
+
+        initPieChart(chartRef, title, chartData);
+     } catch (error) {
+        console.error(`Error fetching data for ${title}:`, error);
+        // Optional: Display a fallback chart or message
+        initPieChart(chartRef, title, []);
+      }
+    };
+
 
     onMounted(() => {
+      // Initialize line charts
       initChart(chartRefLeft.value, {
-        title: 'Movements per week',
-        legendLeft: 'center',
-        xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        yAxisDataIncome: generateRandomData(7),
-        yAxisDataOutlay: generateRandomData(7),
-        xAxisName: 'Days',
+        title: { text: 'Movements per week' },
+        legend: { left: 'center', data: ['Incomes', 'Outlays'] },
+        xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            name: 'Incomes',
+            type: 'line',
+            data: generateRandomData(7),
+            lineStyle: { color: 'rgba(75, 192, 192, 1)' }, 
+            itemStyle: { color: 'rgba(75, 192, 192, 1)' }, 
+          },
+          {
+            name: 'Outlays',
+            type: 'line',
+            data: generateRandomData(7),
+            lineStyle: { color: '#E70707' }, 
+            itemStyle: { color: '#E70707' },
+          },
+        ],
       });
+
       initChart(chartRefRight.value, {
-        title: 'Movements per fortnight',
-        legendLeft: '41%',
-        xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        yAxisDataIncome: generateRandomData(14),
-        yAxisDataOutlay: generateRandomData(14),
-        xAxisName: 'Days',
+        title: { text: 'Movements per fortnight' },
+        legend: { left: '41%', data: ['Incomes', 'Outlays'] },
+        xAxis: { type: 'category', data: Array.from({ length: 14 }, (_, i) => `Day ${i + 1}`) },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            name: 'Incomes',
+            type: 'line',
+            data: generateRandomData(14),
+            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
+            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
+          },
+          {
+            name: 'Outlays',
+            type: 'line',
+            data: generateRandomData(14),
+            lineStyle: { color: '#E70707' },
+            itemStyle: { color: '#E70707' },
+          },
+        ],
       });
+
       initChart(chartRefBottomLeft.value, {
-        title: 'Movements per month',
-        legendLeft: '37%',
-        xAxisData: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-        yAxisDataIncome: generateRandomData(4),
-        yAxisDataOutlay: generateRandomData(4),
-        xAxisName: 'Weeks',
+        title: { text: 'Movements per month' },
+        legend: { left: '37%', data: ['Incomes', 'Outlays'] },
+        xAxis: { type: 'category', data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'] },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            name: 'Incomes',
+            type: 'line',
+            data: generateRandomData(4),
+            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
+            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
+          },
+          {
+            name: 'Outlays',
+            type: 'line',
+            data: generateRandomData(4),
+            lineStyle: { color: '#E70707' },
+            itemStyle: { color: '#E70707' },
+          },
+        ],
       });
+
       initChart(chartRefBottomRight.value, {
-        title: 'Movements per year',
-        legendLeft: 'center',
-        xAxisData: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        yAxisDataIncome: generateRandomData(12),
-        yAxisDataOutlay: generateRandomData(12),
-        xAxisName: 'Months',
+        title: { text: 'Movements per year' },
+        legend: { left: 'center', data: ['Incomes', 'Outlays'] },
+        xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            name: 'Incomes',
+            type: 'line',
+            data: generateRandomData(12),
+            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
+            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
+          },
+          {
+            name: 'Outlays',
+            type: 'line',
+            data: generateRandomData(12),
+            lineStyle: { color: '#E70707' },
+            itemStyle: { color: '#E70707' },
+          },
+        ],
       });
+
+      // Initialize pie charts
+      fetchAndPreparePieChartData('http://localhost/api/allIncomes', chartRefPieIncome.value, 'Income Tags Distribution');
+      fetchAndPreparePieChartData('http://localhost/api/allExpenses', chartRefPieExpense.value, 'Expense Tags Distribution');
     });
 
-    return { chartRefLeft, chartRefRight, chartRefBottomLeft, chartRefBottomRight };
+    return { chartRefLeft, chartRefRight, chartRefBottomLeft, chartRefBottomRight, chartRefPieIncome, chartRefPieExpense };
   },
 };
 </script>
