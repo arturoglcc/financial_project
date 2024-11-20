@@ -18,12 +18,12 @@
 
           // Start date: midnight of one day ago
           const start_date = new Date();
-          start_date.setDate(start_date.getDate() - 1); // One day ago
+          start_date.setHours(0, 0, 0, 0);
 
           // End date: midnight of today
-          const end_date = new Date();
-          end_date.setDate(start_date.getDate() + 1)
-
+          const end_date = new Date(start_date);
+          end_date.setDate(end_date.getDate() + 1); // Move to the next day
+          end_date.setHours(0, 0, 0, 0);
 
           // Helper function to construct the URL with query parameters
           function buildUrl(baseUrl, params) {
@@ -84,6 +84,10 @@
             const date = new Date(transaction.date_time);
             const hour = date.getHours(); // Extract the hour
             result[hour] += parseFloat(transaction.amount); // Add the amount to the correct hour
+            transactions.forEach((transaction) => {
+              const date = new Date(transaction.date_time);
+              console.log('Transaction Time:', date.toString(), 'Hour:', date.getHours());
+            });
           });
           return result;
         };
@@ -111,11 +115,8 @@
       const generateLabels = () => {
         const labels = [];
         const now = new Date();
-        for (let i = 23; i >= 0; i--) {
-          const date = new Date(now);
-          date.setHours(now.getHours() - i);
-          const label = `${date.getHours()}:00`;
-          labels.push(label);
+        for (let i = 0; i < 24; i++) {
+          labels.push(`${i}:00`); // Label each hour (0:00 to 23:00)
         }
         return labels;
       };
