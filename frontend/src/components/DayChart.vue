@@ -5,18 +5,100 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
+  import { onMounted, ref } from 'vue';
+  import * as echarts from 'echarts';
 
-export default {
-  setup() {
-    const chartRef = ref(null);
+  export default {
+    setup() {
+      const chartRef = ref(null);
+      const data = ref({ incomes: Array(24).fill(0), outlays: Array(24).fill(0) });
 
-    const generateRandomData = (points) => {
-      return Array.from({ length: points }, () => Math.floor(Math.random() * 10000));
-    };
+      const fetchTransactions = async () => {
+        try {
+          const currentTime = new Date();
+          const oneDayAgo = new Date(currentTime.getTime() - 24 * 60 * 60 * 1000);
+
+
+          // Helper function to construct the URL with query parameters
+          function buildUrl(baseUrl, params) {
+            const url = new URL(baseUrl);
+            Object.keys(params).forEach(key => {
+              url.searchParams.append(key, params[key]);
+            });
+            return url.toString();
+          }
+
+          // Fetch incomes
+          const fetchIncomes = async () => {
+            const incomesUrl = buildUrl('http://localhost/api/transactions', {
+              start_date: oneDayAgo.toISOString(),
+              end_date: currentTime.toISOString(),
+              transaction_type: 'income',
+            });
+
+          const incomesResponse = await fetch(incomesUrl, {
+            method: 'GET',
+            credentials: 'include', // Include credentials if required
+          });
+
+          if (!incomesResponse.ok) {
+            throw new Error(`Error fetching incomes: ${incomesResponse.statusText}`);
+          }
+
+          return incomesResponse.json();
+        };
+
+        // Fetch outlays
+        const fetchOutlays = async () => {
+          const outlaysUrl = buildUrl('http://localhost/api/transactions', {
+            start_date: oneDayAgo.toISOString(),
+            end_date: currentTime.toISOString(),
+            transaction_type: 'expense',
+          });
+
+          const outlaysResponse = await fetch(outlaysUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+            credentials: 'include', // Include credentials if required
+          });
+
+          if (!outlaysResponse.ok) {
+            throw new Error(`Error fetching outlays: ${outlaysResponse.statusText}`);
+          }
+
+          return outlaysResponse.json();
+        };
+
+         // Process transactions to map amounts to hours
+        const processTransactions = (transactions) => {
+          const result = Array(24).fill(0); // Initialize an array for 24 hours
+          transactions.forEach((transaction) => {
+            const date = new Date(transaction.date_time);
+            const hour = date.getHours(); // Extract the hour
+            result[hour] += parseFloat(transaction.amount); // Add the amount to the correct hour
+          });
+          return result;
+        };
+
+        // Fetch both incomes and outlays
+        const [incomes, outlays] = await Promise.all([fetchIncomes(), fetchOutlays()]);
+        data.value = {
+          incomes: processTransactions(incomes),
+          outlays: processTransactions(outlays),
+        };
+      } catch (error) {
+          console.error('Error fetching transactions:', error);
+          data.value = { incomes: Array(24).fill(0), outlays: Array(24).fill(0) }; // Default fallback
+        }
+      };
 
     const initChart = () => {
+      if (!data) {
+        console.error('Chart initialization error: data is undefined.');
+        return;
+      }
       const chartInstance = echarts.init(chartRef.value);
 
       const option = {
@@ -63,12 +145,12 @@ export default {
           {
             name: 'Incomes',
             type: 'line',
-            data: generateRandomData(25),
+            data: data.value.incomes,
           },
           {
             name: 'Outlays',
             type: 'line',
-            data: generateRandomData(25),
+            data: data.value.outlays,
           }
         ],
         grid: {
@@ -85,7 +167,8 @@ export default {
       });
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      await fetchTransactions();
       initChart();
     });
 

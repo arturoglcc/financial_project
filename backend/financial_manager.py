@@ -70,14 +70,20 @@ def add_transaction(
 
     return {"message": "Transaction added successfully", "transaction_id": new_transaction.id}
 
+
+
 @router.get("/transactions", response_model=list[TransactionCreate])
 def get_transactions(
-   start_date: datetime,
-   end_date: datetime,
+    start_date: datetime,
+    end_date: datetime,
     transaction_type: TransactionType,
     db: Session = Depends(get_db),
     user: User = Depends(authenticate_user)
 ):
+
+ # Debug logs
+    print(f"Received request with start_date={start_date}, end_date={end_date}, transaction_type={transaction_type}")
+    print(f"Authenticated user: {user.id}")
     try:
         transactions = db.query(Transaction).filter(
             Transaction.user_id == user.id,
@@ -88,7 +94,19 @@ def get_transactions(
         if not transactions:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No transactions found in this period"})
         
-        return transactions
+        # Convert to Pydantic model with `type` as a string
+        result = [
+            TransactionCreate(
+                amount=transaction.amount,
+                description=transaction.description,
+                date_time=transaction.date_time,
+                tags=None,  # Add tags if available
+                type=transaction.type.value
+            )
+            for transaction in transactions
+        ]
+
+        return result
 
     except SQLAlchemyError as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error occurred")
