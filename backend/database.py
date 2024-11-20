@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from urllib.parse import quote_plus
 from sqlalchemy.exc import OperationalError
@@ -20,11 +20,34 @@ DATABASE_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PO
 
 print("Constructed DATABASE_URL:", DATABASE_URL)
 
+def create_database_if_not_exists():
+    # Extract the database name from the URL
+    base_url = DATABASE_URL.rsplit('/', 1)[0]  # Get everything before the database name
+    database_name = DATABASE_URL.rsplit('/', 1)[-1]  # Get the database name
+
+    # Connect to the MySQL server without specifying a database
+    engine = create_engine(base_url)
+    try:
+        # Connect and check if the database exists
+        with engine.connect() as connection:
+            result = connection.execute(
+                text(f"SHOW DATABASES LIKE '{database_name}'")
+            ).fetchone()
+            if not result:
+                print(f"Database '{database_name}' does not exist. Creating...")
+                connection.execute(text(f"CREATE DATABASE {database_name}"))
+                print(f"Database '{database_name}' created successfully.")
+    except OperationalError as e:
+        print(f"Error connecting to the database server: {e}")
+    finally:
+        engine.dispose()
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def init_db():
+    create_database_if_not_exists()
     retries = 5
     while retries > 0:
         try:

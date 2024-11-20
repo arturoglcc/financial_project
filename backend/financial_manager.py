@@ -49,10 +49,38 @@ def add_transaction(
     ).first()
     
     if existing_transaction:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="An identical transaction already exists"
-        )
+        # Get existing tags
+        existing_tags = {tc.category.name for tc in existing_transaction.categories}
+        incoming_tags = set(transaction_data.tags or [])
+
+        # Check if tags are identical
+        if existing_tags == incoming_tags:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="An identical transaction with the same tags already exists"
+            )
+        
+        # Add new tags to the existing transaction
+        new_tags = incoming_tags - existing_tags
+        for tag in new_tags:
+            category = db.query(Category).filter(Category.name == tag).first()
+            if not category:
+                # Create the category if it doesn't exist
+                category = Category(name=tag)
+                db.add(category)
+                db.flush()
+
+            # Link the new tag to the existing transaction
+            transaction_category = TransactionCategory(
+                transaction_id=existing_transaction.id,
+                category_id=category.id
+            )
+            db.add(transaction_category)
+
+        db.commit()
+        db.refresh(existing_transaction)
+        return {"message": "Tags updated successfully", "transaction_id": existing_transaction.id}
+
 
     # Create a new transaction
     new_transaction = Transaction(
