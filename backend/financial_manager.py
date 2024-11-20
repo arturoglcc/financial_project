@@ -7,7 +7,7 @@ from pydantic import  BaseModel
 from decimal import Decimal
 from datetime import datetime, timedelta
 from database import SessionLocal, get_db
-from models import User, Transaction
+from models import User, Transaction, Category, TransactionCategory
 import os
 from fastapi import Request
 from UserManagement import authenticate_user
@@ -62,6 +62,24 @@ def add_transaction(
         date_time=transaction_data.date_time,
         type=transaction_data.type.value
     )
+
+    # Handle categories (tags)
+    if transaction_data.tags:
+        for tag in transaction_data.tags:
+            # Check if the category exists
+            category = db.query(Category).filter(Category.name == tag).first()
+            if not category:
+                # Create the category if it doesn't exist
+                category = Category(name=tag)
+                db.add(category)
+                db.flush()  # Flush to get the new category ID immediately
+
+            # Link the category to the transaction
+            transaction_category = TransactionCategory(
+                transaction=new_transaction,
+                category=category
+            )
+            db.add(transaction_category)
     
     # Add and commit the transaction to the database
     db.add(new_transaction)
@@ -207,17 +225,17 @@ def get_all_incomes(
         if not incomes:
             return {"message": "No incomes found."}
 
-        # Transform data to exclude tags
-        result = [
-            {
+        result = []
+        for income in incomes:
+            tags = [tc.category.name for tc in income.categories]  # Fetch related tags
+            result.append({
                 "id": income.id,
                 "amount": income.amount,
                 "description": income.description,
                 "date_time": income.date_time,
-                "type": income.type
-            }
-            for income in incomes
-        ]
+                "type": income.type,
+                "tags": tags
+            })
 
         return result
 
@@ -243,18 +261,20 @@ def get_all_incomes(
             return {"message": "No expenses found."}
 
         # Transform data to exclude tags
-        result = [
-            {
+        result = []
+        for expense in expenses:
+            tags = [tc.category.name for tc in expense.categories]  # Fetch related tags
+            result.append({
                 "id": expense.id,
                 "amount": expense.amount,
                 "description": expense.description,
                 "date_time": expense.date_time,
-                "type": expense.type
-            }
-            for expense in expenses
-        ]
+                "type": expense.type,
+                "tags": tags
+            })
 
         return result
+
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expenses.")

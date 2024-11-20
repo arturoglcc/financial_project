@@ -40,6 +40,8 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), unique=True, nullable=False)
 
+    transactions = relationship("TransactionCategory", back_populates="category")
+
 
 class Transaction(Base):
     __tablename__ = "transactions"
@@ -61,7 +63,7 @@ class TransactionCategory(Base):
 
     # Transaction and category relationships
     transaction = relationship("Transaction", back_populates="categories")
-    category = relationship("Category")
+    category = relationship("Category", back_populates="transactions")
 
 class Debt(Base):
     __tablename__ = "debts"

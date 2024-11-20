@@ -14,8 +14,19 @@
       </thead>
       <tbody>
         <tr v-for="income in incomes" :key="income.id">
-          <td><span v-if="!income.isEditing">{{ income.tag }}</span>
-            <input v-else v-model="income.tag" /></td>
+          <td>
+            <span v-if="!income.isEditing">
+            <!-- Display tags as a comma-separated list -->
+            {{ income.tags && income.tags.length ? income.tags.join(", ") : "No tags" }}
+            </span>
+          <div v-else>
+            <input
+              v-model="income.tagsString"
+              placeholder="Comma-separated tags"
+              @input="updateTags(income)"
+            />
+          </div>
+          </td>
           <td>{{ income.type }}</td>
           <td><span v-if="!income.isEditing">{{ formatCurrency(income.amount) }}</span>
             <input v-else type="number" v-model="income.amount" /></td>
@@ -62,10 +73,18 @@ export default {
         const response = await axios.get("http://localhost/api/allIncomes", {
           withCredentials: true, // Include credentials if authentication is required
         });
-        this.incomes = response.data;
+        this.incomes = response.data.map(income => ({
+          ...income,
+          tagsString: income.tags ? income.tags.join(", ") : "", // String format for editing
+          isEditing: false,
+        }));
       } catch (error) {
         console.error("Error fetching incomes:", error.response ? error.response.data : error.message);
       }
+    },
+    updateTags(income) {
+      // Update tags array based on the input string
+      income.tags = income.tagsString.split(",").map(tag => tag.trim());
     },
     formatCurrency(amount) {
       return `$ ${amount.toFixed(2)}`;

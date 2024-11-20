@@ -18,7 +18,7 @@
 
           // Start date: midnight of one day ago
           const start_date = new Date();
-          start_date.setDate(start_date.getDate() - 2); // One day ago
+          start_date.setDate(start_date.getDate() - 1); // One day ago
 
           // End date: midnight of today
           const end_date = new Date();

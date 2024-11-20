@@ -14,8 +14,19 @@
       </thead>
       <tbody>
         <tr v-for="outlay in outlays" :key="outlay.id">
-          <td><span v-if="!outlay.isEditing">{{ outlay.tag }}</span>
-            <input v-else v-model="outlay.tag" /></td>
+          <td>
+            <span v-if="!outlay.isEditing">
+            <!-- Display tags as a comma-separated list -->
+            {{ outlay.tags && outlay.tags.length ? outlay.tags.join(", ") : "No tags" }}
+            </span>
+          <div v-else>
+            <input
+              v-model="outlay.tagsString"
+              placeholder="Comma-separated tags"
+              @input="updateTags(outlay)"
+            />
+          </div>
+          </td>
           <td>{{ outlay.type }}</td>
           <td><span v-if="!outlay.isEditing">{{ formatCurrency(outlay.amount) }}</span>
             <input v-else type="number" v-model="outlay.amount" /></td>
@@ -62,10 +73,18 @@ export default {
         const response = await axios.get("http://localhost/api/allExpenses", {
           withCredentials: true, // Include credentials if authentication is required
         });
-        this.outlays = response.data;
+        this.outlays = response.data.map(expense => ({
+          ...expense,
+          tagsString: expense.tags ? expense.tags.join(", ") : "", // String format for editing
+          isEditing: false,
+        }));
       } catch (error) {
-        console.error("Error fetching outlays:", error.response ? error.response.data : error.message);
+        console.error("Error fetching outlay:", error.response ? error.response.data : error.message);
       }
+    },
+    updateTags(outlay) {
+      // Update tags array based on the input string
+      outlay.tags = outlay.tagsString.split(",").map(tag => tag.trim());
     },
     formatCurrency(amount) {
       return `$ ${amount.toFixed(2)}`;
