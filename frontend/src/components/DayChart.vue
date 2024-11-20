@@ -15,8 +15,14 @@
 
       const fetchTransactions = async () => {
         try {
-          const currentTime = new Date();
-          const oneDayAgo = new Date(currentTime.getTime() - 24 * 60 * 60 * 1000);
+
+          // Start date: midnight of one day ago
+          const start_date = new Date();
+          start_date.setDate(start_date.getDate() - 2); // One day ago
+
+          // End date: midnight of today
+          const end_date = new Date();
+          end_date.setDate(start_date.getDate() + 1)
 
 
           // Helper function to construct the URL with query parameters
@@ -31,8 +37,8 @@
           // Fetch incomes
           const fetchIncomes = async () => {
             const incomesUrl = buildUrl('http://localhost/api/transactions', {
-              start_date: oneDayAgo.toISOString(),
-              end_date: currentTime.toISOString(),
+              start_date: start_date.toISOString(),
+              end_date: end_date.toISOString(),
               transaction_type: 'income',
             });
 
@@ -51,8 +57,8 @@
         // Fetch outlays
         const fetchOutlays = async () => {
           const outlaysUrl = buildUrl('http://localhost/api/transactions', {
-            start_date: oneDayAgo.toISOString(),
-            end_date: currentTime.toISOString(),
+            start_date: start_date.toISOString(),
+            end_date: end_date.toISOString(),
             transaction_type: 'expense',
           });
 
@@ -101,6 +107,19 @@
       }
       const chartInstance = echarts.init(chartRef.value);
 
+      // Generate labels for the last 24 hours
+      const generateLabels = () => {
+        const labels = [];
+        const now = new Date();
+        for (let i = 23; i >= 0; i--) {
+          const date = new Date(now);
+          date.setHours(now.getHours() - i);
+          const label = `${date.getHours()}:00`;
+          labels.push(label);
+        }
+        return labels;
+      };
+
       const option = {
         color: ['rgba(75, 192, 192, 1)', '#E70707'],
         title: {
@@ -119,7 +138,7 @@
         },
         xAxis: {
           type: 'category',
-          data: ['0:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'],
+          data: generateLabels(),
           axisPointer: { type: 'shadow' },
           name: 'Hours',
           nameLocation: 'center',
