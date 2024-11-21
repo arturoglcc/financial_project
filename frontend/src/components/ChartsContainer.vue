@@ -13,7 +13,6 @@
       <div ref="chartRefBottomRight" class="chart"></div>
     </div>
 
-
     <!-- New Pie Charts -->
     <div class="chart-item">
       <div ref="chartRefPieIncome" class="chart"></div>
@@ -22,8 +21,6 @@
       <div ref="chartRefPieExpense" class="chart"></div>
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -46,38 +43,76 @@ export default {
 
     const initChart = (chartRef, chartData) => {
       const chartInstance = echarts.init(chartRef);
-      chartInstance.setOption(chartData);
-      window.addEventListener('resize', () => {
-        chartInstance.resize();
-        });
-    };
 
-    const initPieChart = (chartRef, title, data) => {
-      const chartInstance = echarts.init(chartRef);
-      const option = {
-        title: { text: title, left: 'center' },
-        tooltip: { trigger: 'item' },
-        series: [
-          {
-            name: title,
-            type: 'pie',
-            radius: '50%',
-            data,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)',
+      let option;
+      if (chartData.type == 'pie') {
+        option = {
+          title: { text: chartData.title, left: 'center', },
+          tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)', },
+          legend: { orient: 'vertical', left: 'left', },
+          toolbox: { feature: { saveAsImage: {} } },
+          series: [
+            {
+              name: chartData.seriesName,
+              type: 'pie',
+              radius: '50%',
+              data: chartData.seriesData,
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+                },
               },
             },
+          ],
+        };
+      } else {
+        option = {
+          color: ['rgba(75, 192, 192, 1)', '#E70707'],
+          title: { text: chartData.title, },
+          tooltip: { trigger: 'axis', valueFormatter: (value) => '$ ' + value, },
+          legend: { data: ['Incomes', 'Outlays'], left: chartData.legendLeft, icon: 'circle', },
+          toolbox: { feature: { magicType: { type: ['line', 'bar'] }, restore: {}, saveAsImage: {} } },
+          xAxis: {
+            type: 'category',
+            data: chartData.xAxisData,
+            axisPointer: { type: 'shadow' },
+            name: chartData.xAxisName,
+            nameLocation: 'center',
+            nameTextStyle: { fontStyle: 'italic', fontWeight: 'bold', fontSize: 15, padding: 10, },
           },
-        ],
-      };
+          yAxis: {
+            type: 'value',
+            name: 'Amount $',
+            nameLocation: 'center',
+            nameTextStyle: { fontStyle: 'italic', fontWeight: 'bold', fontSize: 15, padding: 40, },
+            axisLabel: { formatter: '$ {value}', }
+          },
+          series: [
+            {
+              name: 'Incomes',
+              type: 'line',
+              emphasis: { focus: 'series' },
+              data: chartData.yAxisDataIncome,
+            },
+            {
+              name: 'Outlays',
+              type: 'line',
+              emphasis: { focus: 'series' },
+              data: chartData.yAxisDataOutlay,
+            }
+          ],
+          grid: { left: '12%', right: '5%', top: '10%', bottom: '10%', },
+        };
+      }
+
       chartInstance.setOption(option);
       window.addEventListener('resize', () => {
         chartInstance.resize();
       });
     };
+
     const fetchAndPreparePieChartData = async (url, chartRef, title) => {
       try {
         const response = await axios.get(url, {
@@ -97,107 +132,60 @@ export default {
           value,
         }));
 
-        initPieChart(chartRef, title, chartData);
-     } catch (error) {
+        initChart(chartRef, {
+          type: 'pie',
+          title,
+          seriesName: title,
+          seriesData: chartData,
+        });
+      } catch (error) {
         console.error(`Error fetching data for ${title}:`, error);
         // Optional: Display a fallback chart or message
-        initPieChart(chartRef, title, []);
+        initChart(chartRef, {
+          type: 'pie',
+          title,
+          seriesName: title,
+          seriesData: [],
+        });
       }
     };
-
 
     onMounted(() => {
       // Initialize line charts
       initChart(chartRefLeft.value, {
-        title: { text: 'Movements per week' },
-        legend: { left: 'center', data: ['Incomes', 'Outlays'] },
-        xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            name: 'Incomes',
-            type: 'line',
-            data: generateRandomData(7),
-            lineStyle: { color: 'rgba(75, 192, 192, 1)' }, 
-            itemStyle: { color: 'rgba(75, 192, 192, 1)' }, 
-          },
-          {
-            name: 'Outlays',
-            type: 'line',
-            data: generateRandomData(7),
-            lineStyle: { color: '#E70707' }, 
-            itemStyle: { color: '#E70707' },
-          },
-        ],
+        title: 'Movements per week',
+        legendLeft: 'center',
+        xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        yAxisDataIncome: generateRandomData(7),
+        yAxisDataOutlay: generateRandomData(7),
+        xAxisName: 'Days',
       });
 
       initChart(chartRefRight.value, {
-        title: { text: 'Movements per fortnight' },
-        legend: { left: '41%', data: ['Incomes', 'Outlays'] },
-        xAxis: { type: 'category', data: Array.from({ length: 14 }, (_, i) => `Day ${i + 1}`) },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            name: 'Incomes',
-            type: 'line',
-            data: generateRandomData(14),
-            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
-            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
-          },
-          {
-            name: 'Outlays',
-            type: 'line',
-            data: generateRandomData(14),
-            lineStyle: { color: '#E70707' },
-            itemStyle: { color: '#E70707' },
-          },
-        ],
+        title: 'Movements per fortnight',
+        legendLeft: '41%',
+        xAxisData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        yAxisDataIncome: generateRandomData(14),
+        yAxisDataOutlay: generateRandomData(14),
+        xAxisName: 'Days',
       });
 
       initChart(chartRefBottomLeft.value, {
-        title: { text: 'Movements per month' },
-        legend: { left: '37%', data: ['Incomes', 'Outlays'] },
-        xAxis: { type: 'category', data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'] },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            name: 'Incomes',
-            type: 'line',
-            data: generateRandomData(4),
-            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
-            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
-          },
-          {
-            name: 'Outlays',
-            type: 'line',
-            data: generateRandomData(4),
-            lineStyle: { color: '#E70707' },
-            itemStyle: { color: '#E70707' },
-          },
-        ],
+        title: 'Movements per month',
+        legendLeft: '37%',
+        xAxisData: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        yAxisDataIncome: generateRandomData(4),
+        yAxisDataOutlay: generateRandomData(4),
+        xAxisName: 'Weeks',
       });
 
       initChart(chartRefBottomRight.value, {
-        title: { text: 'Movements per year' },
-        legend: { left: 'center', data: ['Incomes', 'Outlays'] },
-        xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            name: 'Incomes',
-            type: 'line',
-            data: generateRandomData(12),
-            lineStyle: { color: 'rgba(75, 192, 192, 1)' },
-            itemStyle: { color: 'rgba(75, 192, 192, 1)' },
-          },
-          {
-            name: 'Outlays',
-            type: 'line',
-            data: generateRandomData(12),
-            lineStyle: { color: '#E70707' },
-            itemStyle: { color: '#E70707' },
-          },
-        ],
+        title: 'Movements per year',
+        legendLeft: 'center',
+        xAxisData: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        yAxisDataIncome: generateRandomData(12),
+        yAxisDataOutlay: generateRandomData(12),
+        xAxisName: 'Months',
       });
 
       // Initialize pie charts

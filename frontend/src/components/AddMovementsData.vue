@@ -25,7 +25,7 @@
 
         <!-- Tags Field -->
         <div class="form-control">
-          <input type="text" v-model="tags">
+          <input type="text" required v-model="tags">
           <label>
             <span style="transition-delay:0ms">T</span><span style="transition-delay:50ms">a</span><span style="transition-delay:100ms">g</span><span style="transition-delay:150ms">s</span>
           </label>
