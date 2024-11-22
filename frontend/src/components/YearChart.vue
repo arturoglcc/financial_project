@@ -1,43 +1,41 @@
 <template>
-  <div class="chart-container">
-    <div ref="chartRef" class="chart"></div>
-  </div>
+  <div ref="chartRef"></div>
 </template>
 
 <script>
-  import { onMounted, ref } from 'vue';
-  import * as echarts from 'echarts';
+import { onMounted, ref } from 'vue';
+import * as echarts from 'echarts';
 
-  export default {
-    setup() {
-      const chartRef = ref(null);
-      const data = ref({ incomes: Array(12).fill(0), outlays: Array(12).fill(0) });
+export default {
+  setup() {
+    const chartRef = ref(null);
+    const data = ref({ incomes: Array(12).fill(0), outlays: Array(12).fill(0) });
 
-      const fetchTransactions = async () => {
-        try {
-          const start_date = new Date();
-          start_date.setFullYear(start_date.getFullYear() - 1);
-          start_date.setMonth(0, 1);
-          start_date.setHours(0, 0, 0, 0);
+    const fetchTransactions = async () => {
+      try {
+        const start_date = new Date();
+        start_date.setFullYear(start_date.getFullYear() - 1);
+        start_date.setMonth(0, 1);
+        start_date.setHours(0, 0, 0, 0);
 
-          const end_date = new Date();
+        const end_date = new Date();
 
-          // Helper functions y lógica para fetch (igual que en DayChart.vue)
-	    function buildUrl(baseUrl, params) {
-            const url = new URL(baseUrl);
-            Object.keys(params).forEach(key => {
-              url.searchParams.append(key, params[key]);
-            });
-            return url.toString();
-          }
+        // Helper functions y lógica para fetch (igual que en DayChart.vue)
+        function buildUrl(baseUrl, params) {
+          const url = new URL(baseUrl);
+          Object.keys(params).forEach(key => {
+            url.searchParams.append(key, params[key]);
+          });
+          return url.toString();
+        }
 
-          // Fetch incomes
-          const fetchIncomes = async () => {
-            const incomesUrl = buildUrl('http://localhost/api/transactions', {
-              start_date: start_date.toISOString(),
-              end_date: end_date.toISOString(),
-              transaction_type: 'income',
-            });
+        // Fetch incomes
+        const fetchIncomes = async () => {
+          const incomesUrl = buildUrl('http://localhost/api/transactions', {
+            start_date: start_date.toISOString(),
+            end_date: end_date.toISOString(),
+            transaction_type: 'income',
+          });
 
           const incomesResponse = await fetch(incomesUrl, {
             method: 'GET',
@@ -74,76 +72,81 @@
           return outlaysResponse.json();
         };
 
-          const processTransactions = (transactions) => {
-            const result = Array(12).fill(0);
-            transactions.forEach((transaction) => {
-              const date = new Date(transaction.date_time);
-              const month = date.getMonth(); 
-              result[month] += parseFloat(transaction.amount);
-            });
-            return result;
-          };
-
-          const [incomes, outlays] = await Promise.all([fetchIncomes(), fetchOutlays()]);
-          data.value = {
-            incomes: processTransactions(incomes),
-            outlays: processTransactions(outlays),
-          };
-        } catch (error) {
-          console.error('Error fetching transactions:', error);
-        }
-      };
-
-      const initChart = () => {
-        const chartInstance = echarts.init(chartRef.value);
-
-        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        const option = {
-          title: { text: 'Movements per Year' },
-          xAxis: {
-            type: 'category',
-            data: labels,
-            axisPointer: { type: 'shadow' },
-          },
-          yAxis: {
-            type: 'value',
-            name: 'Amount $',
-          },
-          series: [
-            { name: 'Incomes', type: 'line', data: data.value.incomes },
-            { name: 'Outlays', type: 'line', data: data.value.outlays },
-          ],
+        const processTransactions = (transactions) => {
+          const result = Array(12).fill(0);
+          transactions.forEach((transaction) => {
+            const date = new Date(transaction.date_time);
+            const month = date.getMonth();
+            result[month] += parseFloat(transaction.amount);
+          });
+          return result;
         };
 
-        chartInstance.setOption(option);
-        window.addEventListener('resize', () => {
-          chartInstance.resize();
-        });
+        const [incomes, outlays] = await Promise.all([fetchIncomes(), fetchOutlays()]);
+        data.value = {
+          incomes: processTransactions(incomes),
+          outlays: processTransactions(outlays),
+        };
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      }
+    };
+
+    const initChart = () => {
+      const chartInstance = echarts.init(chartRef.value);
+
+      const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const option = {
+        color: ['rgba(75, 192, 192, 1)', '#E70707'],
+        title: { text: 'Movements per Year' },
+        tooltip: { trigger: 'axis', valueFormatter: (value) => '$ ' + value, },
+        legend: { data: ['Incomes', 'Outlays'], icon: 'circle', },
+        toolbox: { feature: { magicType: { type: ['line', 'bar'] }, restore: {}, saveAsImage: {} } },
+        xAxis: {
+          type: 'category',
+          data: labels,
+          axisPointer: { type: 'shadow' },
+          name: 'Months',
+          nameLocation: 'center',
+          nameTextStyle: { fontStyle: 'italic', fontWeight: 'bold', fontSize: 15, padding: 10, },
+        },
+        yAxis: {
+          type: 'value',
+          name: 'Amount $',
+          nameLocation: 'center',
+          nameTextStyle: { fontStyle: 'italic', fontWeight: 'bold', fontSize: 15, padding: 40, },
+          axisLabel: { formatter: '$ {value}', },
+        },
+        series: [
+          {
+            name: 'Incomes',
+            type: 'line',
+            emphasis: { focus: 'series' },
+            data: data.value.incomes
+          },
+          {
+            name: 'Outlays',
+            type: 'line',
+            emphasis: { focus: 'series' },
+            data: data.value.outlays
+          },
+        ],
+        grid: { left: '12%', right: '5%', top: '10%', bottom: '10%', },
       };
 
-      onMounted(async () => {
-        await fetchTransactions();
-        initChart();
+      chartInstance.setOption(option);
+      window.addEventListener('resize', () => {
+        chartInstance.resize();
       });
+    };
 
-      return { chartRef };
-    },
-  };
+    onMounted(async () => {
+      await fetchTransactions();
+      initChart();
+    });
+
+    return { chartRef };
+  },
+};
 </script>
-
-<style scoped>
-.chart-container {
-  display: flex;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.chart {
-  flex: 1;
-  height: 400px;
-}
-</style>
