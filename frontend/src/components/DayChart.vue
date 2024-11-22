@@ -128,12 +128,16 @@
         },
         tooltip: {
           trigger: 'axis',
+          valueFormatter: (value) => '$ ' + value,
         },
         legend: {
           data: ['Incomes', 'Outlays'],
+          icon: 'circle',
         },
         toolbox: {
           feature: {
+            magicType: { type: ['line', 'bar'] },
+            restore: {},
             saveAsImage: {}
           }
         },
@@ -158,24 +162,33 @@
             fontStyle: 'italic',
             fontWeight: 'bold',
             fontSize: 15,
-            padding: 30,
+            padding: 40,
+          },
+          axisLabel: {
+            formatter: '$ {value}'
           },
         },
         series: [
           {
             name: 'Incomes',
             type: 'line',
+            emphasis: {
+              focus: 'series'
+            },
             data: data.value.incomes,
           },
           {
             name: 'Outlays',
             type: 'line',
+            emphasis: {
+              focus: 'series'
+            },
             data: data.value.outlays,
           }
         ],
         grid: {
-          left: '5%',
-          right: '5%',
+          left: '6%',
+          right: '2.5%',
           top: '10%',
           bottom: '10%',
         },
