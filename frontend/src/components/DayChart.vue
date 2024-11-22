@@ -5,116 +5,118 @@
 </template>
 
 <script>
-  import { onMounted, ref } from 'vue';
-  import * as echarts from 'echarts';
+import { onMounted, ref } from 'vue';
+import * as echarts from 'echarts';
 
-  export default {
-    setup() {
-      const chartRef = ref(null);
-      const data = ref({ incomes: Array(24).fill(0), outlays: Array(24).fill(0) });
+export default {
+  setup() {
+    const chartRef = ref(null);
+    const data = ref({ incomes: Array(24).fill(0), outlays: Array(24).fill(0) });
 
-      const fetchTransactions = async () => {
-        try {
+    const fetchTransactions = async () => {
+      // Start date: midnight of one day ago
+      const start_date = new Date();
+      start_date.setHours(0, 0, 0, 0);
 
-          // Start date: midnight of one day ago
-          const start_date = new Date();
-          start_date.setHours(0, 0, 0, 0);
+      // End date: midnight of today
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + 1); // Move to the next day
+      end_date.setHours(0, 0, 0, 0);
 
-          // End date: midnight of today
-          const end_date = new Date(start_date);
-          end_date.setDate(end_date.getDate() + 1); // Move to the next day
-          end_date.setHours(0, 0, 0, 0);
+      // Helper function to construct the URL with query parameters
+      function buildUrl(baseUrl, params) {
+        const url = new URL(baseUrl);
+        Object.keys(params).forEach((key) => {
+          url.searchParams.append(key, params[key]);
+        });
+        return url.toString();
+      }
 
-          // Helper function to construct the URL with query parameters
-          function buildUrl(baseUrl, params) {
-            const url = new URL(baseUrl);
-            Object.keys(params).forEach(key => {
-              url.searchParams.append(key, params[key]);
-            });
-            return url.toString();
-          }
+      let incomes = [];
+      let outlays = [];
 
-          // Fetch incomes
-          const fetchIncomes = async () => {
-            const incomesUrl = buildUrl('http://localhost/api/transactions', {
-              start_date: start_date.toISOString(),
-              end_date: end_date.toISOString(),
-              transaction_type: 'income',
-            });
+      // Fetch incomes
+      try {
+        const incomesUrl = buildUrl('http://localhost/api/transactions', {
+          start_date: start_date.toISOString(),
+          end_date: end_date.toISOString(),
+          transaction_type: 'income',
+        });
 
-          const incomesResponse = await fetch(incomesUrl, {
-            method: 'GET',
-            credentials: 'include', // Include credentials if required
-          });
+        const incomesResponse = await fetch(incomesUrl, {
+          method: 'GET',
+          credentials: 'include', // Include credentials if required
+        });
 
-          if (!incomesResponse.ok) {
-            throw new Error(`Error fetching incomes: ${incomesResponse.statusText}`);
-          }
-
-          return incomesResponse.json();
-        };
-
-        // Fetch outlays
-        const fetchOutlays = async () => {
-          const outlaysUrl = buildUrl('http://localhost/api/transactions', {
-            start_date: start_date.toISOString(),
-            end_date: end_date.toISOString(),
-            transaction_type: 'expense',
-          });
-
-          const outlaysResponse = await fetch(outlaysUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-            },
-            credentials: 'include', // Include credentials if required
-          });
-
-          if (!outlaysResponse.ok) {
-            throw new Error(`Error fetching outlays: ${outlaysResponse.statusText}`);
-          }
-
-          return outlaysResponse.json();
-        };
-
-         // Process transactions to map amounts to hours
-        const processTransactions = (transactions) => {
-          const result = Array(24).fill(0); // Initialize an array for 24 hours
-          transactions.forEach((transaction) => {
-            const date = new Date(transaction.date_time);
-            const hour = date.getHours(); // Extract the hour
-            result[hour] += parseFloat(transaction.amount); // Add the amount to the correct hour
-            transactions.forEach((transaction) => {
-              const date = new Date(transaction.date_time);
-              console.log('Transaction Time:', date.toString(), 'Hour:', date.getHours());
-            });
-          });
-          return result;
-        };
-
-        // Fetch both incomes and outlays
-        const [incomes, outlays] = await Promise.all([fetchIncomes(), fetchOutlays()]);
-        data.value = {
-          incomes: processTransactions(incomes),
-          outlays: processTransactions(outlays),
-        };
-      } catch (error) {
-          console.error('Error fetching transactions:', error);
-          data.value = { incomes: Array(24).fill(0), outlays: Array(24).fill(0) }; // Default fallback
+        if (!incomesResponse.ok) {
+          throw new Error(`Error fetching incomes: ${incomesResponse.statusText}`);
         }
+
+        const incomesData = await incomesResponse.json();
+        incomes = incomesData.map((transaction) => ({
+          hour: new Date(transaction.date_time).getHours(),
+          amount: parseFloat(transaction.amount),
+        }));
+      } catch (error) {
+        console.error('Error fetching incomes:', error);
+      }
+
+      // Fetch outlays
+      try {
+        const outlaysUrl = buildUrl('http://localhost/api/transactions', {
+          start_date: start_date.toISOString(),
+          end_date: end_date.toISOString(),
+          transaction_type: 'expense',
+        });
+
+        const outlaysResponse = await fetch(outlaysUrl, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+          credentials: 'include', // Include credentials if required
+        });
+
+        if (!outlaysResponse.ok) {
+          throw new Error(`Error fetching outlays: ${outlaysResponse.statusText}`);
+        }
+
+        const outlaysData = await outlaysResponse.json();
+        outlays = outlaysData.map((transaction) => ({
+          hour: new Date(transaction.date_time).getHours(),
+          amount: parseFloat(transaction.amount),
+        }));
+      } catch (error) {
+        console.error('Error fetching outlays:', error);
+      }
+
+      // Process data into a format suitable for the chart
+      const processTransactions = (transactions) => {
+        const result = Array(24).fill(0); // Initialize an array for 24 hours
+        transactions.forEach((transaction) => {
+          result[transaction.hour] += transaction.amount;
+        });
+        return result;
       };
 
+      // Update data
+      data.value = {
+        incomes: processTransactions(incomes),
+        outlays: processTransactions(outlays),
+      };
+    };
+
     const initChart = () => {
-      if (!data) {
-        console.error('Chart initialization error: data is undefined.');
+      if (!chartRef.value) {
+        console.error('Chart initialization error: chartRef is undefined.');
         return;
       }
+
       const chartInstance = echarts.init(chartRef.value);
 
       // Generate labels for the last 24 hours
       const generateLabels = () => {
         const labels = [];
-        const now = new Date();
         for (let i = 0; i < 24; i++) {
           labels.push(`${i}:00`); // Label each hour (0:00 to 23:00)
         }
@@ -138,8 +140,8 @@
           feature: {
             magicType: { type: ['line', 'bar'] },
             restore: {},
-            saveAsImage: {}
-          }
+            saveAsImage: {},
+          },
         },
         xAxis: {
           type: 'category',
@@ -165,7 +167,7 @@
             padding: 40,
           },
           axisLabel: {
-            formatter: '$ {value}'
+            formatter: '$ {value}',
           },
         },
         series: [
@@ -173,18 +175,18 @@
             name: 'Incomes',
             type: 'line',
             emphasis: {
-              focus: 'series'
+              focus: 'series',
             },
-            data: data.value.incomes,
+            data: data.value.incomes.length ? data.value.incomes : Array(24).fill(0),
           },
           {
             name: 'Outlays',
             type: 'line',
             emphasis: {
-              focus: 'series'
+              focus: 'series',
             },
-            data: data.value.outlays,
-          }
+            data: data.value.outlays.length ? data.value.outlays : Array(24).fill(0),
+          },
         ],
         grid: {
           left: '6%',
@@ -195,6 +197,8 @@
       };
 
       chartInstance.setOption(option);
+
+      // Handle window resize to make the chart responsive
       window.addEventListener('resize', () => {
         chartInstance.resize();
       });
@@ -209,6 +213,7 @@
   },
 };
 </script>
+
 
 <style scoped>
 .chart-container {
