@@ -306,3 +306,64 @@ def get_all_incomes(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expenses.")
+
+@router.get("/incomesTags", status_code=200)
+def get_incomes_tags(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get total income amounts grouped by tags for the authenticated user.
+    """
+    try:
+        incomes = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "income"
+        ).all()
+
+        if not incomes:
+            return {"message": "No incomes found."}
+
+        tag_totals = {}
+        for income in incomes:
+            tags = [tc.category.name for tc in income.categories]
+            for tag in tags:
+                if tag not in tag_totals:
+                    tag_totals[tag] = 0
+                tag_totals[tag] += income.amount
+
+        return [{"tag": tag, "total": total} for tag, total in tag_totals.items()]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching income tags.")
+
+@router.get("/expensesTags", status_code=200)
+def get_expenses_tags(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get total expense amounts grouped by tags for the authenticated user.
+    """
+    try:
+        expenses = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "expense"
+        ).all()
+
+        if not expenses:
+            return {"message": "No expenses found."}
+
+        tag_totals = {}
+        for expense in expenses:
+            tags = [tc.category.name for tc in expense.categories]
+            for tag in tags:
+                if tag not in tag_totals:
+                    tag_totals[tag] = 0
+                tag_totals[tag] += expense.amount
+
+        return [{"tag": tag, "total": total} for tag, total in tag_totals.items()]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching expense tags.")
+

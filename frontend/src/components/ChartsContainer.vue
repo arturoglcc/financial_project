@@ -75,23 +75,36 @@ export default {
     };
 
     const fetchAndPreparePieChartData = async (url, chartRef, title) => {
-      try {
-        const response = await axios.get(url, {
-          withCredentials: true, // Include cookies or authentication headers
-        });
-        const items = response.data;
+  try {
+    const response = await axios.get(url, {
+      withCredentials: true, // Include cookies or authentication headers
+    });
+    const items = response.data;
 
-        const tagCounts = items.reduce((acc, item) => {
-          item.tags.forEach((tag) => {
-            acc[tag] = (acc[tag] || 0) + 1;
-          });
-          return acc;
-        }, {});
+    // Create the chart data from the backend response
+    const chartData = items.map(item => ({
+      name: item.tag,
+      value: item.total,
+    }));
 
-        const chartData = Object.entries(tagCounts).map(([name, value]) => ({
-          name,
-          value,
-        }));
+    initChart(chartRef, {
+      type: 'pie',
+      title,
+      seriesName: title,
+      seriesData: chartData,
+    });
+  } catch (error) {
+    console.error(`Error fetching data for ${title}:`, error);
+    // Optional: Display a fallback chart or message
+    initChart(chartRef, {
+      type: 'pie',
+      title,
+      seriesName: title,
+      seriesData: [],
+    });
+  }
+};
+
 
         initChart(chartRef, {
           type: 'pie',
@@ -112,10 +125,11 @@ export default {
     };
 
     onMounted(() => {
-      // Initialize pie charts
-      fetchAndPreparePieChartData('http://localhost/api/allIncomes', chartRefPieIncome.value, 'Income Tags Distribution');
-      fetchAndPreparePieChartData('http://localhost/api/allExpenses', chartRefPieExpense.value, 'Expense Tags Distribution');
-    });
+  // Initialize pie charts with new endpoints
+  fetchAndPreparePieChartData('http://localhost/api/incomesTags', chartRefPieIncome.value, 'Income Tags Distribution');
+  fetchAndPreparePieChartData('http://localhost/api/expensesTags', chartRefPieExpense.value, 'Expense Tags Distribution');
+});
+
 
     return { chartRefPieIncome, chartRefPieExpense };
   },
