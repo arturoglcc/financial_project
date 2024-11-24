@@ -59,7 +59,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      oldpassword: "",
+      password: "",
       newPassword: "",
       confirmPassword: "",
       showPassword: false,
@@ -104,7 +104,7 @@ export default {
       
       try {
         const response = await axios.put('http://localhost/api/change_password', {
-	      old_password: this.oldPassword,
+	      old_password: this.password,
 	      new_password: this.newPassword
 	    },
 	    {
