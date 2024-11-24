@@ -307,6 +307,7 @@ def get_all_incomes(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expenses.")
 
+
 @router.get("/incomesTags", status_code=200)
 def get_incomes_tags(
     db: Session = Depends(get_db),
@@ -366,4 +367,3 @@ def get_expenses_tags(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
-
