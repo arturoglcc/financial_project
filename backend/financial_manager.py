@@ -330,10 +330,15 @@ def get_incomes_tags(
             tags = [tc.category.name for tc in income.categories]
             for tag in tags:
                 if tag not in tag_totals:
-                    tag_totals[tag] = 0
-                tag_totals[tag] += income.amount
+                    tag_totals[tag] = {"value": 0, "connections": []}
+                tag_totals[tag]["value"] += income.amount
+                tag_totals[tag]["connections"].extend(
+                    [t for t in tags if t != tag]
+                )
 
-        return [{"tag": tag, "total": total} for tag, total in tag_totals.items()]
+        return [{"tag": tag, "total": data["value"], "connections": data["connections"]} for tag, data in tag_totals.items()]
+
+
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching income tags.")
@@ -360,10 +365,15 @@ def get_expenses_tags(
             tags = [tc.category.name for tc in expense.categories]
             for tag in tags:
                 if tag not in tag_totals:
-                    tag_totals[tag] = 0
-                tag_totals[tag] += expense.amount
+                    tag_totals[tag] = {"value": 0, "connections": []}
+                tag_totals[tag]["value"] += expense.amount
+                tag_totals[tag]["connections"].extend(
+                    [t for t in tags if t != tag]
+                )
 
-        return [{"tag": tag, "total": total} for tag, total in tag_totals.items()]
+        return [{"tag": tag, "total": data["value"], "connections": data["connections"]} for tag, data in tag_totals.items()]
+
+
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
