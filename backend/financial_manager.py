@@ -325,19 +325,25 @@ def get_incomes_tags(
         if not incomes:
             return {"message": "No incomes found."}
 
-        tag_totals = {}
-        for income in incomes:
-            tags = [tc.category.name for tc in income.categories]
-            for tag in tags:
-                if tag not in tag_totals:
-                    tag_totals[tag] = {"value": 0, "connections": []}
-                tag_totals[tag]["value"] += income.amount
-                tag_totals[tag]["connections"].extend(
-                    [t for t in tags if t != tag]
-                )
+        # Use a flat dictionary to store relationships
+        tag_relationships = {}
 
-        return [{"tag": tag, "total": data["value"], "connections": data["connections"]} for tag, data in tag_totals.items()]
+        # Process transactions
+        for transaction in incomes:
+            # Get sorted tags for consistency
+            tags = sorted([tc.category.name for tc in transaction.categories])
+            amount = transaction.amount
 
+            # Create a unique key for the combination of tags
+            tags_key = ", ".join(tags)
+
+            # Add or update the total for this combination
+            if tags_key not in tag_relationships:
+                tag_relationships[tags_key] = 0
+
+            tag_relationships[tags_key] += amount
+
+        return tag_relationships
 
 
     except Exception as e:
@@ -360,19 +366,24 @@ def get_expenses_tags(
         if not expenses:
             return {"message": "No expenses found."}
 
-        tag_totals = {}
-        for expense in expenses:
-            tags = [tc.category.name for tc in expense.categories]
-            for tag in tags:
-                if tag not in tag_totals:
-                    tag_totals[tag] = {"value": 0, "connections": []}
-                tag_totals[tag]["value"] += expense.amount
-                tag_totals[tag]["connections"].extend(
-                    [t for t in tags if t != tag]
-                )
+        tag_relationships = {}
 
-        return [{"tag": tag, "total": data["value"], "connections": data["connections"]} for tag, data in tag_totals.items()]
+        # Process transactions
+        for transaction in expenses:
+            # Get sorted tags for consistency
+            tags = sorted([tc.category.name for tc in transaction.categories])
+            amount = transaction.amount
 
+            # Create a unique key for the combination of tags
+            tags_key = ", ".join(tags)
+
+            # Add or update the total for this combination
+            if tags_key not in tag_relationships:
+                tag_relationships[tags_key] = 0
+
+            tag_relationships[tags_key] += amount
+
+        return tag_relationships
 
 
     except Exception as e:
