@@ -4,7 +4,7 @@
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
       <AddMovementsData title="Add income" @confirm-transaction="onConfirmIncome"/>
-      <IncomeTable />
+      <IncomeTable ref="incomeTable" />
     </div>
   </div>
 </template>
@@ -46,6 +46,7 @@ export default {
           }
         );
         console.log("Transaction added successfully:", response.data);
+        this.$refs.incomeTable.fetchIncomes();
       } catch (error) {
         console.error("Error adding transaction:", error.response ? error.response.data : error.message);
       }
