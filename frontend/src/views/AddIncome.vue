@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       menuOpen: false,
+      incomes: [],
     };
   },
   methods: {
@@ -46,10 +47,22 @@ export default {
           }
         );
         console.log("Transaction added successfully:", response.data);
+	this.fetchIncomeData();
       } catch (error) {
         console.error("Error adding transaction:", error.response ? error.response.data : error.message);
       }
     },
+
+    fetchIncomeData() {
+    // Fetch income data again (could use axios or other methods depending on your logic)
+    axios.get('http://localhost/api/getIncomes')
+      .then(response => {
+        this.incomes = response.data;
+      })
+      .catch(error => {
+        console.error("Error fetching income data:", error.response ? error.response.data : error.message);
+      });
+  },
   },
 };
 </script>

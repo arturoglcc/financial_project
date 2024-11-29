@@ -85,6 +85,12 @@ export default {
 
       // Emit the data to the parent
       this.$emit("confirm-transaction", incomeData);
+
+      this.description = "";
+      this.dateInput = "";
+      this.timeInput = "";
+      this.tags = "";
+      this.amount = "";
     },
   },
 };

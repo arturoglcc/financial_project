@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       menuOpen: false,
+      outlays: [],
     };
   },
   methods: {
@@ -46,10 +47,24 @@ export default {
           }
         );
         console.log("Transaction added successfully:", response.data);
+	this.loadOutlayTable();
       } catch (error) {
         console.error("Error adding transaction:", error.response ? error.response.data : error.message);
       }
     },
+    async loadOutlayTable() {
+      try {
+        const response = await axios.get('http://localhost/api/getOutlays');
+        this.outlays = response.data;  // Actualizar el estado de incomes con la respuesta del servidor
+      } catch (error) {
+        console.error("Error fetching outlay data:", error.message);
+      }
+    },
+  },
+  
+  mounted() {
+    // Al montar el componente, cargar los ingresos
+    this.loadOutlayTable();
   },
 };
 </script>
