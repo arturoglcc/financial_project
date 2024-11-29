@@ -69,6 +69,10 @@ export default {
   },
   methods: {
     handleConfirm() {
+      if (!this.description || !this.dateInput || !this.timeInput || !this.amount) {
+        alert("All fields must be filled out.");
+        return;
+      }
       console.log("A transaction has been sent");
       // Gather data into an object to emit to the parent
       const incomeData = {
@@ -85,7 +89,6 @@ export default {
 
       // Emit the data to the parent
       this.$emit("confirm-transaction", incomeData);
-
       this.description = "";
       this.dateInput = "";
       this.timeInput = "";

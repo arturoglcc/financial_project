@@ -4,7 +4,7 @@
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
       <AddMovementsData title="Add outlay" @confirm-transaction="onConfirmOutlay" />
-      <OutlayTable />
+      <OutlayTable ref="outlayTable" />
     </div>
   </div>
 </template>
@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       menuOpen: false,
-      outlays: [],
     };
   },
   methods: {
@@ -46,25 +45,12 @@ export default {
             withCredentials: true, // Include credentials if required
           }
         );
+        this.$refs.outlayTable.fetchOutlays();
         console.log("Transaction added successfully:", response.data);
-	this.loadOutlayTable();
       } catch (error) {
         console.error("Error adding transaction:", error.response ? error.response.data : error.message);
       }
     },
-    async loadOutlayTable() {
-      try {
-        const response = await axios.get('http://localhost/api/getOutlays');
-        this.outlays = response.data;  // Actualizar el estado de incomes con la respuesta del servidor
-      } catch (error) {
-        console.error("Error fetching outlay data:", error.message);
-      }
-    },
-  },
-  
-  mounted() {
-    // Al montar el componente, cargar los ingresos
-    this.loadOutlayTable();
   },
 };
 </script>
