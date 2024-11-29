@@ -4,7 +4,7 @@
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
       <AddMovementsData title="Add outlay" @confirm-transaction="onConfirmOutlay" />
-      <OutlayTable />
+      <OutlayTable ref="outlayTable" />
     </div>
   </div>
 </template>
@@ -45,6 +45,7 @@ export default {
             withCredentials: true, // Include credentials if required
           }
         );
+        this.$refs.outlayTable.fetchOutlays();
         console.log("Transaction added successfully:", response.data);
       } catch (error) {
         console.error("Error adding transaction:", error.response ? error.response.data : error.message);
