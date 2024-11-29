@@ -107,6 +107,21 @@ export default {
       this.isFormA = isFormA;
     },
     handleConfirm() {
+      if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount) {
+        alert("All fields must be filled out.");
+        return;
+      }
+      const newDebt = {
+        id: Date.now(),
+        creditor: this.creditor,
+        type: "Debt",
+        months: "-",
+        amount: parseFloat(this.amount),
+        date: `${this.dateInput}T${this.timeInput}`,
+        description: this.description,
+        isEditing: false
+      };
+      this.$emit('add-debt', newDebt);
       this.description = "";
       this.dateInput = "";
       this.creditor = "";
@@ -114,6 +129,21 @@ export default {
       this.amount = "";
     },
     handleConfirmCredit() {
+      if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit) {
+        alert("All fields must be filled out.");
+        return;
+      }
+      const newDebt = {
+        id: Date.now(),
+        creditor: this.creditorCredit,
+        type: "Credit",
+        months: this.isInterestFree ? this.interestCredit : "-",
+        amount: parseFloat(this.amountCredit),
+        date: `${this.dateInputCredit}T${this.timeInputCredit}`,
+        description: this.descriptionCredit,
+        isEditing: false
+      };
+      this.$emit('add-debt', newDebt);
       this.descriptionCredit = "";
       this.dateInputCredit = "";
       this.interestCredit = "";

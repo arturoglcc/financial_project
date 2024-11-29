@@ -3,8 +3,8 @@
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
-      <AddDebtData />
-      <DebtTable />
+      <AddDebtData @add-debt="updateDebts" />
+      <DebtTable ref="debtTable" />
     </div>
   </div>
 </template>
@@ -29,6 +29,9 @@ export default {
   methods: {
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
+    },
+    updateDebts(newDebt) {
+      this.$refs.debtTable.addDebt(newDebt);
     },
   },
 };
