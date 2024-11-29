@@ -13,10 +13,11 @@ export default {
 
     const fetchTransactions = async () => {
       const start_date = new Date();
-      start_date.setDate(start_date.getDate() - 15); // 15 days ago
+      start_date.setDate(start_date.getDate() - 14); // 15 days ago
       start_date.setHours(0, 0, 0, 0);
 
       const end_date = new Date(); // Current date
+      end_date.setHours(23, 59, 59)
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {

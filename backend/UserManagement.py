@@ -8,7 +8,7 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 from database import SessionLocal, get_db
-from models import User
+from models import User, Transaction
 from dotenv import load_dotenv
 import os
 from fastapi import Request
@@ -240,3 +240,23 @@ async def change_password(request: PasswordChangeRequest, user: User = Depends(a
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to update password")
+
+@router.delete("/deleteIncome/{income_id}")
+async def delete_income(income_id: int, db: Session = Depends(get_db)):
+    try:
+        # Get the transaction to delete
+        income = db.query(Transaction).filter(Transaction.id == income_id).first()
+        
+        if not income:
+            raise HTTPException(status_code=404, detail="Income not found")
+        
+        # Delete the transaction
+        db.delete(income)
+        db.commit()
+        
+        return {"message": "Income deleted successfully"}
+    
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database error")
+

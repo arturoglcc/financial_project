@@ -12,11 +12,19 @@ export default {
     const data = ref({ incomes: Array(7).fill(0), outlays: Array(7).fill(0) });
 
     const fetchTransactions = async () => {
-      const start_date = new Date();
-      start_date.setDate(start_date.getDate() - 7); // Start from 7 days ago
-      start_date.setHours(0, 0, 0, 0);
+      const currentDate = new Date();
+const currentDay = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+let start_date = new Date(currentDate); // Initialize start_date to today
+let end_date = new Date(currentDate); // Initialize end_date to today
 
-      const end_date = new Date(); // Current date and time
+
+  const diffToSunday = currentDay === 0 ? 0 : currentDay; // Adjust for Sunday being day 0
+  start_date.setDate(currentDate.getDate() - diffToSunday); // Start date is Sunday
+  end_date.setDate(currentDate.getDate() + (6 - currentDay)); // End date is the upcoming Saturday
+
+// Set the hours of start_date to 00:00 and end_date to 23:59
+start_date.setHours(0, 0, 0, 0);
+end_date.setHours(23, 59, 59, 999);
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {

@@ -111,9 +111,20 @@ export default {
       console.log(`Confirmed income with id: ${income.id}`);
     },
     deleteIncome(id) {
-      this.incomes = this.incomes.filter(income => income.id !== id);
-      console.log(`Deleted income with id: ${id}`);
-    },
+  // Make an API call to the backend to delete the income
+  axios.delete(`http://localhost/api/deleteIncome/${id}`, {
+    withCredentials: true, // Include credentials if needed for authentication
+  })
+  .then((response) => {
+    // If deletion was successful, filter out the deleted income from the local state
+    this.incomes = this.incomes.filter(income => income.id !== id);
+    console.log(`Deleted income with id: ${id}`);
+  })
+  .catch((error) => {
+    console.error("Error deleting income:", error.response ? error.response.data : error.message);
+  });
+}
+
   },
   mounted() {
     this.fetchIncomes(); // Fetch data when the component is mounted

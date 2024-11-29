@@ -13,11 +13,14 @@ export default {
 
     const fetchTransactions = async () => {
       const start_date = new Date();
-      start_date.setFullYear(start_date.getFullYear() - 1); // Start of the last year
+      start_date.setFullYear(start_date.getFullYear()); // Start of the last year
       start_date.setMonth(0, 1); // January 1st
       start_date.setHours(0, 0, 0, 0);
 
-      const end_date = new Date(); // Current date and time
+      const end_date = new Date(); 
+      end_date.setFullYear(end_date.getFullYear());
+      end_date.setMonth(11,31)
+      end_date.setHours(23, 59, 59)
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {
