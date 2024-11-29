@@ -8,6 +8,7 @@ import AddIncome from "./views/AddIncome.vue";
 import AddOutlay from "./views/AddOutlay.vue";
 import Graphs from "./views/Graphs.vue";
 import AddDebt from "./views/AddDebt.vue";
+import History from "./views/History.vue";
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
     path: "/add-debt",
     name: "Add Debt",
     component: AddDebt,
+  },
+  {
+    path: "/history",
+    name: "History",
+    component: History,
   },
 ];
 
