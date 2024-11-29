@@ -48,7 +48,7 @@
         </svg>
       </div>
     </router-link>
-    <a href="#" class="add-card light">
+    <router-link to="/add-debt" class="add-card light">
       <div class="add-title">
         Add <br> debt
       </div>
@@ -71,7 +71,7 @@
           <rect width="24" height="24" fill="currentColor" mask="url(#lineMdPlusSquareFilled0)" />
         </svg>
       </div>
-    </a>
+    </router-link>
   </div>
 </template>
 

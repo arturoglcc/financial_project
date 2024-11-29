@@ -7,6 +7,7 @@ import ChangePassword from "./views/ChangePassword.vue";
 import AddIncome from "./views/AddIncome.vue";
 import AddOutlay from "./views/AddOutlay.vue";
 import Graphs from "./views/Graphs.vue";
+import AddDebt from "./views/AddDebt.vue";
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: "/graphs",
     name: "Graphs",
     component: Graphs,
+  },
+  {
+    path: "/add-debt",
+    name: "Add Debt",
+    component: AddDebt,
   },
 ];
 
