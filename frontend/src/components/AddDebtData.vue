@@ -54,6 +54,12 @@
           <label for="timeInputCredit">Time</label>
           <input class="input-date-time" type="time" id="timeInputCredit" v-model="timeInputCredit" required />
         </div>
+        <div class="form-control">
+          <input type="text" required v-model="creditorCredit">
+          <label>
+            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
+          </label>
+        </div>
         <div class="form-control amount-centered">
           <input type="float" required v-model="amountCredit">
           <label>
@@ -93,6 +99,7 @@ export default {
       timeInputCredit: "",
       interestCredit: "",
       amountCredit: "",
+      creditorCredit: "",
     };
   },
   methods: {
@@ -112,6 +119,7 @@ export default {
       this.interestCredit = "";
       this.timeInputCredit = "";
       this.amountCredit = "";
+      this.creditorCredit = "";
       this.isInterestFree = false;
     },
   },
@@ -194,6 +202,7 @@ export default {
   cursor: pointer;
   font-weight: 500;
   line-height: 20px;
+  margin-left: 23px;
 }
 
 .form-control input[type="number"]:disabled {
