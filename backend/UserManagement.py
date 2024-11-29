@@ -260,3 +260,49 @@ async def delete_income(income_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail="Database error")
 
+
+
+@router.put("/editTransaction/{transaction_id}")
+async def edit_transaction(transaction_id: int, updated_data: dict, db: Session = Depends(get_db)):
+    try:
+        # Fetch the transaction to edit
+        transaction = db.query(Transaction).filter(Transaction.id == transaction_id).first()
+        
+        if not transaction:
+            raise HTTPException(status_code=404, detail="Transaction not found")
+        
+        # Update the transaction fields
+        if 'amount' in updated_data:
+            transaction.amount = updated_data['amount']
+        if 'description' in updated_data:
+            transaction.description = updated_data['description']
+        if 'date_time' in updated_data:
+            transaction.date_time = updated_data['date_time']
+        
+        # Update the categories (tags) by removing old ones and adding new ones
+        if 'categories' in updated_data:
+            # Clear old categories first
+            db.query(TransactionCategory).filter(TransactionCategory.transaction_id == transaction_id).delete()
+            db.commit()  # Commit changes to remove old categories
+
+            for category_name in updated_data['categories']:
+                # Check if category already exists
+                category = db.query(Category).filter(Category.name == category_name).first()
+                
+                if not category:
+                    # Create a new category if it doesn't exist
+                    category = Category(name=category_name)
+                    db.add(category)
+                    db.commit()  # Commit to save the new category in the database
+                
+                # Create a new TransactionCategory entry for the transaction-category relationship
+                new_transaction_category = TransactionCategory(transaction_id=transaction_id, category_id=category.id)
+                db.add(new_transaction_category)
+            
+        # Commit all the changes to the database
+        db.commit()
+        return {"message": "Transaction updated successfully"}
+    
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while updating the transaction")

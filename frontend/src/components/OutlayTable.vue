@@ -102,18 +102,51 @@ export default {
       outlay.isEditing = false;
       outlay.originalData = null;
     },
-    confirmOutlay(outlay) {
-      if (!outlay.tag || outlay.amount === null || !outlay.date_time || !outlay.description) {
-        alert("All fields must be filled out before confirming.");
-        return;
-      }
-      outlay.isEditing = false;
-      console.log(`Confirmed outlay with id: ${outlay.id}`);
-    },
+    async confirmOutlay(outlay) {
+  if (!outlay.tags || outlay.amount === null || !outlay.date_time || !outlay.description) {
+    alert("All fields must be filled out before confirming.");
+    return;
+  }
+
+  // Prepare the updated transaction data
+  const updatedOutlay = {
+    id: outlay.id,
+    tags: outlay.tags,
+    amount: outlay.amount,
+    date_time: outlay.date_time,
+    description: outlay.description,
+  };
+
+  try {
+    const response = await axios.put(
+      `http://localhost/api/editTransaction/${outlay.id}`,
+      updatedOutlay,
+      { withCredentials: true }
+    );
+
+    // On success, update the outlay in the local state
+    Object.assign(outlay, updatedOutlay); // Update the outlay with new data
+    outlay.isEditing = false;
+    console.log(`Outlay updated successfully: ${response.data}`);
+  } catch (error) {
+    console.error("Error updating outlay:", error.response ? error.response.data : error.message);
+  }
+}
+,
     deleteOutlay(id) {
-      this.outlays = this.outlays.filter(outlay => outlay.id !== id);
-      console.log(`Deleted outlay with id: ${id}`);
-    },
+  axios.delete(`http://localhost/api/deleteIncome/${id}`, {
+    withCredentials: true, // Include credentials if needed
+  })
+  .then(response => {
+    // Successfully deleted from the backend, remove from local data
+    this.outlays = this.outlays.filter(outlay => outlay.id !== id);
+    console.log(`Deleted outlay with id: ${id}`);
+  })
+  .catch(error => {
+    console.error("Error deleting outlay:", error.response ? error.response.data : error.message);
+  });
+}
+
   },
   mounted() {
     this.fetchOutlays(); // Fetch data when the component is mounted

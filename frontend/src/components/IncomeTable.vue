@@ -102,14 +102,37 @@ export default {
       income.isEditing = false;
       income.originalData = null;
     },
-    confirmIncome(income) {
-      if (!income.tag || income.amount === null || !income.date_time || !income.description) {
-        alert("All fields must be filled out before confirming.");
-        return;
-      }
-      income.isEditing = false;
-      console.log(`Confirmed income with id: ${income.id}`);
-    },
+    async confirmIncome(income) {
+  if (!income.tags || income.amount === null || !income.date_time || !income.description) {
+    alert("All fields must be filled out before confirming.");
+    return;
+  }
+
+  // Prepare the updated transaction data
+  const updatedIncome = {
+    id: income.id,
+    tags: income.tags,
+    amount: income.amount,
+    date_time: income.date_time,
+    description: income.description,
+  };
+
+  try {
+    const response = await axios.put(
+      `http://localhost/api/editTransaction/${income.id}`,
+      updatedIncome,
+      { withCredentials: true }
+    );
+
+    // On success, update the income in the local state
+    Object.assign(income, updatedIncome); // Update the income with new data
+    income.isEditing = false;
+    console.log(`Income updated successfully: ${response.data}`);
+  } catch (error) {
+    console.error("Error updating income:", error.response ? error.response.data : error.message);
+  }
+}
+,
     deleteIncome(id) {
   // Make an API call to the backend to delete the income
   axios.delete(`http://localhost/api/deleteIncome/${id}`, {
