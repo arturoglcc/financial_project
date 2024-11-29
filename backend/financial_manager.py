@@ -306,3 +306,85 @@ def get_all_incomes(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expenses.")
+
+
+@router.get("/incomesTags", status_code=200)
+def get_incomes_tags(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get total income amounts grouped by tags for the authenticated user.
+    """
+    try:
+        incomes = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "income"
+        ).all()
+
+        if not incomes:
+            return {"message": "No incomes found."}
+
+        # Use a flat dictionary to store relationships
+        tag_relationships = {}
+
+        # Process transactions
+        for transaction in incomes:
+            # Get sorted tags for consistency
+            tags = sorted([tc.category.name for tc in transaction.categories])
+            amount = transaction.amount
+
+            # Create a unique key for the combination of tags
+            tags_key = ", ".join(tags)
+
+            # Add or update the total for this combination
+            if tags_key not in tag_relationships:
+                tag_relationships[tags_key] = 0
+
+            tag_relationships[tags_key] += amount
+
+        return tag_relationships
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching income tags.")
+
+@router.get("/expensesTags", status_code=200)
+def get_expenses_tags(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Get total expense amounts grouped by tags for the authenticated user.
+    """
+    try:
+        expenses = db.query(Transaction).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "expense"
+        ).all()
+
+        if not expenses:
+            return {"message": "No expenses found."}
+
+        tag_relationships = {}
+
+        # Process transactions
+        for transaction in expenses:
+            # Get sorted tags for consistency
+            tags = sorted([tc.category.name for tc in transaction.categories])
+            amount = transaction.amount
+
+            # Create a unique key for the combination of tags
+            tags_key = ", ".join(tags)
+
+            # Add or update the total for this combination
+            if tags_key not in tag_relationships:
+                tag_relationships[tags_key] = 0
+
+            tag_relationships[tags_key] += amount
+
+        return tag_relationships
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching expense tags.")

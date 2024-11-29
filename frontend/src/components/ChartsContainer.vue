@@ -43,84 +43,181 @@ export default {
     const chartRefPieIncome = ref(null);
     const chartRefPieExpense = ref(null);
 
-    const initChart = (chartRef, chartData) => {
+    // Predefined colors
+    const brightColors = [
+      '#e74c3c', // Red
+      '#3498db', // Light Blue
+      '#2ecc71', // Green
+      '#FF99CC', // pink
+      '#f1c40f', // Yellow
+      '#f39c12', // Orange
+      '#9b59b6', // Light Purple
+      '#ecf0f1', // White
+    ];
+
+    const tagColors = {}; // Store colors assigned to each tag
+
+    const assignColor = (tags, index) => {
+    // Loop through each tag and assign color if not already assigned
+    tags.forEach((tag) => {
+      if (!tagColors[tag]) {
+        // Check if there's a pre-defined color from brightColors or generate one
+        if (index < brightColors.length) {
+          tagColors[tag] = brightColors[index];
+        } else {
+          tagColors[tag] = generateDynamicColor(index);
+        }
+        index++;
+      }
+    });
+    if (tags.length > 1) {
+    return blendColors(tags);
+  }
+
+    // Return the color for the first tag (or any logic you need)
+    return tagColors[tags[0]]; // Return the color of the first tag or the last assigned color
+};
+
+
+    // Helper function to generate dynamic colors
+    const generateDynamicColor = (index) => {
+      const hue = (index * 137.508) % 360; // HSL color generation
+      return `hsl(${hue}, 70%, 60%)`;
+    };
+
+    // Helper function to blend colors for overlapping tags
+    const blendColors = (tags) => {
+      const rgbValues = tags.map((tag) => {
+        const color = tagColors[tag] || generateDynamicColor(Object.keys(tagColors).length);
+        return color.slice(1).match(/.{1,2}/g).map((x) => parseInt(x, 16));
+      });
+
+      const blended = rgbValues[0].map((_, i) =>
+        Math.round(
+          rgbValues.reduce((sum, rgb) => sum + rgb[i], 0) / rgbValues.length
+        )
+      );
+
+      return `rgb(${blended.join(',')})`;
+    };
+
+    // Function to initialize overlapping chart
+    const initOverlappingChart = (chartRef, chartData, title) => {
+      if (!chartRef) {
+        console.error("Chart reference is not defined.");
+        return;
+      }
+
+      // Dispose of existing chart instance
+      const existingInstance = echarts.getInstanceByDom(chartRef);
+      if (existingInstance) {
+        echarts.dispose(chartRef);
+      }
+
+      // Initialize a new chart instance
       const chartInstance = echarts.init(chartRef);
 
+      // Handle empty data gracefully
+      if (!chartData || !chartData.length) {
+        chartInstance.setOption({
+          title: { text: "No Data Available", left: "center" },
+          series: [],
+        });
+        return;
+      }
+
+      // Define chart options
       const option = {
-        title: { text: chartData.title, left: 'center', },
-        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)', },
-        legend: { orient: 'vertical', left: 'left', },
-        toolbox: { feature: { saveAsImage: {} } },
+        title: { text: title, left: "center" },
+        tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
         series: [
           {
-            name: chartData.seriesName,
-            type: 'pie',
-            radius: '50%',
-            data: chartData.seriesData,
+            name: title,
+            type: "pie",
+            radius: ["40%", "70%"],
+            data: chartData, // Directly use the provided chartData
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                shadowColor: "rgba(0, 0, 0, 0.5)",
               },
             },
           },
         ],
       };
 
+      // Set chart options
       chartInstance.setOption(option);
-      window.addEventListener('resize', () => {
+
+      // Ensure the chart resizes dynamically
+      window.addEventListener("resize", () => {
         chartInstance.resize();
       });
     };
 
+    // Function to fetch and prepare pie chart data
     const fetchAndPreparePieChartData = async (url, chartRef, title) => {
       try {
-        const response = await axios.get(url, {
-          withCredentials: true, // Include cookies or authentication headers
-        });
+        const response = await axios.get(url, { withCredentials: true });
         const items = response.data;
 
-        const tagCounts = items.reduce((acc, item) => {
-          item.tags.forEach((tag) => {
-            acc[tag] = (acc[tag] || 0) + 1;
+        const seenEntries = new Set(); // Track unique names
+        const chartData = [];
+        const tagTotals = {}; // Store totals for individual tags
+
+        // Process combined tags
+        Object.entries(items).forEach(([tags, value], loopIndex) => {
+          const tagGroup = tags.split(",").map((tag) => tag.trim());
+          const sortedTags = tagGroup.sort();
+          const overlapKey = sortedTags.join(" & ");
+
+          const combinedIndex = chartData.length + loopIndex + tagGroup.length - 1;
+          const color = assignColor(sortedTags, combinedIndex);
+          // Add combined tags only if unique
+          if (!seenEntries.has(overlapKey)) {
+            seenEntries.add(overlapKey);
+            chartData.push({
+              name: overlapKey,
+              value,
+              tags: sortedTags,
+              itemStyle: { color: color},
+            });
+          }
+
+          // Accumulate totals for individual tags
+          tagGroup.forEach((tag) => {
+            tagTotals[tag] = (tagTotals[tag] || 0) + value;
           });
-          return acc;
-        }, {});
-
-        const chartData = Object.entries(tagCounts).map(([name, value]) => ({
-          name,
-          value,
-        }));
-
-        initChart(chartRef, {
-          type: 'pie',
-          title,
-          seriesName: title,
-          seriesData: chartData,
         });
+
+        // Pass the prepared chartData directly to the chart initializer
+        initOverlappingChart(chartRef, chartData, title);
       } catch (error) {
         console.error(`Error fetching data for ${title}:`, error);
-        // Optional: Display a fallback chart or message
-        initChart(chartRef, {
-          type: 'pie',
-          title,
-          seriesName: title,
-          seriesData: [],
-        });
+        initOverlappingChart(chartRef, [], title); // Initialize chart with empty data in case of error
       }
     };
 
     onMounted(() => {
-      // Initialize pie charts
-      fetchAndPreparePieChartData('http://localhost/api/allIncomes', chartRefPieIncome.value, 'Income Tags Distribution');
-      fetchAndPreparePieChartData('http://localhost/api/allExpenses', chartRefPieExpense.value, 'Expense Tags Distribution');
+      fetchAndPreparePieChartData(
+        'http://localhost/api/incomesTags',
+        chartRefPieIncome.value,
+        'Income Tags Distribution'
+      );
+      fetchAndPreparePieChartData(
+        'http://localhost/api/expensesTags',
+        chartRefPieExpense.value,
+        'Expense Tags Distribution'
+      );
     });
 
     return { chartRefPieIncome, chartRefPieExpense };
   },
 };
 </script>
+
+
 
 <style scoped>
 .charts-container {
