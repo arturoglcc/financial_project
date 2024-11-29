@@ -248,7 +248,7 @@ def get_all_incomes(
         incomes = db.query(Transaction).filter(
             Transaction.user_id == user.id,
             Transaction.type == "income"  # Filter only incomes
-        ).all()
+        ).order_by(Transaction.date_time.desc()).all()
 
         if not incomes:
             return {"message": "No incomes found."}
@@ -283,7 +283,7 @@ def get_all_incomes(
         expenses = db.query(Transaction).filter(
             Transaction.user_id == user.id,
             Transaction.type == "expense"  # Filter only expenses
-        ).all()
+        ).order_by(Transaction.date_time.desc()).all()
 
         if not expenses:
             return {"message": "No expenses found."}

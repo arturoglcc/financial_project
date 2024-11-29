@@ -214,6 +214,7 @@ export default {
       })
         .then(response => {
           this.outlays = this.outlays.filter(outlay => outlay.id !== id);
+          this.incomes = this.incomes.filter(income => income.id !== id);
           console.log(`Deleted outlay with id: ${id}`);
         })
         .catch(error => {
@@ -256,18 +257,21 @@ export default {
         console.error("Error updating income:", error.response ? error.response.data : error.message);
       }
     },
-    deleteIncome(id) {
-      axios.delete(`http://localhost/api/deleteIncome/${id}`, {
-        withCredentials: true,
-      })
-        .then(response => {
+    async deleteIncome(incomeId) {
+  try {
+    // Assuming you're calling an API to delete the income
+    await axios.delete(`http://localhost/api/deleteIncome/${incomeId}`, {
+      withCredentials: true,
+    })
+    .then(response => {
           this.incomes = this.incomes.filter(income => income.id !== id);
           console.log(`Deleted income with id: ${id}`);
         })
-        .catch(error => {
-          console.error("Error deleting income:", error.response ? error.response.data : error.message);
-        });
-    },
+  } catch (error) {
+    console.error("Error deleting income:", error);
+  }
+}
+
   },
   mounted() {
     this.fetchData(); // Initial data fetch

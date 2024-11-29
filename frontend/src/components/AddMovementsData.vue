@@ -89,6 +89,7 @@ export default {
 
       // Emit the data to the parent
       this.$emit("confirm-transaction", incomeData);
+      setTimeout(() => 5000);
       this.description = "";
       this.dateInput = "";
       this.timeInput = "";
