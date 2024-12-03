@@ -22,9 +22,7 @@ let end_date = new Date(currentDate); // Initialize end_date to today
   start_date.setDate(currentDate.getDate() - diffToSunday); // Start date is Sunday
   end_date.setDate(currentDate.getDate() + (6 - currentDay)); // End date is the upcoming Saturday
 
-// Set the hours of start_date to 00:00 and end_date to 23:59
-start_date.setHours(0, 0, 0, 0);
-end_date.setHours(23, 59, 59, 999);
+
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {

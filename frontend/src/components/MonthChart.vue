@@ -14,11 +14,9 @@ export default {
     const fetchTransactions = async () => {
       const start_date = new Date();
       start_date.setDate(1); // First day of the month
-      start_date.setHours(0, 0, 0, 0);
 
       const end_date = new Date();
       end_date.setMonth(end_date.getMonth() + 1, 1); // First day of the next month
-      end_date.setHours(0, 0, 0, 0);
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {

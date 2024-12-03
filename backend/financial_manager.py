@@ -6,6 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from pydantic import  BaseModel
 from decimal import Decimal
 from datetime import datetime, timedelta
+import pytz
+from pytz import timezone
 from database import SessionLocal, get_db
 from models import User, Transaction, Category, TransactionCategory
 import os
@@ -39,6 +41,8 @@ def add_transaction(
     transaction_data: TransactionCreate,
     db: Session = Depends(get_db),
     user: User = Depends(authenticate_user)):
+
+    
     # Check if a transaction with the same details already exists (ignoring tags)
     existing_transaction = db.query(Transaction).filter(
         Transaction.user_id == user.id,
@@ -129,7 +133,6 @@ def get_transactions(
 
  # Debug logs
     print(f"Received request with start_date={start_date}, end_date={end_date}, transaction_type={transaction_type}")
-    print(f"Authenticated user: {user.id}")
     try:
         transactions = db.query(Transaction).filter(
             Transaction.user_id == user.id,

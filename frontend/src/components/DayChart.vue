@@ -14,14 +14,17 @@ export default {
     const data = ref({ incomes: Array(24).fill(0), outlays: Array(24).fill(0) });
 
     const fetchTransactions = async () => {
-      // Start date: midnight of one day ago
-      const start_date = new Date();
-      start_date.setHours(0, 0, 0, 0);
+  // Start date: beginning of today
+  const start_date = new Date();
+  start_date.setHours(0, 0, 0, 0);
+  const start_date_string = start_date.toISOString().split('T')[0];
 
-      // End date: midnight of today
-      const end_date = new Date(start_date);
-      end_date.setDate(end_date.getDate() + 1); // Move to the next day
-      end_date.setHours(0, 0, 0, 0);
+  // End date: beginning of tomorrow
+  const end_date = new Date(start_date);
+  end_date.setDate(end_date.getDate() + 1);
+  end_date.setHours(0, 0, 0, 0);
+  const end_date_string = end_date.toISOString().split('T')[0];
+
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {
@@ -38,8 +41,8 @@ export default {
       // Fetch incomes
       try {
         const incomesUrl = buildUrl('http://localhost/api/transactions', {
-          start_date: start_date.toISOString(),
-          end_date: end_date.toISOString(),
+          start_date: start_date_string,
+          end_date: end_date_string,
           transaction_type: 'income',
         });
 
@@ -64,8 +67,8 @@ export default {
       // Fetch outlays
       try {
         const outlaysUrl = buildUrl('http://localhost/api/transactions', {
-          start_date: start_date.toISOString(),
-          end_date: end_date.toISOString(),
+          start_date: start_date_string,
+          end_date: end_date_string,
           transaction_type: 'expense',
         });
 
