@@ -5,6 +5,16 @@
       Switch to {{ isIncome ? 'Outlays' : 'Incomes' }}
     </button>
 
+        <!-- Search Bar -->
+        <div class="search-bar">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        placeholder="Search by tags..." 
+        class="search-input"
+      />
+    </div>
+
     <!-- Outlay Table -->
     <div v-if="!isIncome" class="transaction-table outlay-table">
       <h3><i class="fas fa-money-bill-wave"></i> Outlays</h3>
@@ -20,7 +30,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="outlay in outlays" :key="outlay.id">
+          <tr v-for="outlay in filteredOutlays" :key="outlay.id">
             <td>
               <span v-if="!outlay.isEditing">
                 {{ outlay.tags && outlay.tags.length ? outlay.tags.join(", ") : "No tags" }}
@@ -77,7 +87,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="income in incomes" :key="income.id">
+          <tr v-for="income in filteredIncomes" :key="income.id">
             <td>
               <span v-if="!income.isEditing">
                 {{ income.tags && income.tags.length ? income.tags.join(", ") : "No tags" }}
@@ -130,8 +140,45 @@ export default {
       isIncome: false, // Tracks if we are viewing Incomes or Outlays
       incomes: [],
       outlays: [],
+      searchQuery: "", // Stores the search input
     };
   },
+  computed: {
+  filteredOutlays() {
+    if (!this.searchQuery) return this.outlays;
+
+    // Process the search query: split by commas, trim spaces, and filter out empty strings
+    const keywords = this.searchQuery
+      .split(",")
+      .map(keyword => keyword.trim())
+      .filter(keyword => keyword);
+
+    // Filter outlays by matching any of the keywords
+    return this.outlays.filter(outlay =>
+      outlay.tags && outlay.tags.some(tag =>
+        keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
+      )
+    );
+  },
+  filteredIncomes() {
+    if (!this.searchQuery) return this.incomes;
+
+    // Process the search query: split by commas, trim spaces, and filter out empty strings
+    const keywords = this.searchQuery
+      .split(",")
+      .map(keyword => keyword.trim())
+      .filter(keyword => keyword);
+
+    // Filter incomes by matching any of the keywords
+    return this.incomes.filter(income =>
+      income.tags && income.tags.some(tag =>
+        keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
+      )
+    );
+  },
+},
+
+
   methods: {
     toggleHistory() {
       this.isIncome = !this.isIncome;
@@ -280,6 +327,20 @@ export default {
 </script>
 
 <style scoped>
+
+.search-bar {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.search-input {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
