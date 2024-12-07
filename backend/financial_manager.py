@@ -19,12 +19,10 @@ from typing import List, Optional
 # Initialize APIRouter for modular routing
 router = APIRouter()
 
-
 # Define TransactionType Enum
 class TransactionType(Enum):
     income = "income"
     expense = "expense"
-
 
 # Pydantic model for transaction data
 class TransactionCreate(BaseModel):
@@ -34,6 +32,17 @@ class TransactionCreate(BaseModel):
     tags: Optional[List[str]] = None
     type: TransactionType
 
+class DebtCreate(BaseModel):
+    description: Optional[str]
+    amount: Decimal
+    due_date: Optional[datetime]
+    paid: bool = False
+
+class DebtUpdate(BaseModel):
+    description: Optional[str]
+    amount: Optional[Decimal]
+    due_date: Optional[datetime]
+    paid: Optional[bool]
 
 # Function to add a transaction
 @router.post("/addTransaction", status_code=status.HTTP_201_CREATED)
@@ -42,7 +51,6 @@ def add_transaction(
     db: Session = Depends(get_db),
     user: User = Depends(authenticate_user)):
 
-    
     # Check if a transaction with the same details already exists (ignoring tags)
     existing_transaction = db.query(Transaction).filter(
         Transaction.user_id == user.id,
@@ -84,7 +92,6 @@ def add_transaction(
         db.commit()
         db.refresh(existing_transaction)
         return {"message": "Tags updated successfully", "transaction_id": existing_transaction.id}
-
 
     # Create a new transaction
     new_transaction = Transaction(
@@ -391,3 +398,117 @@ def get_expenses_tags(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
+
+@router.post("/debts", status_code=status.HTTP_201_CREATED)
+def create_debt(
+    debt_data: DebtCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Add a new debt for the authenticated user.
+    """
+    try:
+        new_debt = Debt(
+            user_id=user.id,
+            description=debt_data.description,
+            amount=debt_data.amount,
+            due_date=debt_data.due_date,
+            paid=debt_data.paid,
+        )
+        db.add(new_debt)
+        db.commit()
+        db.refresh(new_debt)
+        return {"message": "Debt created successfully", "debt_id": new_debt.id}
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while creating the debt."
+        )
+
+@router.put("/debts/{debt_id}", status_code=status.HTTP_200_OK)
+def update_debt(
+    debt_id: int,
+    debt_data: DebtUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Edit an existing debt.
+    """
+    try:
+        debt = db.query(Debt).filter(
+            Debt.id == debt_id,
+            Debt.user_id == user.id
+        ).first()
+
+        if not debt:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Debt not found."
+            )
+
+        if debt_data.description is not None:
+            debt.description = debt_data.description
+        if debt_data.amount is not None:
+            debt.amount = debt_data.amount
+        if debt_data.due_date is not None:
+            debt.due_date = debt_data.due_date
+        if debt_data.paid is not None:
+            debt.paid = debt_data.paid
+
+        db.commit()
+        db.refresh(debt)
+        return {"message": "Debt updated successfully", "debt_id": debt.id}
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while updating the debt."
+        )
+
+@router.delete("/debts/{debt_id}", status_code=status.HTTP_200_OK)
+def delete_debt(
+    debt_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Eliminate an existing debt.
+    """
+    try:
+        debt = db.query(Debt).filter(
+            Debt.id == debt_id,
+            Debt.user_id == user.id
+        ).first()
+
+        if not debt:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Debt not found."
+            )
+
+        db.delete(debt)
+        db.commit()
+        return {"message": "Debt deleted successfully"}
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while deleting the debt."
+        )
+
+@router.get("/debts", response_model=List[DebtCreate])
+def get_debts(
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Obtain all debts of the authenticated user.
+    """
+    try:
+        debts = db.query(Debt).filter(Debt.user_id == user.id).all()
+        return debts
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while fetching debts."
+        )
