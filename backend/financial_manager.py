@@ -399,7 +399,7 @@ def get_expenses_tags(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
 
-@router.post("/debts", status_code=status.HTTP_201_CREATED)
+@router.post("/add-debt", status_code=status.HTTP_201_CREATED)
 def create_debt(
     debt_data: DebtCreate,
     db: Session = Depends(get_db),
@@ -413,6 +413,7 @@ def create_debt(
             user_id=user.id,
             description=debt_data.description,
             amount=debt_data.amount,
+            date=debt_data.date,
             due_date=debt_data.due_date,
             paid=debt_data.paid,
         )
@@ -426,7 +427,7 @@ def create_debt(
             detail="An error occurred while creating the debt."
         )
 
-@router.put("/debts/{debt_id}", status_code=status.HTTP_200_OK)
+@router.put("/add-debt", status_code=status.HTTP_200_OK)
 def update_debt(
     debt_id: int,
     debt_data: DebtUpdate,
@@ -466,7 +467,7 @@ def update_debt(
             detail="An error occurred while updating the debt."
         )
 
-@router.delete("/debts/{debt_id}", status_code=status.HTTP_200_OK)
+@router.delete("/add-debt", status_code=status.HTTP_200_OK)
 def delete_debt(
     debt_id: int,
     db: Session = Depends(get_db),
@@ -496,7 +497,7 @@ def delete_debt(
             detail="An error occurred while deleting the debt."
         )
 
-@router.get("/debts", response_model=List[DebtCreate])
+@router.get("/add-debt", response_model=List[DebtCreate])
 def get_debts(
     db: Session = Depends(get_db),
     user: User = Depends(authenticate_user)

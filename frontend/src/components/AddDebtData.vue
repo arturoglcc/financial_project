@@ -2,7 +2,6 @@
   <div class="form-container">
     <div class="button-container">
       <button class="top-button" @click="toggleForm(true)" :class="{ active: isFormA }">Add Debt</button>
-      <button class="top-button" @click="toggleForm(false)" :class="{ active: !isFormA }">Add Purchase with credit</button>
     </div>
     <!-- Form Debt -->
     <form @submit.prevent="handleAdd" v-if="isFormA">
@@ -21,136 +20,84 @@
           <label for="timeInput">Time</label>
           <input class="input-date-time" type="time" id="timeInput" v-model="timeInput" required />
         </div>
-        <div class="form-control">
-          <input type="text" required v-model="creditor">
-          <label>
-            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
-          </label>
+
+	<div class="form-control2">
+          <label for="dueDateInput">Due date</label>
+          <input class="input-date-time" type="date" id="dueDateInput" v-model="dueDateInput" required />
         </div>
+        <div class="form-control2">
+          <label for="dueTimeInput">Time</label>
+          <input class="input-date-time" type="time" id="dueTimeInput" v-model="dueTimeInput" required />
+        </div>
+	
         <div class="form-control amount-centered">
           <input type="float" required v-model="amount">
           <label>
             <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
           </label>
         </div>
+	<div class="form-control checkbox-control">
+          <input type="checkbox" id="isPaidCheckbox" v-model="isPaid" />
+          <label for="inPaidCheckbox">Paid</label>
+        </div>
         <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
         <button class="button" @click="handleConfirm"><span class="text">Confirm</span><span>Confirm</span></button>
-      </div>
-    </form>
-    <!-- Form Credit -->
-    <form @submit.prevent="handleAddCredit" v-else>
-      <div class="form-grid">
-        <div class="form-control">
-          <input type="text" required v-model="descriptionCredit">
-          <label>
-            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span style="transition-delay:500ms">n</span>
-          </label>
-        </div>
-        <div class="form-control2">
-          <label for="dateInputCredit">Date</label>
-          <input class="input-date-time" type="date" id="dateInputCredit" v-model="dateInputCredit" required />
-        </div>
-        <div class="form-control2">
-          <label for="timeInputCredit">Time</label>
-          <input class="input-date-time" type="time" id="timeInputCredit" v-model="timeInputCredit" required />
-        </div>
-        <div class="form-control">
-          <input type="text" required v-model="creditorCredit">
-          <label>
-            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
-          </label>
-        </div>
-        <div class="form-control amount-centered">
-          <input type="float" required v-model="amountCredit">
-          <label>
-            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
-          </label>
-        </div>
-        <div class="form-control checkbox-control">
-          <input type="checkbox" id="interestFreeCheckbox" v-model="isInterestFree" />
-          <label for="interestFreeCheckbox">Interest-free months</label>
-        </div>
-        <div class="form-control">
-          <input type="number" min="0" required v-model="interestCredit" :disabled="!isInterestFree">
-          <label>
-            <span style="transition-delay:0ms">I</span><span style="transition-delay:50ms">n</span><span style="transition-delay:100ms">t</span><span style="transition-delay:150ms">e</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">e</span><span style="transition-delay:300ms">s</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">-</span><span style="transition-delay:450ms">f</span><span style="transition-delay:500ms">r</span><span style="transition-delay:550ms">e</span><span style="transition-delay:600ms">e</span><span style="transition-delay:700ms">m</span><span style="transition-delay:750ms">o</span><span style="transition-delay:800ms">n</span><span style="transition-delay:850ms">t</span><span style="transition-delay:900ms">h</span><span style="transition-delay:950ms">s</span>
-          </label>
-        </div>
-        <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
-        <button class="button" @click="handleConfirmCredit"><span class="text">Confirm</span><span>Confirm</span></button>
-      </div>
+       </div>
     </form>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       isFormA: true,
-      isInterestFree: false,
+      isPaid: false,
       description: "",
       dateInput: "",
       timeInput: "",
-      creditor: "",
+      dueDateInput: "",
+      dueTimeInput: "",
       amount: "",
-      descriptionCredit: "",
-      dateInputCredit: "",
-      timeInputCredit: "",
-      interestCredit: "",
-      amountCredit: "",
-      creditorCredit: "",
     };
   },
   methods: {
     toggleForm(isFormA) {
       this.isFormA = isFormA;
     },
-    handleConfirm() {
-      if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount) {
+    async handleConfirm() {
+      if (!this.description || !this.dateInput || !this.timeInput || !this.dueDateInput || !this.dueTimeInput   || !this.amount) {
         alert("All fields must be filled out.");
         return;
       }
       const newDebt = {
-        id: Date.now(),
-        creditor: this.creditor,
-        type: "Debt",
-        months: "-",
-        amount: parseFloat(this.amount),
-        date: `${this.dateInput}T${this.timeInput}`,
         description: this.description,
-        isEditing: false
+	amount: parseFloat(this.amount),
+	date: `${this.dateInput}T${this.timeInput}`,
+        due_date: `${this.dueDateInput}T${this.dueTimeInput}`,
+	paid: this.isPaid,
       };
-      this.$emit('add-debt', newDebt);
-      this.description = "";
-      this.dateInput = "";
-      this.creditor = "";
-      this.timeInput = "";
-      this.amount = "";
-    },
-    handleConfirmCredit() {
-      if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit) {
-        alert("All fields must be filled out.");
-        return;
+      try {
+        const response = await axios.post('http://localhost/api/add-debt', newDebt, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+	});
+	alert("Debt added successfully!");
+        this.$emit('add-debt', response.data); //Nota cambiar eso si no funciona
+        this.description = "";
+        this.dateInput = "";
+        this.timeInput = "";
+        this.dueDateInput = "";
+        this.dueTimeInput = "";
+        this.amount = "";
+        this.isPaid = false;
+      } catch (error) {
+        console.error("Error adding debt:", error);
+        alert("Failed to add debt.");
       }
-      const newDebt = {
-        id: Date.now(),
-        creditor: this.creditorCredit,
-        type: "Credit",
-        months: this.isInterestFree ? this.interestCredit : "-",
-        amount: parseFloat(this.amountCredit),
-        date: `${this.dateInputCredit}T${this.timeInputCredit}`,
-        description: this.descriptionCredit,
-        isEditing: false
-      };
-      this.$emit('add-debt', newDebt);
-      this.descriptionCredit = "";
-      this.dateInputCredit = "";
-      this.interestCredit = "";
-      this.timeInputCredit = "";
-      this.amountCredit = "";
-      this.creditorCredit = "";
-      this.isInterestFree = false;
     },
   },
 };
@@ -177,7 +124,6 @@ export default {
   grid-template-areas: 
     "description description"
     "date time"
-    "tags tags"
     "amount amount"; 
 }
 
