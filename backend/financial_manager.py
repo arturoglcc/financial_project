@@ -34,6 +34,18 @@ class TransactionCreate(BaseModel):
     tags: Optional[List[str]] = None
     type: TransactionType
 
+class DebtCreate(BaseModel):
+    description: Optional[str] = None  
+    amount: float  
+    date: Optional[datetime] = None 
+    due_date: Optional[datetime] = None  
+    paid: bool = False 
+    creditor: str 
+    is_interest: bool = False  
+    freemonths: int = 0 
+
+    class Config:
+        orm_mode = True 
 
 # Function to add a transaction
 @router.post("/addTransaction", status_code=status.HTTP_201_CREATED)
