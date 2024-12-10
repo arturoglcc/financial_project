@@ -10,7 +10,7 @@
       <input 
         type="text" 
         v-model="searchQuery" 
-        placeholder="Search by tags..." 
+        placeholder="Search by tags or description..." 
         class="search-input"
       />
     </div>
@@ -154,11 +154,15 @@ export default {
       .filter(keyword => keyword);
 
     // Filter outlays by matching any of the keywords
-    return this.outlays.filter(outlay =>
-      outlay.tags && outlay.tags.some(tag =>
+    return this.outlays.filter(outlay => {
+      const matchesTags = outlay.tags && outlay.tags.some(tag =>
         keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
-      )
-    );
+      );
+      const matchesDescription = outlay.description && keywords.some(keyword =>
+        outlay.description.toLowerCase().includes(keyword.toLowerCase())
+      );
+      return matchesTags || matchesDescription;
+    });
   },
   filteredIncomes() {
     if (!this.searchQuery) return this.incomes;
@@ -170,11 +174,15 @@ export default {
       .filter(keyword => keyword);
 
     // Filter incomes by matching any of the keywords
-    return this.incomes.filter(income =>
-      income.tags && income.tags.some(tag =>
+    return this.incomes.filter(income => {
+      const matchesTags = income.tags && income.tags.some(tag =>
         keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
-      )
-    );
+      );
+      const matchesDescription = income.description && keywords.some(keyword =>
+        income.description.toLowerCase().includes(keyword.toLowerCase())
+      );
+      return matchesTags || matchesDescription;
+    });
   },
 },
 
