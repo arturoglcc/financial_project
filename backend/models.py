@@ -74,6 +74,9 @@ class Debt(Base):
     date = Column(DateTime, nullable=True, default=datetime.utcnow)
     due_date = Column(DateTime, nullable=True, default=datetime.utcnow)
     paid = Column(Boolean, default=False)
+    creditor = Column(String(255), nullable=False)
+    is_interest = Column(Boolean, default=False)
+    freemonths = Column(Integer, default=0)
 
     # Relationship with user
     user = relationship("User", back_populates="debts")

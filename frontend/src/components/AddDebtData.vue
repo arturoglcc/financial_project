@@ -27,6 +27,14 @@
             <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
           </label>
         </div>
+        <div class="form-control2">
+          <label for="dueDateInput">Due date</label>
+          <input class="input-date-time" type="date" id="dueDateInput" v-model="dueDateInput" required />
+        </div>
+        <div class="form-control2">
+          <label for="dueTimeInput">Time</label>
+          <input class="input-date-time" type="time" id="dueTimeInput" v-model="dueTimeInput" required />
+        </div>
         <div class="form-control amount-centered">
           <input type="float" required v-model="amount">
           <label>
@@ -59,6 +67,14 @@
           <label>
             <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
           </label>
+        </div>
+        <div class="form-control2">
+          <label for="dueDateInputCredit">Due date</label>
+          <input class="input-date-time" type="date" id="dueDateInputCredit" v-model="dueDateInputCredit" required />
+        </div>
+        <div class="form-control2">
+          <label for="dueTimeInputCredit">Due Time</label>
+          <input class="input-date-time" type="time" id="dueTimeInputCredit" v-model="dueTimeInputCredit" required />
         </div>
         <div class="form-control amount-centered">
           <input type="float" required v-model="amountCredit">
@@ -100,6 +116,10 @@ export default {
       interestCredit: "",
       amountCredit: "",
       creditorCredit: "",
+      dueDateInput: "",
+      dueTimeInput: "",
+      dueDateInputCredit: "",
+      dueTimeInputCredit: "",
     };
   },
   methods: {
@@ -107,7 +127,7 @@ export default {
       this.isFormA = isFormA;
     },
     handleConfirm() {
-      if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount) {
+      if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount || !this.dueDateInput || !this.dueTimeInput) {
         alert("All fields must be filled out.");
         return;
       }
@@ -119,6 +139,7 @@ export default {
         amount: parseFloat(this.amount),
         date: `${this.dateInput}T${this.timeInput}`,
         description: this.description,
+        dueDate: `${this.dueDateInput}T${this.dueTimeInput}`,
         isEditing: false
       };
       this.$emit('add-debt', newDebt);
@@ -127,9 +148,11 @@ export default {
       this.creditor = "";
       this.timeInput = "";
       this.amount = "";
+      this.dueDateInput = "";
+      this.dueTimeInput = "";
     },
     handleConfirmCredit() {
-      if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit) {
+      if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit || !this.dueDateInputCredit || !this.dueTimeInputCredit) {
         alert("All fields must be filled out.");
         return;
       }
@@ -141,6 +164,7 @@ export default {
         amount: parseFloat(this.amountCredit),
         date: `${this.dateInputCredit}T${this.timeInputCredit}`,
         description: this.descriptionCredit,
+        dueDate: `${this.dueDateInputCredit}T${this.dueTimeInputCredit}`,
         isEditing: false
       };
       this.$emit('add-debt', newDebt);
@@ -151,6 +175,8 @@ export default {
       this.amountCredit = "";
       this.creditorCredit = "";
       this.isInterestFree = false;
+      this.dueDateInputCredit = "";
+      this.dueTimeInputCredit = "";
     },
   },
 };

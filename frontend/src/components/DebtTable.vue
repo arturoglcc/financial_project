@@ -5,10 +5,11 @@
       <thead>
         <tr>
           <th>Creditor</th>
-          <th>Type</th>
-          <th>Interest-free months</th>
+          <th>Paid</th>
+          <th>Interest months</th>
           <th>Amount</th>
           <th>Date</th>
+          <th>Due Date</th>
           <th>Description</th>
           <th>Actions</th>
         </tr>
@@ -19,7 +20,10 @@
             <span v-if="!debt.isEditing">{{ debt.creditor }}</span>
             <input v-else v-model="debt.creditor"/>
           </td>
-          <td>{{ debt.type }}</td>
+          <td>
+            <span v-if="!debt.isEditing">{{ debt.isPaid }}</span>
+            <input v-else type="checkbox" v-model="debt.isPaid"/>
+          </td>
           <td>
             <span v-if="!debt.isEditing">{{ debt.months }}</span>
             <input v-else type="number" min="0" v-model="debt.months"/>
@@ -31,6 +35,10 @@
           <td>
             <span v-if="!debt.isEditing">{{ formatDate(debt.date) }}</span>
             <input v-else type="datetime-local" v-model="debt.date"/>
+          </td>
+          <td>
+            <span v-if="!debt.isEditing">{{ formatDate(debt.dueDate) }}</span>
+            <input v-else type="datetime-local" v-model="debt.dueDate"/>
           </td>
           <td>
             <span v-if="!debt.isEditing">{{ debt.description || "-------------------------" }}</span>
@@ -75,6 +83,7 @@ export default {
       return new Date(date).toLocaleString("en-US", options);
     },
     addDebt(newDebt) {
+      newDebt.isPaid = false;
       this.debts.push(newDebt);
     },
     editDebt(debt) {
@@ -87,7 +96,7 @@ export default {
       debt.originalData = null;
     },
     confirmDebt(debt) {
-      if (!debt.creditor || debt.months === null || debt.amount === null || !debt.date || !debt.description) {
+      if (!debt.creditor || debt.months === null || debt.amount === null || !debt.date || !debt.dueDate || !debt.description) {
         alert("All fields must be filled out before confirming.");
         return;
       }
