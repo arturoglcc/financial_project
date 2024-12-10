@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -126,7 +127,7 @@ export default {
     toggleForm(isFormA) {
       this.isFormA = isFormA;
     },
-    handleConfirm() {
+    async handleConfirm() {
       if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount || !this.dueDateInput || !this.dueTimeInput) {
         alert("All fields must be filled out.");
         return;
@@ -142,6 +143,15 @@ export default {
         dueDate: `${this.dueDateInput}T${this.dueTimeInput}`,
         isEditing: false
       };
+      try {
+      const response = await axios.post("http://localhost/api/add-debt", newDebt);
+      console.log("Debt created successfully:", response.data);
+      alert("Debt added successfully!");
+      this.$emit("add-debt", response.data);
+      } catch(error){
+        console.error("Error creating debt:", error);
+        alert("There was an error adding the debt.");
+      }
       this.$emit('add-debt', newDebt);
       this.description = "";
       this.dateInput = "";
