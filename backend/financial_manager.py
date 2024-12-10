@@ -391,3 +391,34 @@ def get_expenses_tags(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
+
+@router.post("/add-debt", status_code=status.HTTP_201_CREATED)
+def create_debt(
+    debt_data: DebtCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(authenticate_user)
+):
+    """
+    Add a new debt for the authenticated user.
+    """
+    try:
+        new_debt = Debt(
+            user_id=user.id,
+            description=debt_data.description,
+            amount=debt_data.amount,
+            date=debt_data.date,
+            due_date=debt_data.due_date,
+            paid=debt_data.paid,
+            creditor=debt_data.creditor,
+            is_interest=debt_data.is_interest,
+            freemonths=debt_data.freemonths,
+        )
+        db.add(new_debt)
+        db.commit()
+        db.refresh(new_debt)
+        return {"message": "Debt created successfully", "debt_id": new_debt.id}
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while creating the debt."
+        )
