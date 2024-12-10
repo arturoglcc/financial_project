@@ -21,11 +21,10 @@
       </div>
     </div>
     <select class="frequency-select" v-model="selectedFrequency" @change="calculateHighlightedDates">
+      <option value="daily">Daily</option>
       <option value="weekly">Weekly</option>
       <option value="biweekly">Biweekly</option>
       <option value="monthly">Monthly</option>
-      <option value="bimonthly">Bimonthly</option>
-      <option value="semiannual">Semiannual</option>
       <option value="annual">Annual</option>
     </select>
   </div>
@@ -90,6 +89,9 @@ export default {
       while(currentDate.getFullYear() <= this.currentYear + 1) {
         this.highlightedDates.push(new Date(currentDate));
         switch (this.selectedFrequency) {
+          case 'daily':
+            currentDate.setDate(currentDate.getDate() + 1);
+            break;
           case 'weekly':
             currentDate.setDate(currentDate.getDate() + 7);
             break;
@@ -98,12 +100,6 @@ export default {
             break;
           case 'monthly':
             currentDate.setMonth(currentDate.getMonth() + 1);
-            break;
-          case 'bimonthly':
-            currentDate.setMonth(currentDate.getMonth() + 2);
-            break;
-          case 'semiannual':
-            currentDate.setMonth(currentDate.getMonth() + 6);
             break;
           case 'annual':
             currentDate.setFullYear(currentDate.getFullYear() + 1);
