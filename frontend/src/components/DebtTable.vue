@@ -1,4 +1,4 @@
-<template>
+template>
   <div class="debt-table">
     <h3>Debts</h3>
     <table>
@@ -111,6 +111,7 @@ export default {
     },
     // Method to add a debt
     addDebt(newDebt) {
+      newDebt.isPaid = false;
       this.debts.push(newDebt);
     },
     // Method to enable editing of a debt
@@ -126,7 +127,7 @@ export default {
     },
     // Method to save edited debt
     confirmDebt(debt) {
-      if (!debt.creditor || debt.months === null || debt.amount === null || !debt.date || !debt.description) {
+      if (!debt.creditor || debt.months === null || debt.amount === null || !debt.date || !debt.dueDate || !debt.description) {
         alert("All fields must be filled out before confirming.");
         return;
       }
