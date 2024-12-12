@@ -1,8 +1,8 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request, Response, status
 from fastapi.responses import JSONResponse
-from sqlalchemy import Column, Integer, DateTime, DECIMAL, Text, Enum, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, DECIMAL, Text, Enum, ForeignKey, exc
 from sqlalchemy.orm import Session, declarative_base, relationship
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from pydantic import  BaseModel
 from decimal import Decimal
 from datetime import datetime, timedelta
@@ -15,16 +15,15 @@ from fastapi import Request
 from UserManagement import authenticate_user
 from enum import Enum
 from typing import List, Optional
+from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize APIRouter for modular routing
 router = APIRouter()
-
 
 # Define TransactionType Enum
 class TransactionType(Enum):
     income = "income"
     expense = "expense"
-
 
 # Pydantic model for transaction data
 class TransactionCreate(BaseModel):
@@ -404,12 +403,11 @@ def get_expenses_tags(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
 
-@router.post("/add-debt", status_code=status.HTTP_201_CREATED)
+@router.post("/debts", status_code=status.HTTP_201_CREATED)
 def create_debt(
     debt_data: DebtCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(authenticate_user)
-):
+    user: User = Depends(authenticate_user)):
     """
     Add a new debt for the authenticated user.
     """
@@ -429,8 +427,12 @@ def create_debt(
         db.commit()
         db.refresh(new_debt)
         return {"message": "Debt created successfully", "debt_id": new_debt.id}
-    except SQLAlchemyError as e:
+    except IntegrityError as e:
+        #Manejo de errores más específico
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Error de Integridad: {str(e)}")
+    except exc.SQLAlchemyError as e:
+        db.rollback() #Para revertir cambios en caso de error
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while creating the debt."
+            detail=f"Un error ocurrió al crear la deuda: {str(e)}"
         )

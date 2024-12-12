@@ -100,7 +100,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -128,31 +129,39 @@ export default {
       this.isFormA = isFormA;
     },
     async handleConfirm() {
+      const token = localStorage.getItem("jwtToken"); // Este token solo sirve para verificar si existe
+      if (!token) {
+        alert("No authentication token found. Please log in.");
+        return;
+      }
       if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount || !this.dueDateInput || !this.dueTimeInput) {
         alert("All fields must be filled out.");
         return;
       }
       const newDebt = {
-        id: Date.now(),
         creditor: this.creditor,
-        type: "Debt",
-        months: "-",
         amount: parseFloat(this.amount),
         date: `${this.dateInput}T${this.timeInput}`,
         description: this.description,
-        dueDate: `${this.dueDateInput}T${this.dueTimeInput}`,
-        isEditing: false
+        due_date: `${this.dueDateInput}T${this.dueTimeInput}`,
+      };
+      
+      const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
       };
       try {
-      const response = await axios.post("http://localhost/api/add-debt", newDebt);
-      console.log("Debt created successfully:", response.data);
-      alert("Debt added successfully!");
-      this.$emit("add-debt", response.data);
+        const response = await axios.post("http://localhost/api/debts", newDebt);
+	console.log("Debt created successfully:", response.data);
+      	alert("Debt created successfully");
+      	this.$emit("add-debt", response.data);
       } catch(error){
-        console.error("Error creating debt:", error);
-        alert("There was an error adding the debt.");
+     	  console.error("Error creating debt:", error);
+          alert("There was an error adding the debt.");
       }
-      this.$emit('add-debt', newDebt);
+      this.$emit("add-debt", newDebt);
       this.description = "";
       this.dateInput = "";
       this.creditor = "";
@@ -161,32 +170,50 @@ export default {
       this.dueDateInput = "";
       this.dueTimeInput = "";
     },
-    handleConfirmCredit() {
+    async handleConfirmCredit() {
+      const token = localStorage.getItem("jwtToken"); // Este token solo sirve para verificar si existe
+      if (!token) {
+        alert("No authentication token found. Please log in.");
+        return;
+      }
       if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit || !this.dueDateInputCredit || !this.dueTimeInputCredit) {
         alert("All fields must be filled out.");
         return;
       }
       const newDebt = {
-        id: Date.now(),
         creditor: this.creditorCredit,
-        type: "Credit",
-        months: this.isInterestFree ? this.interestCredit : "-",
         amount: parseFloat(this.amountCredit),
         date: `${this.dateInputCredit}T${this.timeInputCredit}`,
         description: this.descriptionCredit,
-        dueDate: `${this.dueDateInputCredit}T${this.dueTimeInputCredit}`,
-        isEditing: false
+        due_date: `${this.dueDateInputCredit}T${this.dueTimeInputCredit}`,
       };
+      
+      const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+      };
+
+      try {
+        const response = await axios.post("http://localhost/api/debts", newDebt);
+	console.log("Debt created successfully:", response.data);
+      	alert("Credit created successfully");
+        this.$emit('add-debt', response.data);
+      } catch (error) {
+        console.error("Error creating debt:", error);
+        alert("There was an error adding the debt.");
+      }
       this.$emit('add-debt', newDebt);
       this.descriptionCredit = "";
       this.dateInputCredit = "";
-      this.interestCredit = "";
       this.timeInputCredit = "";
-      this.amountCredit = "";
       this.creditorCredit = "";
-      this.isInterestFree = false;
+      this.amountCredit = "";
       this.dueDateInputCredit = "";
       this.dueTimeInputCredit = "";
+      this.isInterestFree = false;
+      this.interestCredit = "";
     },
   },
 };
