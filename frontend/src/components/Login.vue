@@ -42,7 +42,6 @@
         </div>
         <button type="submit">Log in</button>
       </form>
-      <a href="#" class="forgot-link">Forgot password?</a>
       <p class="signup-text">
         Don't have an account? <router-link to="/signup">Sign up</router-link>
       </p>
@@ -228,25 +227,18 @@ button:hover {
   background: #333;
 }
 
-.forgot-link {
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
 .signup-text {
   text-align: center;
   color: #666;
   margin: 0;
+  margin-top: 15px;
 }
 
 .signup-text a {
   text-decoration: none;
 }
 
-.forgot-link:hover, .signup-text a:hover {
+.signup-text a:hover {
   text-decoration: underline;
 }
 
