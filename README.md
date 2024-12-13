@@ -115,12 +115,11 @@ On the left side of the screen you will find a navigation bar showing the sectio
 ### Home
 
 This section will show:
--Your latest movements (income and outlays).
--A graph summarizing your annual movements.
+- Your latest movements (income and outlays).
+- A graph summarizing your annual movements.
 
 At the bottom of the page, you will find buttons to add income or outlays.
 
-### User settings
 
 Here you can view your personal information, add missing data or edit existing information as needed.
 
@@ -131,13 +130,13 @@ In this section you can update your password. To do so, you must first confirm y
 ### History movements
 
 This section shows a detailed record of your financial movements (income or outlays), depending on the filter you choose. In addition, you can:
--Edit or delete specific movements.
--Perform searches using tags.
+- Edit or delete specific movements.
+- Perform searches using tags.
 
 ### Graphs
 
 Here are graphs summarizing your financial movements. You can visualize them according to different periods: day, week, fortnight, month or year.
--Charts can be bar or line graphs.
--It is possible to save the graphs in PNG format.
--Pie charts are also included to visualize the proportions according to the tags.
+- Charts can be bar or line graphs.
+- It is possible to save the graphs in PNG format.
+- Pie charts are also included to visualize the proportions according to the tags.
 
