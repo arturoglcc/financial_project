@@ -1,9 +1,10 @@
 <template>
+  <!-- Page where components are displayed to see the history of movements -->
   <div id="edit">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
-      <HistoryTable/>
+      <HistoryTable />
     </div>
   </div>
 </template>
@@ -24,6 +25,7 @@ export default {
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
@@ -45,7 +47,7 @@ export default {
   margin-top: 50px;
 }
 
-#edit .sidebarExpanded + .content {
+#edit .sidebarExpanded+.content {
   margin-left: 240px;
 }
 </style>

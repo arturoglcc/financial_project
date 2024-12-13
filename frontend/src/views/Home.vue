@@ -1,4 +1,5 @@
 <template>
+  <!-- Page where the components for the application's home page are displayed -->
   <div id="home">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
@@ -38,6 +39,7 @@ export default {
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
@@ -60,7 +62,7 @@ export default {
   margin-top: 50px;
 }
 
-#home .sidebarExpanded + .content {
+#home .sidebarExpanded+.content {
   margin-left: 240px;
 }
 

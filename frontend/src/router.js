@@ -10,6 +10,7 @@ import Graphs from "./views/Graphs.vue";
 import AddDebt from "./views/AddDebt.vue";
 import History from "./views/History.vue";
 
+// Define the routes for the application
 const routes = [
   {
     path: "/",
@@ -63,6 +64,7 @@ const routes = [
   },
 ];
 
+// Create the router instance with the defined routes and history mode
 const router = createRouter({
   history: createWebHistory(),
   routes,

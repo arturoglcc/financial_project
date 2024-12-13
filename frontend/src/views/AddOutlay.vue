@@ -1,4 +1,5 @@
 <template>
+  <!-- Page showing the components to add outlays -->
   <div id="edit">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
@@ -29,12 +30,13 @@ export default {
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
+    // Handle the confirmation of a new outlay transaction
     async onConfirmOutlay(incomeData) {
       incomeData.tags = incomeData.tags || null;
-      
       try {
         incomeData.type = "expense"
         const response = await axios.post(
@@ -69,7 +71,7 @@ export default {
   margin-top: 50px;
 }
 
-#edit .sidebarExpanded + .content {
+#edit .sidebarExpanded+.content {
   margin-left: 240px;
 }
 </style>

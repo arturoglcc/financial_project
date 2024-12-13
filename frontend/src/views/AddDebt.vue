@@ -1,4 +1,5 @@
 <template>
+  <!-- Page showing the components to be able to add debts -->
   <div id="edit">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
@@ -23,13 +24,15 @@ export default {
   },
   data() {
     return {
-      menuOpen: false,
+      menuOpen: false, // State to track if the sidebar menu is open
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
+    // Update debts in the DebtTable component
     updateDebts(newDebt) {
       this.$refs.debtTable.addDebt(newDebt);
     },
@@ -51,7 +54,7 @@ export default {
   margin-top: 50px;
 }
 
-#edit .sidebarExpanded + .content {
+#edit .sidebarExpanded+.content {
   margin-left: 240px;
 }
 </style>

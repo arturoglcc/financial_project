@@ -1,4 +1,5 @@
 <template>
+  <!-- Page where the components are displayed so that user information can be changed. -->
   <div id="edit">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
@@ -24,6 +25,7 @@ export default {
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
@@ -45,7 +47,7 @@ export default {
   margin-top: 50px;
 }
 
-#edit .sidebarExpanded + .content {
+#edit .sidebarExpanded+.content {
   margin-left: 240px;
 }
 </style>

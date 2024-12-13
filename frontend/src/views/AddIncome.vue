@@ -1,9 +1,10 @@
 <template>
+  <!-- Page showing the components to add income -->
   <div id="edit">
     <SideBar :menuOpen="menuOpen" @toggle-menu="toggleMenu" />
     <Header @toggle-menu="toggleMenu" />
     <div class="content">
-      <AddMovementsData title="Add income" @confirm-transaction="onConfirmIncome"/>
+      <AddMovementsData title="Add income" @confirm-transaction="onConfirmIncome" />
       <IncomeTable ref="incomeTable" />
     </div>
   </div>
@@ -29,12 +30,13 @@ export default {
     };
   },
   methods: {
+    // Toggle the sidebar menu open/close state
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
+    // Handle the confirmation of a new income transaction
     async onConfirmIncome(incomeData) {
       incomeData.tags = incomeData.tags || null;
-      
       try {
         incomeData.type = "income"
         const response = await axios.post(
@@ -69,7 +71,7 @@ export default {
   margin-top: 50px;
 }
 
-#edit .sidebarExpanded + .content {
+#edit .sidebarExpanded+.content {
   margin-left: 240px;
 }
 </style>
