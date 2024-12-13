@@ -14,16 +14,16 @@ export default {
     const data = ref({ incomes: Array(24).fill(0), outlays: Array(24).fill(0) });
 
     const fetchTransactions = async () => {
-  // Start date: beginning of today
-  const start_date = new Date();
-  start_date.setHours(0, 0, 0, 0);
-  const start_date_string = start_date.toISOString().split('T')[0];
+      // Start date: beginning of today
+      const start_date = new Date();
+      start_date.setHours(0, 0, 0, 0);
+      const start_date_string = start_date.toISOString().split('T')[0];
 
-  // End date: beginning of tomorrow
-  const end_date = new Date(start_date);
-  end_date.setDate(end_date.getDate() + 1);
-  end_date.setHours(0, 0, 0, 0);
-  const end_date_string = end_date.toISOString().split('T')[0];
+      // End date: beginning of tomorrow
+      const end_date = new Date(start_date);
+      end_date.setDate(end_date.getDate() + 1);
+      end_date.setHours(0, 0, 0, 0);
+      const end_date_string = end_date.toISOString().split('T')[0];
 
 
       // Helper function to construct the URL with query parameters

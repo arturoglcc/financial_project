@@ -1,8 +1,10 @@
 <template>
   <div class="form-container">
     <div class="button-container">
+      <!-- Buttons to toggle between forms -->
       <button class="top-button" @click="toggleForm(true)" :class="{ active: isFormA }">Add Debt</button>
-      <button class="top-button" @click="toggleForm(false)" :class="{ active: !isFormA }">Add Purchase with credit</button>
+      <button class="top-button" @click="toggleForm(false)" :class="{ active: !isFormA }">Add Purchase with
+        credit</button>
     </div>
     <!-- Form Debt -->
     <form @submit.prevent="handleAdd" v-if="isFormA">
@@ -10,7 +12,12 @@
         <div class="form-control">
           <input type="text" required v-model="description">
           <label>
-            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span style="transition-delay:500ms">n</span>
+            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span
+              style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span
+              style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span
+              style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span
+              style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span
+              style="transition-delay:500ms">n</span>
           </label>
         </div>
         <div class="form-control2">
@@ -24,16 +31,23 @@
         <div class="form-control">
           <input type="text" required v-model="creditor">
           <label>
-            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
+            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span
+              style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span
+              style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span
+              style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
           </label>
         </div>
         <div class="form-control amount-centered">
           <input type="float" required v-model="amount">
           <label>
-            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
+            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span
+              style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span
+              style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span
+              style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
           </label>
         </div>
-        <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
+        <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for
+          example: 100.00</small>
         <button class="button" @click="handleConfirm"><span class="text">Confirm</span><span>Confirm</span></button>
       </div>
     </form>
@@ -43,7 +57,12 @@
         <div class="form-control">
           <input type="text" required v-model="descriptionCredit">
           <label>
-            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span style="transition-delay:500ms">n</span>
+            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span
+              style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span
+              style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span
+              style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span
+              style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span
+              style="transition-delay:500ms">n</span>
           </label>
         </div>
         <div class="form-control2">
@@ -57,13 +76,19 @@
         <div class="form-control">
           <input type="text" required v-model="creditorCredit">
           <label>
-            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
+            <span style="transition-delay:0ms">C</span><span style="transition-delay:50ms">r</span><span
+              style="transition-delay:100ms">e</span><span style="transition-delay:150ms">d</span><span
+              style="transition-delay:200ms">i</span><span style="transition-delay:250ms">t</span><span
+              style="transition-delay:300ms">o</span><span style="transition-delay:350ms">r</span>
           </label>
         </div>
         <div class="form-control amount-centered">
           <input type="float" required v-model="amountCredit">
           <label>
-            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
+            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span
+              style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span
+              style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span
+              style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
           </label>
         </div>
         <div class="form-control checkbox-control">
@@ -73,11 +98,22 @@
         <div class="form-control">
           <input type="number" min="0" required v-model="interestCredit" :disabled="!isInterestFree">
           <label>
-            <span style="transition-delay:0ms">I</span><span style="transition-delay:50ms">n</span><span style="transition-delay:100ms">t</span><span style="transition-delay:150ms">e</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">e</span><span style="transition-delay:300ms">s</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">-</span><span style="transition-delay:450ms">f</span><span style="transition-delay:500ms">r</span><span style="transition-delay:550ms">e</span><span style="transition-delay:600ms">e</span><span style="transition-delay:700ms">m</span><span style="transition-delay:750ms">o</span><span style="transition-delay:800ms">n</span><span style="transition-delay:850ms">t</span><span style="transition-delay:900ms">h</span><span style="transition-delay:950ms">s</span>
+            <span style="transition-delay:0ms">I</span><span style="transition-delay:50ms">n</span><span
+              style="transition-delay:100ms">t</span><span style="transition-delay:150ms">e</span><span
+              style="transition-delay:200ms">r</span><span style="transition-delay:250ms">e</span><span
+              style="transition-delay:300ms">s</span><span style="transition-delay:350ms">t</span><span
+              style="transition-delay:400ms">-</span><span style="transition-delay:450ms">f</span><span
+              style="transition-delay:500ms">r</span><span style="transition-delay:550ms">e</span><span
+              style="transition-delay:600ms">e</span><span style="transition-delay:700ms">m</span><span
+              style="transition-delay:750ms">o</span><span style="transition-delay:800ms">n</span><span
+              style="transition-delay:850ms">t</span><span style="transition-delay:900ms">h</span><span
+              style="transition-delay:950ms">s</span>
           </label>
         </div>
-        <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
-        <button class="button" @click="handleConfirmCredit"><span class="text">Confirm</span><span>Confirm</span></button>
+        <small>*Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for
+          example: 100.00</small>
+        <button class="button" @click="handleConfirmCredit"><span
+            class="text">Confirm</span><span>Confirm</span></button>
       </div>
     </form>
   </div>
@@ -161,24 +197,24 @@ export default {
   border: 2px solid #ddd;
   border-radius: 10px;
   padding: 20px;
-  width: 1165px; 
+  width: 1165px;
   margin: auto;
 }
 
 .button-container {
-  display:flex;
-  justify-content:center;
+  display: flex;
+  justify-content: center;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  grid-template-areas: 
+  grid-template-areas:
     "description description"
     "date time"
     "tags tags"
-    "amount amount"; 
+    "amount amount";
 }
 
 .form-control {
@@ -208,7 +244,7 @@ export default {
 }
 
 .amount-centered {
-  grid-area: amount; 
+  grid-area: amount;
   display: flex;
   justify-content: center;
 }
@@ -283,7 +319,7 @@ export default {
 .form-control input:focus+label span,
 .form-control input:valid+label span {
   color: rgb(32, 180, 230);
-  transform: translateY(-40px); 
+  transform: translateY(-40px);
 }
 
 .button {
@@ -303,8 +339,8 @@ export default {
   -webkit-user-select: none;
   touch-action: manipulation;
   z-index: 1;
-  -webkit-box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
-  box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  -webkit-box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+  box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
   font-weight: 1000;
 }
 
@@ -375,5 +411,4 @@ export default {
   color: #18181a;
   border-bottom: 2px solid rgb(32, 180, 230);
 }
-
 </style>

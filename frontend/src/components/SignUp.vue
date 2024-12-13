@@ -10,16 +10,17 @@
     <div class="signup-form">
       <h2>Create Your Account</h2>
 
+      <!-- Display succes or error message -->
       <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-      
       <form @submit.prevent="handleSignUp">
         <div class="input-group">
           <label for="username">Username</label>
           <div class="input-container group">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="icon">
-              <path fill="none" stroke="currentColor" d="M18.5 20.247V16S16 14.5 12 14.5S5.5 16 5.5 16v4.247M1.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12S17.799 22.5 12 22.5S1.5 17.799 1.5 12Zm10.426.5S8.5 10.68 8.5 8c0-1.933 1.569-3.5 3.504-3.5A3.495 3.495 0 0 1 15.5 8c0 2.68-3.426 4.5-3.426 4.5z" />
+              <path fill="none" stroke="currentColor"
+                d="M18.5 20.247V16S16 14.5 12 14.5S5.5 16 5.5 16v4.247M1.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12S17.799 22.5 12 22.5S1.5 17.799 1.5 12Zm10.426.5S8.5 10.68 8.5 8c0-1.933 1.569-3.5 3.504-3.5A3.495 3.495 0 0 1 15.5 8c0 2.68-3.426 4.5-3.426 4.5z" />
             </svg>
             <input type="text" id="username" v-model="username" @input="clearErrorMessage" required class="input" />
           </div>
@@ -29,7 +30,8 @@
           <div v-if="emailError" class="error-message">The email is not valid</div>
           <div class="input-container group">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" class="icon">
-              <path fill="currentColor" fill-rule="evenodd" d="M14.95 3.684L8.637 8.912a1 1 0 0 1-1.276 0l-6.31-5.228A1 1 0 0 0 1 4v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-.05-.316M2 2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m-.21 1l5.576 4.603a1 1 0 0 0 1.27.003L14.268 3z"/>
+              <path fill="currentColor" fill-rule="evenodd"
+                d="M14.95 3.684L8.637 8.912a1 1 0 0 1-1.276 0l-6.31-5.228A1 1 0 0 0 1 4v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-.05-.316M2 2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m-.21 1l5.576 4.603a1 1 0 0 0 1.27.003L14.268 3z" />
             </svg>
             <input type="email" id="email" v-model="email" @input="validateEmail" required class="input" />
           </div>
@@ -37,26 +39,38 @@
         <div class="input-group">
           <label for="password">Password</label>
           <div class="input-container group">
-            <svg stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icon">
-              <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" stroke-linejoin="round" stroke-linecap="round"></path>
+            <svg stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+              class="icon">
+              <path
+                d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                stroke-linejoin="round" stroke-linecap="round"></path>
             </svg>
-            <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password" @input="clearErrorMessage" required class="input" />
+            <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password"
+              @input="clearErrorMessage" required class="input" />
             <svg class="input-icon clickable" viewBox="0 0 24 24" @click="togglePassword">
-              <path v-if="showPassword" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-              <path v-else d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+              <path v-if="showPassword"
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+              <path v-else
+                d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
             </svg>
           </div>
         </div>
         <div class="input-group">
           <label for="confirm-password">Confirm Password</label>
           <div class="input-container group">
-            <svg stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icon">
-              <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" stroke-linejoin="round" stroke-linecap="round"></path>
+            <svg stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+              class="icon">
+              <path
+                d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                stroke-linejoin="round" stroke-linecap="round"></path>
             </svg>
-            <input :type="showPassword2 ? 'text' : 'password'" id="confirm-password" v-model="confirmPassword" @input="clearErrorMessage" required class="input" />
+            <input :type="showPassword2 ? 'text' : 'password'" id="confirm-password" v-model="confirmPassword"
+              @input="clearErrorMessage" required class="input" />
             <svg class="input-icon clickable" viewBox="0 0 24 24" @click="toggleConfirmPassword">
-              <path v-if="showPassword2" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-              <path v-else d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+              <path v-if="showPassword2"
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+              <path v-else
+                d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
             </svg>
           </div>
         </div>
@@ -86,11 +100,13 @@ export default {
     };
   },
   methods: {
+    // Validate email format
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       this.emailError = !emailRegex.test(this.email);
     },
 
+    // Handle sign-up form submission
     async handleSignUp() {
       if (this.password !== this.confirmPassword) {
         this.errorMessage = "Passwords do not match.";
@@ -108,7 +124,7 @@ export default {
           body: JSON.stringify({
             username: this.username,
             email: this.email,
-            password: this.password 
+            password: this.password
           })
         });
 
@@ -122,20 +138,20 @@ export default {
           const errorData = await response.json();
           if (errorData.detail && typeof errorData.detail === 'object') {
             switch (errorData.detail.code) {
-            case "EMAIL_TAKEN":
-              this.errorMessage = "The email is already registered. Please use a different email.";
-              break;
-            case "USERNAME_TAKEN":
-              this.errorMessage = "The username is already taken. Please choose another.";
-              break;
-            default:
-              this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
+              case "EMAIL_TAKEN":
+                this.errorMessage = "The email is already registered. Please use a different email.";
+                break;
+              case "USERNAME_TAKEN":
+                this.errorMessage = "The username is already taken. Please choose another.";
+                break;
+              default:
+                this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
+            }
+          } else {
+            this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
           }
-        } else {
-        this.errorMessage = "Sign-up failed: " + (errorData.message || "An unknown error occurred.");
         }
-      }
-    } catch (error) {
+      } catch (error) {
         console.error("Error connecting to server:", error);
         alert("An error occurred while signing up. Please try again later.");
         this.username = "";
@@ -145,12 +161,15 @@ export default {
       }
     },
 
+    // Toggle password visibility
     togglePassword() {
       this.showPassword = !this.showPassword;
     },
+    // Toggle confirm password visibility
     toggleConfirmPassword() {
       this.showPassword2 = !this.showPassword2;
     },
+    // Clear error message when user starts typing
     clearErrorMessage() {
       this.errorMessage = "";
     },
@@ -236,7 +255,8 @@ export default {
   color: #94a3b8;
 }
 
-.input:focus, .input:hover {
+.input:focus,
+.input:hover {
   outline: none;
   border-color: rgba(129, 140, 248);
   background-color: #fff;
@@ -313,5 +333,4 @@ p {
   margin-bottom: 10px;
   text-align: center;
 }
-
 </style>

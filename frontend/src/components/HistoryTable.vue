@@ -1,18 +1,14 @@
 <template>
   <div>
+    <!-- Button to toggle between Incomes and Outlays -->
     <button @click="toggleHistory" class="switch-button">
       <i class="fas" :class="isIncome ? 'fa-arrow-right' : 'fa-arrow-left'"></i>
       Switch to {{ isIncome ? 'Outlays' : 'Incomes' }}
     </button>
 
-        <!-- Search Bar -->
-        <div class="search-bar">
-      <input 
-        type="text" 
-        v-model="searchQuery" 
-        placeholder="Search by tags or description..." 
-        class="search-input"
-      />
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" v-model="searchQuery" placeholder="Search by tags or description..." class="search-input" />
     </div>
 
     <!-- Outlay Table -->
@@ -32,39 +28,70 @@
         <tbody>
           <tr v-for="outlay in filteredOutlays" :key="outlay.id">
             <td>
+              <!-- Display or edit tags -->
               <span v-if="!outlay.isEditing">
                 {{ outlay.tags && outlay.tags.length ? outlay.tags.join(", ") : "No tags" }}
               </span>
               <div v-else>
-                <input
-                  v-model="outlay.tagsString"
-                  placeholder="Comma-separated tags"
-                  @input="updateTags(outlay)"
-                />
+                <input v-model="outlay.tagsString" placeholder="Comma-separated tags" @input="updateTags(outlay)" />
               </div>
             </td>
             <td>{{ outlay.type }}</td>
+            <!-- Display or edit amount -->
             <td><span v-if="!outlay.isEditing">{{ formatCurrency(outlay.amount) }}</span>
-              <input v-else type="number" v-model="outlay.amount" /></td>
+              <input v-else type="number" v-model="outlay.amount" />
+            </td>
+            <!-- Display or edit date -->
             <td><span v-if="!outlay.isEditing">{{ formatDate(outlay.date_time) }}</span>
-              <input v-else type="datetime-local" v-model="outlay.date_time" /></td>
+              <input v-else type="datetime-local" v-model="outlay.date_time" />
+            </td>
+            <!-- Display or edit description -->
             <td><span v-if="!outlay.isEditing">{{ outlay.description || "-------------------------" }}</span>
-              <input v-else v-model="outlay.description" /></td>
+              <input v-else v-model="outlay.description" />
+            </td>
             <td>
+              <!-- Buttons to edit, cancel edit, save or delete -->
               <button @click="editOutlay(outlay)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g></svg>
-            </button>
-
-              <button @click="cancelEdit(outlay)" v-if="outlay.isEditing"><i class="fas fa-times"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12l7 7M12 12l-7 -7M12 12l-7 7M12 12l7 -7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="12;0"/></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path stroke-dasharray="56" stroke-dashoffset="56"
+                      d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0" />
+                    </path>
+                    <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0" />
+                    </path>
+                    <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0" />
+                    </path>
+                  </g>
+                </svg>
               </button>
 
-              <button @click="confirmOutlay(outlay)" v-if="outlay.isEditing"><i class="fas fa-check"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l6 6l10 -10"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0"/></path></svg>
+              <button @click="cancelEdit(outlay)" v-if="outlay.isEditing"><i class="fas fa-times"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12"
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 12l7 7M12 12l-7 -7M12 12l-7 7M12 12l7 -7">
+                    <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="12;0" />
+                  </path>
+                </svg>
               </button>
 
-              <button @click="deleteOutlay(outlay.id)"><i class="fas fa-trash-alt"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z"/></svg>
+              <button @click="confirmOutlay(outlay)" v-if="outlay.isEditing"><i class="fas fa-check"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24"
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l6 6l10 -10">
+                    <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0" />
+                  </path>
+                </svg>
+              </button>
+
+              <button @click="deleteOutlay(outlay.id)"><i class="fas fa-trash-alt"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z" />
+                </svg>
               </button>
             </td>
           </tr>
@@ -89,39 +116,70 @@
         <tbody>
           <tr v-for="income in filteredIncomes" :key="income.id">
             <td>
+              <!-- Display or edit tags -->
               <span v-if="!income.isEditing">
                 {{ income.tags && income.tags.length ? income.tags.join(", ") : "No tags" }}
               </span>
               <div v-else>
-                <input
-                  v-model="income.tagsString"
-                  placeholder="Comma-separated tags"
-                  @input="updateTags(income)"
-                />
+                <input v-model="income.tagsString" placeholder="Comma-separated tags" @input="updateTags(income)" />
               </div>
             </td>
             <td>{{ income.type }}</td>
+            <!-- Display or edit amount -->
             <td><span v-if="!income.isEditing">{{ formatCurrency(income.amount) }}</span>
-              <input v-else type="number" v-model="income.amount" /></td>
+              <input v-else type="number" v-model="income.amount" />
+            </td>
+            <!-- Display or edit date -->
             <td><span v-if="!income.isEditing">{{ formatDate(income.date_time) }}</span>
-              <input v-else type="datetime-local" v-model="income.date_time" /></td>
+              <input v-else type="datetime-local" v-model="income.date_time" />
+            </td>
+            <!-- Display or edit description -->
             <td><span v-if="!income.isEditing">{{ income.description || "-------------------------" }}</span>
-              <input v-else v-model="income.description" /></td>
+              <input v-else v-model="income.description" />
+            </td>
             <td>
+              <!-- Buttons to edit, cancel edit, save or delete -->
               <button @click="editOutlay(income)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g></svg>
-            </button>
-
-              <button @click="cancelEdit(income)" v-if="income.isEditing"><i class="fas fa-times"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12l7 7M12 12l-7 -7M12 12l-7 7M12 12l7 -7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="12;0"/></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path stroke-dasharray="56" stroke-dashoffset="56"
+                      d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0" />
+                    </path>
+                    <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0" />
+                    </path>
+                    <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0" />
+                    </path>
+                  </g>
+                </svg>
               </button>
 
-              <button @click="confirmOutlay(income)" v-if="income.isEditing"><i class="fas fa-check"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l6 6l10 -10"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0"/></path></svg>
+              <button @click="cancelEdit(income)" v-if="income.isEditing"><i class="fas fa-times"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12"
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 12l7 7M12 12l-7 -7M12 12l-7 7M12 12l7 -7">
+                    <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="12;0" />
+                  </path>
+                </svg>
               </button>
 
-              <button @click="deleteOutlay(income.id)"><i class="fas fa-trash-alt"></i> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z"/></svg>
+              <button @click="confirmOutlay(income)" v-if="income.isEditing"><i class="fas fa-check"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24"
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l6 6l10 -10">
+                    <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0" />
+                  </path>
+                </svg>
+              </button>
+
+              <button @click="deleteOutlay(income.id)"><i class="fas fa-trash-alt"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z" />
+                </svg>
               </button>
             </td>
           </tr>
@@ -144,47 +202,47 @@ export default {
     };
   },
   computed: {
-  filteredOutlays() {
-    if (!this.searchQuery) return this.outlays;
+    filteredOutlays() {
+      if (!this.searchQuery) return this.outlays;
 
-    // Process the search query: split by commas, trim spaces, and filter out empty strings
-    const keywords = this.searchQuery
-      .split(",")
-      .map(keyword => keyword.trim())
-      .filter(keyword => keyword);
+      // Process the search query: split by commas, trim spaces, and filter out empty strings
+      const keywords = this.searchQuery
+        .split(",")
+        .map(keyword => keyword.trim())
+        .filter(keyword => keyword);
 
-    // Filter outlays by matching any of the keywords
-    return this.outlays.filter(outlay => {
-      const matchesTags = outlay.tags && outlay.tags.some(tag =>
-        keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
-      );
-      const matchesDescription = outlay.description && keywords.some(keyword =>
-        outlay.description.toLowerCase().includes(keyword.toLowerCase())
-      );
-      return matchesTags || matchesDescription;
-    });
+      // Filter outlays by matching any of the keywords
+      return this.outlays.filter(outlay => {
+        const matchesTags = outlay.tags && outlay.tags.some(tag =>
+          keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
+        );
+        const matchesDescription = outlay.description && keywords.some(keyword =>
+          outlay.description.toLowerCase().includes(keyword.toLowerCase())
+        );
+        return matchesTags || matchesDescription;
+      });
+    },
+    filteredIncomes() {
+      if (!this.searchQuery) return this.incomes;
+
+      // Process the search query: split by commas, trim spaces, and filter out empty strings
+      const keywords = this.searchQuery
+        .split(",")
+        .map(keyword => keyword.trim())
+        .filter(keyword => keyword);
+
+      // Filter incomes by matching any of the keywords
+      return this.incomes.filter(income => {
+        const matchesTags = income.tags && income.tags.some(tag =>
+          keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
+        );
+        const matchesDescription = income.description && keywords.some(keyword =>
+          income.description.toLowerCase().includes(keyword.toLowerCase())
+        );
+        return matchesTags || matchesDescription;
+      });
+    },
   },
-  filteredIncomes() {
-    if (!this.searchQuery) return this.incomes;
-
-    // Process the search query: split by commas, trim spaces, and filter out empty strings
-    const keywords = this.searchQuery
-      .split(",")
-      .map(keyword => keyword.trim())
-      .filter(keyword => keyword);
-
-    // Filter incomes by matching any of the keywords
-    return this.incomes.filter(income => {
-      const matchesTags = income.tags && income.tags.some(tag =>
-        keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
-      );
-      const matchesDescription = income.description && keywords.some(keyword =>
-        income.description.toLowerCase().includes(keyword.toLowerCase())
-      );
-      return matchesTags || matchesDescription;
-    });
-  },
-},
 
 
   methods: {
@@ -313,19 +371,19 @@ export default {
       }
     },
     async deleteIncome(incomeId) {
-  try {
-    // Assuming you're calling an API to delete the income
-    await axios.delete(`http://localhost/api/deleteIncome/${incomeId}`, {
-      withCredentials: true,
-    })
-    .then(response => {
-          this.incomes = this.incomes.filter(income => income.id !== id);
-          console.log(`Deleted income with id: ${id}`);
+      try {
+        // Assuming you're calling an API to delete the income
+        await axios.delete(`http://localhost/api/deleteIncome/${incomeId}`, {
+          withCredentials: true,
         })
-  } catch (error) {
-    console.error("Error deleting income:", error);
-  }
-}
+          .then(response => {
+            this.incomes = this.incomes.filter(income => income.id !== id);
+            console.log(`Deleted income with id: ${id}`);
+          })
+      } catch (error) {
+        console.error("Error deleting income:", error);
+      }
+    }
 
   },
   mounted() {
@@ -335,7 +393,6 @@ export default {
 </script>
 
 <style scoped>
-
 .search-bar {
   margin: 20px 0;
   text-align: center;
@@ -354,7 +411,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
@@ -377,33 +435,71 @@ td button:hover svg {
 }
 
 /* Add custom widths to the columns */
-th:nth-child(1), td:nth-child(1) { width: 20%; }  /* First column (Tags) */
-th:nth-child(2), td:nth-child(2) { width: 15%; }  /* Second column (Type) */
-th:nth-child(3), td:nth-child(3) { width: 15%; }  /* Third column (Amount) */
-th:nth-child(4), td:nth-child(4) { width: 20%; }  /* Fourth column (Date) */
-th:nth-child(5), td:nth-child(5) { width: 25%; }  /* Fifth column (Description) */
-th:nth-child(6), td:nth-child(6) { width: 15%; }  /* Sixth column (Actions) */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 20%;
+}
+
+/* First column (Tags) */
+th:nth-child(2),
+td:nth-child(2) {
+  width: 15%;
+}
+
+/* Second column (Type) */
+th:nth-child(3),
+td:nth-child(3) {
+  width: 15%;
+}
+
+/* Third column (Amount) */
+th:nth-child(4),
+td:nth-child(4) {
+  width: 20%;
+}
+
+/* Fourth column (Date) */
+th:nth-child(5),
+td:nth-child(5) {
+  width: 25%;
+}
+
+/* Fifth column (Description) */
+th:nth-child(6),
+td:nth-child(6) {
+  width: 15%;
+}
+
+/* Sixth column (Actions) */
 
 .transaction-table {
-  width: 100%; /* Makes the table take up all available width */
-  max-width: 1200px; /* Optional: Restrict the maximum width */
-  margin: 0 auto; /* Center the table */
-  border-collapse: collapse; /* Optional: Makes the table borders more compact */
+  width: 100%;
+  /* Makes the table take up all available width */
+  max-width: 1200px;
+  /* Optional: Restrict the maximum width */
+  margin: 0 auto;
+  /* Center the table */
+  border-collapse: collapse;
+  /* Optional: Makes the table borders more compact */
 }
 
 .transaction-table th,
 .transaction-table td {
-  padding: 15px; /* Increase padding for better spacing */
+  padding: 15px;
+  /* Increase padding for better spacing */
   text-align: left;
-  border-bottom: 1px solid #ddd; /* Consistent border for all cells */
+  border-bottom: 1px solid #ddd;
+  /* Consistent border for all cells */
 }
 
 .transaction-table th {
-  background-color: #f5f5f5; /* Optional: Adds a background color to headers */
+  background-color: #f5f5f5;
+  /* Optional: Adds a background color to headers */
 }
 
 .transaction-table td {
-  background-color: #ffffff; /* Optional: Adds a background color to rows */
+  background-color: #ffffff;
+  /* Optional: Adds a background color to rows */
 }
 
 .switch-button {

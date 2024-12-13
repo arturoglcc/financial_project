@@ -7,7 +7,12 @@
         <div class="form-control">
           <input type="text" required v-model="description">
           <label>
-            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span style="transition-delay:500ms">n</span>
+            <span style="transition-delay:0ms">D</span><span style="transition-delay:50ms">e</span><span
+              style="transition-delay:100ms">s</span><span style="transition-delay:150ms">c</span><span
+              style="transition-delay:200ms">r</span><span style="transition-delay:250ms">i</span><span
+              style="transition-delay:300ms">p</span><span style="transition-delay:350ms">t</span><span
+              style="transition-delay:400ms">i</span><span style="transition-delay:450ms">o</span><span
+              style="transition-delay:500ms">n</span>
           </label>
         </div>
 
@@ -27,7 +32,8 @@
         <div class="form-control">
           <input type="text" required v-model="tags">
           <label>
-            <span style="transition-delay:0ms">T</span><span style="transition-delay:50ms">a</span><span style="transition-delay:100ms">g</span><span style="transition-delay:150ms">s</span>
+            <span style="transition-delay:0ms">T</span><span style="transition-delay:50ms">a</span><span
+              style="transition-delay:100ms">g</span><span style="transition-delay:150ms">s</span>
           </label>
         </div>
 
@@ -35,12 +41,17 @@
         <div class="form-control amount-centered">
           <input type="float" required v-model="amount">
           <label>
-            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
+            <span style="transition-delay:0ms">A</span><span style="transition-delay:50ms">m</span><span
+              style="transition-delay:100ms">o</span><span style="transition-delay:150ms">u</span><span
+              style="transition-delay:200ms">n</span><span style="transition-delay:250ms">t</span><span
+              style="transition-delay:300ms"> </span><span style="transition-delay:350ms">$</span>
           </label>
         </div>
 
-        <small>*Place the tags related to the entry separated by commas, for example: cinema, food <br> *Set the time in 24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example: 100.00</small>
-        
+        <small>*Place the tags related to the entry separated by commas, for example: cinema, food <br> *Set the time in
+          24 hour format, for example, 22:15 <br> *Enter the amount with two decimal numbers, for example:
+          100.00</small>
+
         <!-- Confirm Button -->
         <button @click="handleConfirm"><span class="text">Confirm</span><span>Confirm</span></button>
       </div>
@@ -104,7 +115,7 @@ export default {
   border: 2px solid #ddd;
   border-radius: 10px;
   padding: 20px;
-  width: 1165px; 
+  width: 1165px;
   margin: auto;
 }
 
@@ -116,11 +127,11 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  grid-template-areas: 
+  grid-template-areas:
     "description description"
     "date time"
     "tags tags"
-    "amount amount"; 
+    "amount amount";
 }
 
 .form-control {
@@ -151,7 +162,7 @@ export default {
 }
 
 .amount-centered {
-  grid-area: amount; 
+  grid-area: amount;
   display: flex;
   justify-content: center;
 }
@@ -198,7 +209,7 @@ export default {
 .form-control input:focus+label span,
 .form-control input:valid+label span {
   color: rgb(32, 180, 230);
-  transform: translateY(-40px); 
+  transform: translateY(-40px);
 }
 
 button {
@@ -218,8 +229,8 @@ button {
   -webkit-user-select: none;
   touch-action: manipulation;
   z-index: 1;
-  -webkit-box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
-  box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  -webkit-box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+  box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
   font-weight: 1000;
 }
 

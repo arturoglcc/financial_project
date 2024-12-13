@@ -11,14 +11,15 @@ export default {
     const chartRef = ref(null);
     const data = ref({ incomes: Array(12).fill(0), outlays: Array(12).fill(0) });
 
+    // Function to fetch transactions data
     const fetchTransactions = async () => {
       const start_date = new Date();
       start_date.setFullYear(start_date.getFullYear()); // Start of the last year
       start_date.setMonth(0, 1); // January 1st
 
-      const end_date = new Date(); 
+      const end_date = new Date();
       end_date.setFullYear(end_date.getFullYear());
-      end_date.setMonth(11,31)
+      end_date.setMonth(11, 31)
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {
@@ -97,11 +98,10 @@ export default {
       };
     };
 
+    // Function to initialize the chart
     const initChart = () => {
       const chartInstance = echarts.init(chartRef.value);
-
       const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
       const option = {
         color: ['rgba(75, 192, 192, 1)', '#E70707'],
         title: { text: 'Movements per Year' },

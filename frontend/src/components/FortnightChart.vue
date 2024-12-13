@@ -11,11 +11,11 @@ export default {
     const chartRef = ref(null);
     const data = ref({ incomes: Array(15).fill(0), outlays: Array(15).fill(0) });
 
+    // Function to fetch transactions data
     const fetchTransactions = async () => {
       const start_date = new Date();
       start_date.setDate(start_date.getDate() - 14); // 15 days ago
       start_date.setHours(0, 0, 0, 0);
-
       const end_date = new Date(); // Current date
       end_date.setHours(23, 59, 59)
 
@@ -27,10 +27,8 @@ export default {
         });
         return url.toString();
       }
-
       let incomes = [];
       let outlays = [];
-
       // Fetch incomes
       try {
         const incomesUrl = buildUrl('http://localhost/api/transactions', {
@@ -38,16 +36,13 @@ export default {
           end_date: end_date.toISOString(),
           transaction_type: 'income',
         });
-
         const incomesResponse = await fetch(incomesUrl, {
           method: 'GET',
           credentials: 'include', // Include credentials if required
         });
-
         if (!incomesResponse.ok) {
           throw new Error(`Error fetching incomes: ${incomesResponse.statusText}`);
         }
-
         const incomesData = await incomesResponse.json();
         incomes = incomesData;
       } catch (error) {
@@ -61,23 +56,19 @@ export default {
           end_date: end_date.toISOString(),
           transaction_type: 'expense',
         });
-
         const outlaysResponse = await fetch(outlaysUrl, {
           method: 'GET',
           headers: { Accept: 'application/json' },
           credentials: 'include', // Include credentials if required
         });
-
         if (!outlaysResponse.ok) {
           throw new Error(`Error fetching outlays: ${outlaysResponse.statusText}`);
         }
-
         const outlaysData = await outlaysResponse.json();
         outlays = outlaysData;
       } catch (error) {
         console.error('Error fetching outlays:', error);
       }
-
       // Process transactions to aggregate amounts by day
       const processTransactions = (transactions) => {
         const result = Array(15).fill(0); // Initialize an array for 15 days
@@ -90,17 +81,16 @@ export default {
         });
         return result;
       };
-
       // Update data with fallback values if needed
       data.value = {
         incomes: incomes.length ? processTransactions(incomes) : Array(15).fill(0),
         outlays: outlays.length ? processTransactions(outlays) : Array(15).fill(0),
       };
     };
-
+    
+    // Function to initialize the chart
     const initChart = () => {
       const chartInstance = echarts.init(chartRef.value);
-
       // Generate labels for the last 15 days
       const labels = Array.from({ length: 15 }, (_, i) => {
         const date = new Date();
@@ -108,6 +98,7 @@ export default {
         return `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}`;
       });
 
+      // Chart options
       const option = {
         color: ['rgba(75, 192, 192, 1)', '#E70707'],
         title: { text: 'Movements per Fortnight' },
@@ -171,6 +162,7 @@ export default {
       });
     };
 
+    // Fetch transactions and initialize chart on component mount
     onMounted(async () => {
       await fetchTransactions();
       initChart();

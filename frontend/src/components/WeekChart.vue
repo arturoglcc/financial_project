@@ -11,18 +11,16 @@ export default {
     const chartRef = ref(null);
     const data = ref({ incomes: Array(7).fill(0), outlays: Array(7).fill(0) });
 
+    // Function to fetch transactions data
     const fetchTransactions = async () => {
       const currentDate = new Date();
-const currentDay = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
-let start_date = new Date(currentDate); // Initialize start_date to today
-let end_date = new Date(currentDate); // Initialize end_date to today
+      const currentDay = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+      let start_date = new Date(currentDate); // Initialize start_date to today
+      let end_date = new Date(currentDate); // Initialize end_date to today
 
-
-  const diffToSunday = currentDay === 0 ? 0 : currentDay; // Adjust for Sunday being day 0
-  start_date.setDate(currentDate.getDate() - diffToSunday); // Start date is Sunday
-  end_date.setDate(currentDate.getDate() + (6 - currentDay)); // End date is the upcoming Saturday
-
-
+      const diffToSunday = currentDay === 0 ? 0 : currentDay; // Adjust for Sunday being day 0
+      start_date.setDate(currentDate.getDate() - diffToSunday); // Start date is Sunday
+      end_date.setDate(currentDate.getDate() + (6 - currentDay)); // End date is the upcoming Saturday
 
       // Helper function to construct the URL with query parameters
       function buildUrl(baseUrl, params) {
@@ -106,9 +104,9 @@ let end_date = new Date(currentDate); // Initialize end_date to today
       };
     };
 
+    // Function to initialize the chart
     const initChart = () => {
       const chartInstance = echarts.init(chartRef.value);
-
       const option = {
         color: ['rgba(75, 192, 192, 1)', '#E70707'],
         title: { text: 'Movements per Week' },

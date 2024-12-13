@@ -1,23 +1,29 @@
 <template>
   <div class="charts-container">
+    <!-- Weekly chart component -->
     <div class="chart-item">
       <WeekChart class="chart" />
     </div>
+    <!-- Fortnightly chart component -->
     <div class="chart-item">
       <FortnightChart class="chart" />
     </div>
+    <!-- Monthly chart component -->
     <div class="chart-item">
       <MonthChart class="chart" />
     </div>
+    <!-- Yearly chart component -->
     <div class="chart-item">
       <YearChart class="chart" />
     </div>
 
     <!-- New Pie Charts -->
     <div class="chart-item">
+      <!-- Pie chart for income -->
       <div ref="chartRefPieIncome" class="chart"></div>
     </div>
     <div class="chart-item">
+      <!-- Pie chart for expenses -->
       <div ref="chartRefPieExpense" class="chart"></div>
     </div>
   </div>
@@ -58,25 +64,25 @@ export default {
     const tagColors = {}; // Store colors assigned to each tag
 
     const assignColor = (tags, index) => {
-    // Loop through each tag and assign color if not already assigned
-    tags.forEach((tag) => {
-      if (!tagColors[tag]) {
-        // Check if there's a pre-defined color from brightColors or generate one
-        if (index < brightColors.length) {
-          tagColors[tag] = brightColors[index];
-        } else {
-          tagColors[tag] = generateDynamicColor(index);
+      // Loop through each tag and assign color if not already assigned
+      tags.forEach((tag) => {
+        if (!tagColors[tag]) {
+          // Check if there's a pre-defined color from brightColors or generate one
+          if (index < brightColors.length) {
+            tagColors[tag] = brightColors[index];
+          } else {
+            tagColors[tag] = generateDynamicColor(index);
+          }
+          index++;
         }
-        index++;
+      });
+      if (tags.length > 1) {
+        return blendColors(tags);
       }
-    });
-    if (tags.length > 1) {
-    return blendColors(tags);
-  }
 
-    // Return the color for the first tag (or any logic you need)
-    return tagColors[tags[0]]; // Return the color of the first tag or the last assigned color
-};
+      // Return the color for the first tag (or any logic you need)
+      return tagColors[tags[0]]; // Return the color of the first tag or the last assigned color
+    };
 
 
     // Helper function to generate dynamic colors
@@ -181,7 +187,7 @@ export default {
               name: overlapKey,
               value,
               tags: sortedTags,
-              itemStyle: { color: color},
+              itemStyle: { color: color },
             });
           }
 

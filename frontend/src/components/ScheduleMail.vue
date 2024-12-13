@@ -2,24 +2,37 @@
   <div class="calendar-container">
     <h2>Schedule Mail</h2>
     <div class="calendar-header">
+      <!-- Button to navigate to the previous month -->
       <button @click="prevMonth">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12l7 -7M8 12l7 7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="12;0"/></path>
+          <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round"
+            stroke-linejoin="round" stroke-width="2" d="M8 12l7 -7M8 12l7 7">
+            <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="12;0" />
+          </path>
         </svg>
       </button>
+      <!-- Display the current month and year -->
       <span class="month-title">{{ currentMonthName }} {{ currentYear }}</span>
+      <!-- Button to navigate to the next month -->
       <button @click="nextMonth">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12l-7 -7M16 12l-7 7"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="12;0"/></path>
+          <path fill="none" stroke="currentColor" stroke-dasharray="12" stroke-dashoffset="12" stroke-linecap="round"
+            stroke-linejoin="round" stroke-width="2" d="M16 12l-7 -7M16 12l-7 7">
+            <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="12;0" />
+          </path>
         </svg>
-      </button> 
+      </button>
     </div>
     <div class="calendar">
+      <!-- Display the days of the week -->
       <div class="day-header" v-for="day in daysOfWeek" :key="day">{{ day }}</div>
-      <div class="day" v-for="(day, index) in daysInMonth" :key="index" :class="{ 'selected': isSelected(day), 'highlighted': isHighlighted(day) }" @click="selectDate(day)">
+      <!-- Display the days in the current month -->
+      <div class="day" v-for="(day, index) in daysInMonth" :key="index"
+        :class="{ 'selected': isSelected(day), 'highlighted': isHighlighted(day) }" @click="selectDate(day)">
         {{ day || '' }}
       </div>
     </div>
+    <!-- Dropdown to select the frequency of the mail -->
     <select class="frequency-select" v-model="selectedFrequency" @change="calculateHighlightedDates">
       <option value="daily">Daily</option>
       <option value="weekly">Weekly</option>
@@ -43,9 +56,11 @@ export default {
     };
   },
   computed: {
+    // Get the name of the current month
     currentMonthName() {
       return new Date(this.currentYear, this.currentMonth).toLocaleString('en-US', { month: 'long' });
     },
+    // Get the days in the current month
     daysInMonth() {
       const firstDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
       const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
@@ -53,6 +68,7 @@ export default {
     },
   },
   methods: {
+    // Navigate to the previous month
     prevMonth() {
       if (this.currentMonth === 0) {
         this.currentMonth = 11;
@@ -62,6 +78,7 @@ export default {
       }
       this.calculateHighlightedDates();
     },
+    // Navigate to the next month
     nextMonth() {
       if (this.currentMonth === 11) {
         this.currentMonth = 0;
@@ -71,22 +88,26 @@ export default {
       }
       this.calculateHighlightedDates();
     },
+    // Select a date in the calendar
     selectDate(day) {
       if (!day) return;
       this.selectedDate = new Date(this.currentYear, this.currentMonth, day);
       this.calculateHighlightedDates();
     },
+    // Check if a day is selected
     isSelected(day) {
       return this.selectedDate && this.selectedDate.getDate() === day && this.selectedDate.getMonth() === this.currentMonth && this.selectedDate.getFullYear() === this.currentYear;
     },
+    // Check if a day is highlighted
     isHighlighted(day) {
       return this.highlightedDates.some(date => date.getDate() === day && date.getMonth() === this.currentMonth && date.getFullYear() === this.currentYear);
     },
+    // Calculate the highlighted dates based on the selected frequency
     calculateHighlightedDates() {
       this.highlightedDates = [];
       if (!this.selectedDate) return;
       let currentDate = new Date(this.selectedDate);
-      while(currentDate.getFullYear() <= this.currentYear + 1) {
+      while (currentDate.getFullYear() <= this.currentYear + 1) {
         this.highlightedDates.push(new Date(currentDate));
         switch (this.selectedFrequency) {
           case 'daily':
@@ -109,7 +130,7 @@ export default {
     }
   },
   mounted() {
-    this.selectDate(1);
+    this.selectDate(1); // Select the first day of the month by default
   }
 };
 </script>
