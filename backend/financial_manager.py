@@ -403,7 +403,7 @@ def get_expenses_tags(
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error fetching expense tags.")
 
-@router.post("/debts", status_code=status.HTTP_201_CREATED)
+@router.post("/add-debt", status_code=status.HTTP_201_CREATED)
 def create_debt(
     debt_data: DebtCreate,
     db: Session = Depends(get_db),
