@@ -44,7 +44,7 @@
         Balance
       </div>
       <div class="stat-value">
-        $ 0
+        $ {{ balance }}
       </div>
       <div class="stat-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20">
@@ -63,6 +63,7 @@ export default {
     return {
       lastIncome: null, // Store the value of the last income
       lastOutlay: null, // Store the value of the last outlay
+      balance: 0, // Store the calculated balance
     };
   },
   methods: {
@@ -87,6 +88,28 @@ export default {
       } catch (error) {
         console.error("Error fetching last outlay:", error.response ? error.response.data : error.message);
         this.lastOutlay = 0; // Set fallback value for outlay only
+      }
+
+      try {
+        // Fetch all incomes
+        const allIncomesResponse = await axios.get("http://localhost/api/allIncomes", {
+          withCredentials: true, // Include credentials if authentication is required
+        });
+        const incomes = Array.isArray(allIncomesResponse.data) ? allIncomesResponse.data : [];
+        const totalIncomes = incomes.reduce((sum, income) => sum + parseFloat(income.amount), 0);
+
+        // Fetch all expenses
+        const allExpensesResponse = await axios.get("http://localhost/api/allExpenses", {
+          withCredentials: true, // Include credentials if authentication is required
+        });
+        const expenses = Array.isArray(allExpensesResponse.data) ? allExpensesResponse.data : [];
+        const totalExpenses = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+
+        // Calculate balance
+        this.balance = totalIncomes - totalExpenses;
+      } catch (error) {
+        console.error("Error fetching all incomes or expenses:", error.response ? error.response.data : error.message);
+        this.balance = 0; // Set fallback value for balance
       }
     },
   },
