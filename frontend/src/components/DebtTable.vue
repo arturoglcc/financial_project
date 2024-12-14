@@ -1,4 +1,4 @@
-template>
+<template>
   <div class="debt-table">
     <h3>Debts</h3>
     <table>

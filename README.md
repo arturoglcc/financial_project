@@ -1,6 +1,6 @@
-# Financial Web Project Using FastAPI, Vue.js, MySQL, and Apache
+# Financial Web Project Using FastAPI, Vue.js, MySQL, and NGINX
 
-This project is a financial management web application built using FastAPI (backend), Vue.js (frontend), MySQL (database), and Apache (HTTP server). To run and manage the project, you need Docker and Docker Compose installed on your machine.
+This project is a financial management web application built using FastAPI (backend), Vue.js (frontend), MySQL (database), and NGINX (HTTP server). To run and manage the project, you need Docker and Docker Compose installed on your machine.
 
 ## Prerequisites
 
@@ -42,9 +42,9 @@ This command will build the images if they do not already exist and start the co
 The project defines the following containers:
 
 * frontend: Vue.js frontend application
-* backend: Django backend application
+* backend: FastAPI backend application
 * db: MySQL database
-* http: Apache HTTP server acting as a reverse proxy
+* http: NGINX HTTP server acting as a reverse proxy
 
 
 To start a single Docker container (e.g., only the frontend), specify the container name from the docker-compose.yml file:
