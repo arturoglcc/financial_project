@@ -129,11 +129,6 @@ export default {
       this.isFormA = isFormA;
     },
     async handleConfirm() {
-      const token = localStorage.getItem("jwtToken"); // Este token solo sirve para verificar si existe
-      if (!token) {
-        alert("No authentication token found. Please log in.");
-        return;
-      }
       if (!this.description || !this.dateInput || !this.timeInput || !this.creditor || !this.amount || !this.dueDateInput || !this.dueTimeInput) {
         alert("All fields must be filled out.");
         return;
@@ -145,23 +140,28 @@ export default {
         description: this.description,
         due_date: `${this.dueDateInput}T${this.dueTimeInput}`,
       };
-      
-      const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
-      };
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
       try {
-        const response = await axios.post("http://localhost/api/debts", newDebt);
+        const response = await axios.post("http://localhost/api/add-debt", newDebt, {
+            headers: {
+	       "Content-Type": "application/json",
+	       Authorization: `Bearer ${token}`, 
+	    },
+	    withCredentials: true,
+          }
+	);
 	console.log("Debt created successfully:", response.data);
-      	alert("Debt created successfully");
       	this.$emit("add-debt", response.data);
       } catch(error){
-     	  console.error("Error creating debt:", error);
-          alert("There was an error adding the debt.");
+        console.error("Error adding debt:", error.response ? error.response.data : error.message);
       }
-      this.$emit("add-debt", newDebt);
+      this.resetForm();
+    },
+    resetForm() {
       this.description = "";
       this.dateInput = "";
       this.creditor = "";
@@ -171,11 +171,6 @@ export default {
       this.dueTimeInput = "";
     },
     async handleConfirmCredit() {
-      const token = localStorage.getItem("jwtToken"); // Este token solo sirve para verificar si existe
-      if (!token) {
-        alert("No authentication token found. Please log in.");
-        return;
-      }
       if (!this.descriptionCredit || !this.dateInputCredit || !this.timeInputCredit || !this.creditorCredit || !this.amountCredit || !this.dueDateInputCredit || !this.dueTimeInputCredit) {
         alert("All fields must be filled out.");
         return;
@@ -187,24 +182,28 @@ export default {
         description: this.descriptionCredit,
         due_date: `${this.dueDateInputCredit}T${this.dueTimeInputCredit}`,
       };
-      
-      const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
-      };
-
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
       try {
-        const response = await axios.post("http://localhost/api/debts", newDebt);
+        const response = await axios.post("http://localhost/api/add-debt", newDebt, {
+            headers: {
+	      "Content-Type": "application/json",
+	      Authorization: `Bearer ${token}`,
+	    },
+	    withCredentials: true,
+          } 
+	);
 	console.log("Debt created successfully:", response.data);
-      	alert("Credit created successfully");
         this.$emit('add-debt', response.data);
       } catch (error) {
-        console.error("Error creating debt:", error);
-        alert("There was an error adding the debt.");
+        console.error("Error adding debt:", error.response ? error.response.data : error.message);
       }
-      this.$emit('add-debt', newDebt);
+     this.resetFormCredit();
+    },
+    resetFormCredit() {
       this.descriptionCredit = "";
       this.dateInputCredit = "";
       this.timeInputCredit = "";
@@ -214,6 +213,7 @@ export default {
       this.dueTimeInputCredit = "";
       this.isInterestFree = false;
       this.interestCredit = "";
+      
     },
   },
 };
